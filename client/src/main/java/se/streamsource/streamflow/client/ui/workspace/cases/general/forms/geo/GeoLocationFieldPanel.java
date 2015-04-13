@@ -25,6 +25,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.LineBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.application.ApplicationContext;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -77,6 +79,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    private FormSubmissionWizardPageModel model;
 
    private ButtonGroup modeButtonGroup;
+
+   private JLabel addressInfoLabel;
 
    public GeoLocationFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field,
          @Uses GeoLocationFieldValue fieldValue, @Uses FormSubmissionWizardPageModel model)
@@ -142,7 +146,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       dummyTopPanel.add(selectLineButton);
       dummyTopPanel.add(selectPolygonButton);
 
-      dummyTopPanel.add(new JLabel("Address here"));
+      addressInfoLabel = new JLabel();
+      dummyTopPanel.add(addressInfoLabel);
       dummyTopPanel.add(new JLabel("Help hint here"));
 
       selectPointButton.addActionListener(new ActionListener() {
@@ -213,13 +218,30 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    public void setValue(String newValue)
    {
       textField.setText( newValue );
-
       currentLocationData = parseLocationDTOValue(newValue);
+      addressInfoLabel.setText(formatAddressInfo(currentLocationData));
       currentGeoMarker = GeoMarker.parseGeoMarker(currentLocationData.location().get());
       switchInteractionMode(new PanZoomInteractionMode());
       scrollMarkerIntoView(currentGeoMarker);
    }
 
+   private static String formatAddressInfo(LocationDTO locationDTO) {
+      List<String> elements = new ArrayList<String>();
+      if (!StringUtils.isBlank(locationDTO.street().get())) {
+         elements.add(locationDTO.street().get());
+      }
+      if (!StringUtils.isBlank(locationDTO.zipcode().get())) {
+         elements.add(locationDTO.zipcode().get());
+      }
+      if (!StringUtils.isBlank(locationDTO.city().get())) {
+         elements.add(locationDTO.city().get());
+      }
+      if (!StringUtils.isBlank(locationDTO.country().get())) {
+         elements.add(locationDTO.country().get());
+      }
+
+      return "<html>" + StringUtils.join(elements, ", ") + "</html>";
+   }
 
    @Override
    public GeoMarker getCurrentGeoMarker() {
