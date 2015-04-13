@@ -69,7 +69,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    private StateBinder.Binding binding;
    private JXMapViewer mapViewer;
    private MapInteractionMode currentInteractionMode;
-   private GeoMarker currentGeoMarker;
    private LocationDTO currentLocationData;
    private GeoLocationFieldValue fieldValue;
 
@@ -200,18 +199,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Override
    public String getValue()
    {
-//      return textField.getText();
-      ValueBuilder<LocationDTO> builder = module.valueBuilderFactory().newValueBuilder(LocationDTO.class);
-      LocationDTO prototype = builder.prototype();
-
-      prototype.city().set("x");
-      prototype.country().set("x");
-      prototype.street().set("x");
-      prototype.zipcode().set("x");
-      prototype.location().set(currentGeoMarker.stringify());
-
-      String json = builder.newInstance().toJSON();
-      return json;
+      return currentLocationData.toJSON();
    }
 
    @Override
@@ -220,9 +208,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       textField.setText( newValue );
       currentLocationData = parseLocationDTOValue(newValue);
       addressInfoLabel.setText(formatAddressInfo(currentLocationData));
-      currentGeoMarker = GeoMarker.parseGeoMarker(currentLocationData.location().get());
       switchInteractionMode(new PanZoomInteractionMode());
-      scrollMarkerIntoView(currentGeoMarker);
+      scrollMarkerIntoView(getCurrentGeoMarker());
    }
 
    private static String formatAddressInfo(LocationDTO locationDTO) {
@@ -245,14 +232,22 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
    @Override
    public GeoMarker getCurrentGeoMarker() {
-      return currentGeoMarker;
+      return GeoMarker.parseGeoMarker(currentLocationData.location().get());
    }
 
    @Override
    public void updateGeoMarker(GeoMarker marker) {
-      currentGeoMarker = marker;
+      currentLocationData = locationDataForMarker(marker);
+      addressInfoLabel.setText(formatAddressInfo(currentLocationData));
       binding.updateProperty(getValue());
       switchInteractionMode(new PanZoomInteractionMode());
+   }
+
+   private LocationDTO locationDataForMarker(GeoMarker marker) {
+      ValueBuilder<LocationDTO> builder = module.valueBuilderFactory().newValueBuilder(LocationDTO.class);
+      LocationDTO prototype = builder.prototype();
+      prototype.location().set(marker.stringify());
+      return builder.newInstance();
    }
 
    @Override
