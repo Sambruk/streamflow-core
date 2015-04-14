@@ -182,6 +182,7 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
+import se.streamsource.streamflow.client.util.mapquest.MapquestNominatimService;
 import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
@@ -232,12 +233,14 @@ public class UIAssembler
             UncaughtExceptionHandler.class,
             JavaHelp.class
       ).visibleIn(layer);
+      module.objects(MapquestNominatimService.class).visibleIn(layer);
 
       module.importedServices(UncaughtExceptionHandler.class,
             JavaHelp.class).importedBy(NewObjectImporter.class).visibleIn(application);
       module.services(
             ExceptionHandlerService.class).instantiateOnStartup();
       module.importedServices(DialogService.class).importedBy(NewObjectImporter.class).visibleIn(application);
+      module.importedServices(MapquestNominatimService.class).importedBy(NewObjectImporter.class).visibleIn(application);
 
       module.objects(ActionBinder.class, ValueBinder.class, StateBinder.class).visibleIn(layer);
 
@@ -346,7 +349,7 @@ public class UIAssembler
 
 
       module.objects(ProjectModel.class ).visibleIn(layer);
-      
+
       addMV(module, SelectedFormsModel.class, SelectedFormsView.class);
 
       addViews(module,

@@ -79,6 +79,9 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Service
    DialogService dialogs;
 
+   @Service
+   MapquestNominatimService geoLookupService;
+
    private FormSubmissionWizardPageModel model;
 
    private ButtonGroup modeButtonGroup;
@@ -254,7 +257,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
          @Override
          protected MapquestQueryResult doInBackground() throws Exception {
-            return new MapquestNominatimService().reverseLookup(firstPoint.getLatitude(), firstPoint.getLongitude());
+            return geoLookupService.reverseLookup(firstPoint.getLatitude(), firstPoint.getLongitude());
          }
 
          @Override
