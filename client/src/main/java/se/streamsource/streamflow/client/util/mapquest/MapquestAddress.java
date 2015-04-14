@@ -27,6 +27,7 @@ public class MapquestAddress {
    private String pedestrian;
    private String road;
    private String city;
+   private String county;
 
    public String getCountry() {
       return country;
@@ -74,5 +75,21 @@ public class MapquestAddress {
 
    public void setCity(String city) {
       this.city = city;
+   }
+
+   public String getCounty() {
+      return county;
+   }
+
+   public void setCounty(String county) {
+      this.county = county;
+   }
+
+   @Override
+   public String toString() {
+      return "MapquestAddress [country=" + country + ", house_number="
+            + house_number + ", postcode=" + postcode + ", pedestrian="
+            + pedestrian + ", road=" + road + ", city=" + city + ", county="
+            + county + "]";
    }
 }

@@ -17,21 +17,29 @@
 package se.streamsource.streamflow.client.util.mapquest;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The mapquest nominatim geo query service. See http://open.mapquestapi.com/nominatim.
  */
 public class MapquestNominatimService {
 
+   private static final Logger logger = LoggerFactory.getLogger(MapquestNominatimService.class);
+
    private String nominatimBaseUrl = "http://open.mapquestapi.com/nominatim/v1";
    private JacksonConverter converter = new JacksonConverter();
 
-   MapquestQueryResult reverseLookup(double latitude, double longitude) {
+   public MapquestQueryResult reverseLookup(double latitude, double longitude) {
       String url = reverseLookupQueryUrl(latitude, longitude);
-      return getObject(MapquestQueryResult.class, url);
+      logger.info("Reverse geo lookup for: "+url);
+      MapquestQueryResult result = getObject(MapquestQueryResult.class, url);
+      logger.info("Reverse geo result: " + result);
+      return result;
    }
 
    private <T> T getObject(Class<T> clazz, String url) {
@@ -47,11 +55,10 @@ public class MapquestNominatimService {
    }
 
    private String reverseLookupQueryUrl(double latitude, double longitude) {
-      return String.format("%s/reverse?lat=%f&lon=%f&format=json", nominatimBaseUrl, latitude, longitude);
+      return String.format(Locale.US, "%s/reverse?lat=%f&lon=%f&format=json", nominatimBaseUrl, latitude, longitude);
    }
 
    public static void main(String[] args) {
-      MapquestQueryResult result = new MapquestNominatimService().reverseLookup(55.681, 12.577);
-      System.out.println(result);
+      new MapquestNominatimService().reverseLookup(55.681, 12.577);
    }
 }

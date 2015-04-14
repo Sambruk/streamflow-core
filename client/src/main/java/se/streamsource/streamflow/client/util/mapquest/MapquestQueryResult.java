@@ -39,4 +39,10 @@ public class MapquestQueryResult {
    public void setAddress(MapquestAddress address) {
       this.address = address;
    }
+
+   @Override
+   public String toString() {
+      return "MapquestQueryResult [osm_type=" + osm_type + ", address="
+            + address + "]";
+   }
 }

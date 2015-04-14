@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingWorker;
 import javax.swing.border.LineBorder;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +61,9 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Abstra
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.mapquest.MapquestAddress;
+import se.streamsource.streamflow.client.util.mapquest.MapquestNominatimService;
+import se.streamsource.streamflow.client.util.mapquest.MapquestQueryResult;
 
 public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMarkerHolder
 {
@@ -241,6 +245,33 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       addressInfoLabel.setText(formatAddressInfo(currentLocationData));
       binding.updateProperty(getValue());
       switchInteractionMode(new PanZoomInteractionMode());
+      initiateGetAddressInfo(marker);
+   }
+
+   private void initiateGetAddressInfo(GeoMarker marker) {
+      final PointMarker firstPoint = marker.getPoints().get(0);
+      new SwingWorker<MapquestQueryResult, Object>() {
+
+         @Override
+         protected MapquestQueryResult doInBackground() throws Exception {
+            return new MapquestNominatimService().reverseLookup(firstPoint.getLatitude(), firstPoint.getLongitude());
+         }
+
+         @Override
+         protected void done() {
+            try {
+               updateAddressInfo(get());
+            } catch (Exception e) {
+               logger.warn("Failed to get address info", e);
+            }
+         }
+      }.execute();
+   }
+
+   private void updateAddressInfo(MapquestQueryResult mapquestQueryResult) {
+      currentLocationData = locationDataWithAddressInfo(currentLocationData, mapquestQueryResult);
+      addressInfoLabel.setText(formatAddressInfo(currentLocationData));
+      binding.updateProperty(getValue());
    }
 
    private LocationDTO locationDataForMarker(GeoMarker marker) {
@@ -248,6 +279,35 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       LocationDTO prototype = builder.prototype();
       prototype.location().set(marker.stringify());
       return builder.newInstance();
+   }
+
+   private LocationDTO locationDataWithAddressInfo(LocationDTO locationData, MapquestQueryResult mapquestQueryResult) {
+      ValueBuilder<LocationDTO> builder = module.valueBuilderFactory().newValueBuilder(LocationDTO.class).withPrototype(locationData);
+      LocationDTO prototype = builder.prototype();
+
+      MapquestAddress address = mapquestQueryResult.getAddress();
+
+      String street = firstNonNull(address.getRoad(), address.getPedestrian(), "");
+      if (address.getHouse_number() != null) {
+         street = street + " " + address.getHouse_number();
+      }
+
+      prototype.street().set(street);
+      prototype.zipcode().set(firstNonNull(address.getPostcode(), ""));
+      prototype.city().set(firstNonNull(address.getCity(), address.getCounty(), ""));
+      prototype.country().set(firstNonNull(address.getCountry(), ""));
+
+      return builder.newInstance();
+   }
+
+   private <T> T firstNonNull(T... args) {
+      for (T t: args) {
+         if (t != null) {
+            return t;
+         }
+      }
+
+      return null;
    }
 
    @Override
