@@ -50,6 +50,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +80,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Service
    DialogService dialogs;
 
-   @Service
-   MapquestNominatimService geoLookupService;
+   @Uses
+   ObjectBuilder<MapquestNominatimService> geoLookupServiceBuilder;
 
    private FormSubmissionWizardPageModel model;
 
@@ -257,6 +258,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
          @Override
          protected MapquestQueryResult doInBackground() throws Exception {
+            String baseUrl = "http://open.mapquestapi.com/nominatim/v1";
+            MapquestNominatimService geoLookupService = geoLookupServiceBuilder.use(baseUrl).newInstance();
             return geoLookupService.reverseLookup(firstPoint.getLatitude(), firstPoint.getLongitude());
          }
 

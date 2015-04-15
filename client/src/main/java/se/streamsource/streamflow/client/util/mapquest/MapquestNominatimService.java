@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.util.mapquest;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -31,8 +32,12 @@ public class MapquestNominatimService {
 
    private static final Logger logger = LoggerFactory.getLogger(MapquestNominatimService.class);
 
-   private String nominatimBaseUrl = "http://open.mapquestapi.com/nominatim/v1";
+   private String nominatimBaseUrl; // "http://open.mapquestapi.com/nominatim/v1";
    private JacksonConverter converter = new JacksonConverter();
+
+   public MapquestNominatimService(@Uses String nominatimBaseUrl) {
+      this.nominatimBaseUrl = nominatimBaseUrl;
+   }
 
    public MapquestQueryResult reverseLookup(double latitude, double longitude) {
       String url = reverseLookupQueryUrl(latitude, longitude);
@@ -59,6 +64,6 @@ public class MapquestNominatimService {
    }
 
    public static void main(String[] args) {
-      new MapquestNominatimService().reverseLookup(55.681, 12.577);
+      new MapquestNominatimService("http://open.mapquestapi.com/nominatim/v1").reverseLookup(55.681, 12.577);
    }
 }

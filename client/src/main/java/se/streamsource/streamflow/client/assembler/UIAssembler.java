@@ -233,14 +233,13 @@ public class UIAssembler
             UncaughtExceptionHandler.class,
             JavaHelp.class
       ).visibleIn(layer);
-      module.objects(MapquestNominatimService.class).visibleIn(layer);
+      module.objects(MapquestNominatimService.class).visibleIn(application);
 
       module.importedServices(UncaughtExceptionHandler.class,
             JavaHelp.class).importedBy(NewObjectImporter.class).visibleIn(application);
       module.services(
             ExceptionHandlerService.class).instantiateOnStartup();
       module.importedServices(DialogService.class).importedBy(NewObjectImporter.class).visibleIn(application);
-      module.importedServices(MapquestNominatimService.class).importedBy(NewObjectImporter.class).visibleIn(application);
 
       module.objects(ActionBinder.class, ValueBinder.class, StateBinder.class).visibleIn(layer);
 
