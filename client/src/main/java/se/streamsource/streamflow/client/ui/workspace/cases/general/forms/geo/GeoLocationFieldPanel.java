@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsDTO;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.util.StateBinder;
@@ -84,10 +85,12 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    ObjectBuilder<MapquestNominatimService> geoLookupServiceBuilder;
 
    private FormSubmissionWizardPageModel model;
+   private FormDraftSettingsDTO formDraftSettings;
 
    private ButtonGroup modeButtonGroup;
 
    private JLabel addressInfoLabel;
+
 
    public GeoLocationFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field,
          @Uses GeoLocationFieldValue fieldValue, @Uses FormSubmissionWizardPageModel model)
@@ -113,6 +116,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
+
+      formDraftSettings = model.getFormDraftModel().settings();
    }
 
    private JXMapViewer setUpMapViewer() {

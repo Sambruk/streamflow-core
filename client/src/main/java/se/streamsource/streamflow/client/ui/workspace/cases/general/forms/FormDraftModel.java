@@ -35,6 +35,7 @@ import se.streamsource.streamflow.api.workspace.cases.contact.StreetsDTO;
 import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsDTO;
 
 /**
  * Model for a form draft. Use this to update a draft until it is to be submitted
@@ -43,7 +44,7 @@ public class FormDraftModel
 {
    @Uses
    CommandQueryClient client;
-   
+
    @Structure
    Module module;
 
@@ -90,7 +91,7 @@ public class FormDraftModel
       builder.prototype().address().set( query );
       return client.query( "searchstreets", StreetsDTO.class, builder.newInstance());
    }
-   
+
    public void submit()
    {
       client.putCommand( "submit" );
@@ -99,5 +100,10 @@ public class FormDraftModel
    public void delete()
    {
       client.delete();
+   }
+
+   public FormDraftSettingsDTO settings()
+   {
+      return client.query("settings", FormDraftSettingsDTO.class);
    }
 }
