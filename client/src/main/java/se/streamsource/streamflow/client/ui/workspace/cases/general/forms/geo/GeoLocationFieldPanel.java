@@ -356,12 +356,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    }
 
    @Override
-   public boolean validateValue(Object newValue)
-   {
-      return true; // TODO: Validate geo value
-   }
-
-   @Override
    public void setBinding(final StateBinder.Binding binding)
    {
       this.binding = binding;

@@ -49,8 +49,6 @@ public abstract class AbstractFieldPanel extends JPanel
 
    abstract public void setValue( String newValue );
 
-   abstract public boolean validateValue( Object newValue );
-
    public StateBinder bindComponent( BindingFormBuilder bb, FieldSubmissionDTO DTO)
    {
       StateBinder stateBinder = module.objectBuilderFactory().newObject(StateBinder.class);

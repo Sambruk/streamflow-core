@@ -79,7 +79,7 @@ public class AttachmentFieldPanel
    @Action
    public void attach()
    {
-      
+
    }
 
    @Override
@@ -90,12 +90,6 @@ public class AttachmentFieldPanel
          AttachmentFieldSubmission submission = module.valueBuilderFactory().newValueFromJSON(AttachmentFieldSubmission.class, newValue);
          attachment.setText( submission.name().get() );
       }
-   }
-
-   @Override
-   public boolean validateValue( Object newValue )
-   {
-      return true;
    }
 
    @Override

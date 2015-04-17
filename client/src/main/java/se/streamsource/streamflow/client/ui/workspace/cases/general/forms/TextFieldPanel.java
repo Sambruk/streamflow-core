@@ -69,8 +69,8 @@ public class TextFieldPanel extends AbstractFieldPanel
       this.model = model;
       setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
       this.fieldValue = fieldValue;
-      
-      
+
+
       if (KnownDatatypeDefinitionUrls.STREET_ADDRESS.equals( field.field().get().datatypeUrl().get() )
             && model.getFormDraftModel().isStreetLookupEnabled())
       {
@@ -84,7 +84,7 @@ public class TextFieldPanel extends AbstractFieldPanel
          add( textField );
       }
       textField.setColumns( fieldValue.width().get() );
-      
+
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
 
@@ -152,12 +152,6 @@ public class TextFieldPanel extends AbstractFieldPanel
    public void setValue(String newValue)
    {
       textField.setText( newValue );
-   }
-
-   @Override
-   public boolean validateValue(Object newValue)
-   {
-      return true;
    }
 
    @Override
