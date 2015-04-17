@@ -263,8 +263,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
          @Override
          protected MapquestQueryResult doInBackground() throws Exception {
-            String baseUrl = "http://open.mapquestapi.com/nominatim/v1";
-            MapquestNominatimService geoLookupService = geoLookupServiceBuilder.use(baseUrl).newInstance();
+            String urlPattern = formDraftSettings.mapquestReverseLookupUrlPattern().get();
+            MapquestNominatimService geoLookupService = geoLookupServiceBuilder.use(urlPattern).newInstance();
             return geoLookupService.reverseLookup(firstPoint.getLatitude(), firstPoint.getLongitude());
          }
 

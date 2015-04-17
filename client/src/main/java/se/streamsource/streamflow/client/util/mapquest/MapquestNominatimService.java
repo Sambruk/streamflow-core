@@ -32,11 +32,11 @@ public class MapquestNominatimService {
 
    private static final Logger logger = LoggerFactory.getLogger(MapquestNominatimService.class);
 
-   private String nominatimBaseUrl; // "http://open.mapquestapi.com/nominatim/v1";
+   private String mapquestReverseLookupUrlPattern;
    private JacksonConverter converter = new JacksonConverter();
 
-   public MapquestNominatimService(@Uses String nominatimBaseUrl) {
-      this.nominatimBaseUrl = nominatimBaseUrl;
+   public MapquestNominatimService(@Uses String mapquestReverseLookupUrlPattern) {
+      this.mapquestReverseLookupUrlPattern = mapquestReverseLookupUrlPattern;
    }
 
    public MapquestQueryResult reverseLookup(double latitude, double longitude) {
@@ -60,10 +60,10 @@ public class MapquestNominatimService {
    }
 
    private String reverseLookupQueryUrl(double latitude, double longitude) {
-      return String.format(Locale.US, "%s/reverse?lat=%f&lon=%f&format=json", nominatimBaseUrl, latitude, longitude);
+      return String.format(Locale.US, mapquestReverseLookupUrlPattern, latitude, longitude);
    }
 
    public static void main(String[] args) {
-      new MapquestNominatimService("http://open.mapquestapi.com/nominatim/v1").reverseLookup(55.681, 12.577);
+      new MapquestNominatimService("http://open.mapquestapi.com/nominatim/v1/reverse?lat=%f&lon=%f&format=json").reverseLookup(55.681, 12.577);
    }
 }

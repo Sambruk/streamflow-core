@@ -25,7 +25,10 @@ public interface FormDraftSettingsDTO extends ValueComposite
 {
    @Optional
    Property<String> location();
-   
+
    @Optional
    Property<Integer> zoomLevel();
+
+   @Optional
+   Property<String> mapquestReverseLookupUrlPattern();
 }
