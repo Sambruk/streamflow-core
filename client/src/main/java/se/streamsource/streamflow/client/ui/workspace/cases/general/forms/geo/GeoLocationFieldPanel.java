@@ -329,7 +329,13 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
    private void scrollMarkerIntoView(GeoMarker marker) {
       if (marker == null) {
-         // TODO: Scroll to default location
+         GeoPosition defaultPosition = GeoUtils.geoPosition((PointMarker) GeoMarker.parseGeoMarker(formDraftSettings.location().get()));
+         mapViewer.setAddressLocation(defaultPosition);
+         mapViewer.setZoom(formDraftSettings.zoomLevel().get() != null ? formDraftSettings.zoomLevel().get() : 6);
+      }
+      else if (marker instanceof PointMarker) {
+         mapViewer.setAddressLocation(GeoUtils.geoPosition((PointMarker) marker));
+         mapViewer.setZoom(formDraftSettings.zoomLevel().get() != null ? formDraftSettings.zoomLevel().get() : 6);
       }
       else {
          List<PointMarker> pointsInMarker = marker.getPoints();
