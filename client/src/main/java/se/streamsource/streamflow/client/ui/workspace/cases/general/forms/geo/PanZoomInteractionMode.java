@@ -54,19 +54,17 @@ public class PanZoomInteractionMode implements MapInteractionMode {
       if (marker instanceof PointMarker) {
          PointMarker point = (PointMarker) marker;
          final WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
-         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getLatitude(), point.getLongitude())));
+         waypointPainter.setWaypoints(Collections.singleton(new DefaultWaypoint(point.getPosition())));
          return waypointPainter;
       }
       else if (marker instanceof LineMarker) {
-         LineMarker line = (LineMarker) marker;
-         List<GeoPosition> points = GeoUtils.positionList(line.getPoints());
+         List<GeoPosition> points = marker.getPoints();
          LinePainter linePainter = new LinePainter();
          linePainter.setPoints(points);
          return linePainter;
       }
       else if (marker instanceof PolygonMarker) {
-         PolygonMarker polygon = (PolygonMarker) marker;
-         List<GeoPosition> points = GeoUtils.positionList(polygon.getPoints());
+         List<GeoPosition> points = marker.getPoints();
          AreaPainter areaPainter = new AreaPainter();
          areaPainter.setPoints(points);
          return areaPainter;

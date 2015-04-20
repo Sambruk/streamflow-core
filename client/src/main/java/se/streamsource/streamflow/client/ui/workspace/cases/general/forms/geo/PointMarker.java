@@ -18,45 +18,36 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
+
+import org.jxmapviewer.viewer.GeoPosition;
 
 class PointMarker extends GeoMarker {
 
-   private double longitude;
-   private double latitude;
+   private GeoPosition position;
 
-   public PointMarker(double latitude, double longitude) {
-      this.longitude = longitude;
-      this.latitude = latitude;
+   public PointMarker(GeoPosition position) {
+      this.position = position;
    }
 
-   public double getLongitude() {
-      return longitude;
-   }
-
-   public double getLatitude() {
-      return latitude;
+   public GeoPosition getPosition() {
+      return position;
    }
 
    @Override
-   public List<PointMarker> getPoints() {
-      return Collections.singletonList(this);
+   public List<GeoPosition> getPoints() {
+      return Collections.singletonList(position);
    }
 
    @Override
    public String stringify() {
-      return String.format(Locale.US, "%.15f,%.15f", latitude, longitude);
+      return stringify(position);
    }
 
    @Override
    public int hashCode() {
       final int prime = 31;
       int result = 1;
-      long temp;
-      temp = Double.doubleToLongBits(latitude);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(longitude);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
+      result = prime * result + ((position == null) ? 0 : position.hashCode());
       return result;
    }
 
@@ -69,12 +60,11 @@ class PointMarker extends GeoMarker {
       if (getClass() != obj.getClass())
          return false;
       PointMarker other = (PointMarker) obj;
-      if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude))
-         return false;
-      if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))
+      if (position == null) {
+         if (other.position != null)
+            return false;
+      } else if (!position.equals(other.position))
          return false;
       return true;
    }
-
-
 }

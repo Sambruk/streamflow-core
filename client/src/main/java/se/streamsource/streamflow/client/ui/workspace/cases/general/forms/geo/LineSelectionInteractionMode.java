@@ -62,7 +62,7 @@ public class LineSelectionInteractionMode
       mapViewer.repaint();
 
       if (e.getClickCount() == 2) {
-         geoMarkerHolder.updateGeoMarker(new LineMarker(GeoUtils.pointMarkerList(points)));
+         geoMarkerHolder.updateGeoMarker(new LineMarker(points));
       }
    }
 

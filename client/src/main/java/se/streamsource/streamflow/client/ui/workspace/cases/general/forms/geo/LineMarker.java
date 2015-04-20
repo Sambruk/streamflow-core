@@ -20,16 +20,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jxmapviewer.viewer.GeoPosition;
+
 class LineMarker extends GeoMarker {
 
-   private List<PointMarker> points;
+   private List<GeoPosition> points;
 
-   public LineMarker(Collection<PointMarker> points) {
-      this.points = new ArrayList<PointMarker>(points);
+   public LineMarker(Collection<GeoPosition> points) {
+      this.points = new ArrayList<GeoPosition>(points);
    }
 
    @Override
-   public List<PointMarker> getPoints() {
+   public List<GeoPosition> getPoints() {
       return points;
    }
 
@@ -37,7 +39,7 @@ class LineMarker extends GeoMarker {
    public String stringify() {
       StringBuilder sb = new StringBuilder();
       boolean firstElement = true;
-      for (PointMarker p: points) {
+      for (GeoPosition p: points) {
          if (firstElement) {
             firstElement = false;
          }
@@ -45,7 +47,7 @@ class LineMarker extends GeoMarker {
             sb.append(',');
          }
          sb.append('(');
-         sb.append(p.stringify());
+         sb.append(stringify(p));
          sb.append(')');
       }
       return sb.toString();

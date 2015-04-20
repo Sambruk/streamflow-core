@@ -18,10 +18,13 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import org.jxmapviewer.viewer.GeoPosition;
 
 abstract class GeoMarker {
 
-   public abstract List<PointMarker> getPoints();
+   public abstract List<GeoPosition> getPoints();
 
    public abstract String stringify();
 
@@ -37,7 +40,7 @@ abstract class GeoMarker {
       }
 
       if (trimmed.startsWith("(")) {
-         List<PointMarker> points = parsePointList(trimmed);
+         List<GeoPosition> points = parsePointList(trimmed);
          if (points.get(0).equals(points.get(points.size()-1))) {
             return new PolygonMarker(points);
          }
@@ -46,12 +49,12 @@ abstract class GeoMarker {
          }
       }
       else {
-         return parsePoint(trimmed);
+         return new PointMarker(parsePoint(trimmed));
       }
    }
 
-   private static List<PointMarker> parsePointList(String s) {
-      List<PointMarker> result = new ArrayList<PointMarker>();
+   private static List<GeoPosition> parsePointList(String s) {
+      List<GeoPosition> result = new ArrayList<GeoPosition>();
 
       while (!s.isEmpty()) {
          int endParenIndex = s.indexOf(')');
@@ -72,12 +75,16 @@ abstract class GeoMarker {
       return result;
    }
 
-   private static PointMarker parsePoint(String s) {
+   private static GeoPosition parsePoint(String s) {
       String[] lonLat = s.split(",");
       if (lonLat.length != 2) {
          throw new IllegalArgumentException("Invalid position");
       }
 
-      return new PointMarker(Double.parseDouble(lonLat[0]), Double.parseDouble(lonLat[1]));
+      return new GeoPosition(Double.parseDouble(lonLat[0]), Double.parseDouble(lonLat[1]));
+   }
+
+   protected static String stringify(GeoPosition position) {
+      return String.format(Locale.US, "%.15f,%.15f", position.getLatitude(), position.getLongitude());
    }
 }

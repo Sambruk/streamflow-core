@@ -25,6 +25,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.jxmapviewer.viewer.GeoPosition;
 
 public class GeoMarkerTest {
 
@@ -78,8 +79,8 @@ public class GeoMarkerTest {
       assertThat(marker, instanceOf(LineMarker.class));
       LineMarker line = (LineMarker) marker;
       assertThat(line.getPoints().size(), equalTo(2));
-      checkPointMarker(line.getPoints().get(0), 1.5, 2.75);
-      checkPointMarker(line.getPoints().get(1), 3.5, 4.75);
+      checkGeoPosition(line.getPoints().get(0), 1.5, 2.75);
+      checkGeoPosition(line.getPoints().get(1), 3.5, 4.75);
    }
 
    @Test
@@ -88,14 +89,14 @@ public class GeoMarkerTest {
       assertThat(marker, instanceOf(PolygonMarker.class));
       PolygonMarker polygon = (PolygonMarker) marker;
       assertThat(polygon.getPoints().size(), equalTo(3));
-      checkPointMarker(polygon.getPoints().get(0), 1.5, 2.75);
-      checkPointMarker(polygon.getPoints().get(1), 3.5, 4.75);
-      checkPointMarker(polygon.getPoints().get(2), 1.5, 2.75);
+      checkGeoPosition(polygon.getPoints().get(0), 1.5, 2.75);
+      checkGeoPosition(polygon.getPoints().get(1), 3.5, 4.75);
+      checkGeoPosition(polygon.getPoints().get(2), 1.5, 2.75);
    }
 
    @Test
    public void stringifyPoint() {
-      PointMarker marker = new PointMarker(1.5, 2.75);
+      PointMarker marker = new PointMarker(new GeoPosition(1.5, 2.75));
       String stringified = marker.stringify();
       assertThat(stringified, equalTo("1.500000000000000,2.750000000000000"));
    }
@@ -103,7 +104,7 @@ public class GeoMarkerTest {
    @Test
    public void stringifyLine() {
       LineMarker marker = new LineMarker(Arrays.asList(
-            new PointMarker(1.5, 2.75), new PointMarker(3.5, 4.75)));
+            new GeoPosition(1.5, 2.75), new GeoPosition(3.5, 4.75)));
       String stringified = marker.stringify();
       assertThat(stringified, equalTo("(1.500000000000000,2.750000000000000),(3.500000000000000,4.750000000000000)"));
    }
@@ -111,10 +112,10 @@ public class GeoMarkerTest {
    @Test
    public void stringifyPolygon() {
       PolygonMarker marker = new PolygonMarker(Arrays.asList(
-            new PointMarker(1.5, 2.75),
-            new PointMarker(3.5, 4.75),
-            new PointMarker(5.5, 6.75),
-            new PointMarker(1.5, 2.75)
+            new GeoPosition(1.5, 2.75),
+            new GeoPosition(3.5, 4.75),
+            new GeoPosition(5.5, 6.75),
+            new GeoPosition(1.5, 2.75)
             ));
       String stringified = marker.stringify();
       assertThat(stringified, equalTo("(1.500000000000000,2.750000000000000),(3.500000000000000,4.750000000000000),(5.500000000000000,6.750000000000000),(1.500000000000000,2.750000000000000)"));
@@ -124,7 +125,12 @@ public class GeoMarkerTest {
       assertThat(marker, notNullValue());
       assertThat(marker, instanceOf(PointMarker.class));
       PointMarker point = (PointMarker) marker;
-      assertThat(point.getLongitude(), equalTo(lon));
-      assertThat(point.getLatitude(), equalTo(lat));
+      assertThat(point.getPosition().getLongitude(), equalTo(lon));
+      assertThat(point.getPosition().getLatitude(), equalTo(lat));
+   }
+
+   private void checkGeoPosition(GeoPosition position, double lat, double lon) {
+      assertThat(position.getLongitude(), equalTo(lon));
+      assertThat(position.getLatitude(), equalTo(lat));
    }
 }

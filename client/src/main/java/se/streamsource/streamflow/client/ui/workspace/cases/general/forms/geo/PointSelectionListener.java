@@ -53,7 +53,7 @@ public class PointSelectionListener implements MouseListener {
    public void mouseClicked(MouseEvent e) {
       if (e.getButton() == MouseEvent.BUTTON1) {
          GeoPosition geoPosition = mapViewer.convertPointToGeoPosition(e.getPoint());
-         geoMarkerHolder.updateGeoMarker(GeoUtils.pointMarker(geoPosition));
+         geoMarkerHolder.updateGeoMarker(new PointMarker(geoPosition));
       }
    }
 }

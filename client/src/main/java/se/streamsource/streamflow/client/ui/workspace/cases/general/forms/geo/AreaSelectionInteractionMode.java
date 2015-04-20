@@ -63,7 +63,7 @@ public class AreaSelectionInteractionMode
 
       if (e.getClickCount() == 2) {
          points.add(points.get(0)); // Close polygon
-         geoMarkerHolder.updateGeoMarker(new PolygonMarker(GeoUtils.pointMarkerList(points)));
+         geoMarkerHolder.updateGeoMarker(new PolygonMarker(points));
       }
    }
 

@@ -26,6 +26,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -77,9 +78,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    private MapInteractionMode currentInteractionMode;
    private LocationDTO currentLocationData;
    private GeoLocationFieldValue fieldValue;
-
-   @Service
-   DialogService dialogs;
 
    @Uses
    ObjectBuilder<MapquestNominatimService> geoLookupServiceBuilder;
@@ -258,7 +256,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    }
 
    private void initiateGetAddressInfo(GeoMarker marker) {
-      final PointMarker firstPoint = marker.getPoints().get(0);
+      final GeoPosition firstPoint = marker.getPoints().get(0);
       new SwingWorker<MapquestQueryResult, Object>() {
 
          @Override
@@ -329,17 +327,16 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
    private void scrollMarkerIntoView(GeoMarker marker) {
       if (marker == null) {
-         GeoPosition defaultPosition = GeoUtils.geoPosition((PointMarker) GeoMarker.parseGeoMarker(formDraftSettings.location().get()));
+         GeoPosition defaultPosition = ((PointMarker) GeoMarker.parseGeoMarker(formDraftSettings.location().get())).getPosition();
          mapViewer.setAddressLocation(defaultPosition);
          mapViewer.setZoom(formDraftSettings.zoomLevel().get() != null ? formDraftSettings.zoomLevel().get() : 6);
       }
       else if (marker instanceof PointMarker) {
-         mapViewer.setAddressLocation(GeoUtils.geoPosition((PointMarker) marker));
+         mapViewer.setAddressLocation(((PointMarker) marker).getPosition());
          mapViewer.setZoom(formDraftSettings.zoomLevel().get() != null ? formDraftSettings.zoomLevel().get() : 6);
       }
       else {
-         List<PointMarker> pointsInMarker = marker.getPoints();
-         Set<GeoPosition> positionsForMarker = GeoUtils.positionSet(pointsInMarker);
+         Set<GeoPosition> positionsForMarker = new HashSet<GeoPosition>(marker.getPoints());
          mapViewer.zoomToBestFit(positionsForMarker, 0.5);
       }
    }

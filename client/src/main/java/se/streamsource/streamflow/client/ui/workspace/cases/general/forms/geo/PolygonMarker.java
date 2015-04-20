@@ -19,19 +19,21 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jxmapviewer.viewer.GeoPosition;
+
 class PolygonMarker extends GeoMarker {
 
-   private List<PointMarker> points;
+   private List<GeoPosition> points;
 
-   public PolygonMarker(Iterable<PointMarker> points) {
-      this.points = new ArrayList<PointMarker>();
-      for (PointMarker p: points) {
+   public PolygonMarker(Iterable<GeoPosition> points) {
+      this.points = new ArrayList<GeoPosition>();
+      for (GeoPosition p: points) {
          this.points.add(p);
       }
    }
 
    @Override
-   public List<PointMarker> getPoints() {
+   public List<GeoPosition> getPoints() {
       return points;
    }
 
@@ -39,7 +41,7 @@ class PolygonMarker extends GeoMarker {
    public String stringify() {
       StringBuilder sb = new StringBuilder();
       boolean firstElement = true;
-      for (PointMarker p: points) {
+      for (GeoPosition p: points) {
          if (firstElement) {
             firstElement = false;
          }
@@ -47,12 +49,13 @@ class PolygonMarker extends GeoMarker {
             sb.append(',');
          }
          sb.append('(');
-         sb.append(p.stringify());
+         sb.append(stringify(p));
          sb.append(')');
       }
       return sb.toString();
    }
 
+   @Override
    public int hashCode() {
       final int prime = 31;
       int result = 1;
