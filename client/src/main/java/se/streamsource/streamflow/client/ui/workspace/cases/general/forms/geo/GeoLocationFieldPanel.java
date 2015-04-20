@@ -146,38 +146,46 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       dummyTopPanel.add(mapTypeSelector);
 
       modeButtonGroup = new ButtonGroup();
-      JToggleButton selectPointButton = new JToggleButton("Select point");
-      JToggleButton selectLineButton = new JToggleButton("Select line");
-      JToggleButton selectPolygonButton = new JToggleButton("Select area");
-      modeButtonGroup.add(selectPointButton);
-      modeButtonGroup.add(selectLineButton);
-      modeButtonGroup.add(selectPolygonButton);
-      dummyTopPanel.add(selectPointButton);
-      dummyTopPanel.add(selectLineButton);
-      dummyTopPanel.add(selectPolygonButton);
+
+      if (fieldValue.point().get()) {
+         JToggleButton selectPointButton = new JToggleButton("Select point");
+         modeButtonGroup.add(selectPointButton);
+         dummyTopPanel.add(selectPointButton);
+         selectPointButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               switchInteractionMode(new PointSelectionInteractionMode());
+            }
+         });
+      }
+
+      if (fieldValue.polyline().get()) {
+         JToggleButton selectLineButton = new JToggleButton("Select line");
+         modeButtonGroup.add(selectLineButton);
+         dummyTopPanel.add(selectLineButton);
+         selectLineButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               switchInteractionMode(new LineSelectionInteractionMode());
+            }
+         });
+      }
+
+      if (fieldValue.polygon().get()) {
+         JToggleButton selectPolygonButton = new JToggleButton("Select area");
+         modeButtonGroup.add(selectPolygonButton);
+         dummyTopPanel.add(selectPolygonButton);
+         selectPolygonButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               switchInteractionMode(new AreaSelectionInteractionMode());
+            }
+         });
+      }
 
       addressInfoLabel = new JLabel();
       dummyTopPanel.add(addressInfoLabel);
       dummyTopPanel.add(new JLabel("Help hint here"));
-
-      selectPointButton.addActionListener(new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            switchInteractionMode(new PointSelectionInteractionMode());
-         }
-      });
-      selectLineButton.addActionListener(new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            switchInteractionMode(new LineSelectionInteractionMode());
-         }
-      });
-      selectPolygonButton.addActionListener(new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            switchInteractionMode(new AreaSelectionInteractionMode());
-         }
-      });
 
       return controlPanel;
    }
