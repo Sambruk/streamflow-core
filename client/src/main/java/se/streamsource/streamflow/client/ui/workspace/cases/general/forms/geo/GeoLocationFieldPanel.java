@@ -76,7 +76,10 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    private StateBinder.Binding binding;
    private JXMapViewer mapViewer;
    private MapInteractionMode currentInteractionMode;
-   private LocationDTO currentLocationData;
+
+   /** Current value as handled by StreamFlow, ie a JSONified LocationDTO
+    */
+   private String currentValue;
    private GeoLocationFieldValue fieldValue;
 
    @Uses
@@ -218,15 +221,15 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Override
    public String getValue()
    {
-      return currentLocationData.toJSON();
+      return currentValue;
    }
 
    @Override
    public void setValue(String newValue)
    {
       textField.setText( newValue );
-      currentLocationData = parseLocationDTOValue(newValue);
-      addressInfoLabel.setText(formatAddressInfo(currentLocationData));
+      this.currentValue = newValue;
+      addressInfoLabel.setText(formatAddressInfo(getCurrentLocationData()));
       switchInteractionMode(new PanZoomInteractionMode());
       scrollMarkerIntoView(getCurrentGeoMarker());
    }
@@ -249,15 +252,20 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       return "<html>" + StringUtils.join(elements, ", ") + "</html>";
    }
 
+   public LocationDTO getCurrentLocationData() {
+      return module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, "".equals( currentValue ) ? "{}" : currentValue );
+   }
+
    @Override
    public GeoMarker getCurrentGeoMarker() {
-      return GeoMarker.parseGeoMarker(currentLocationData.location().get());
+      return GeoMarker.parseGeoMarker(getCurrentLocationData().location().get());
    }
 
    @Override
    public void updateGeoMarker(GeoMarker marker) {
-      currentLocationData = locationDataForMarker(marker);
-      addressInfoLabel.setText(formatAddressInfo(currentLocationData));
+      LocationDTO locationData = locationDataForMarker(marker);
+      currentValue = locationData.toJSON();
+      addressInfoLabel.setText(formatAddressInfo(locationData));
       binding.updateProperty(getValue());
       switchInteractionMode(new PanZoomInteractionMode());
       initiateGetAddressInfo(marker);
@@ -286,8 +294,9 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    }
 
    private void updateAddressInfo(MapquestQueryResult mapquestQueryResult) {
-      currentLocationData = locationDataWithAddressInfo(currentLocationData, mapquestQueryResult);
-      addressInfoLabel.setText(formatAddressInfo(currentLocationData));
+      LocationDTO updatedLocationData = locationDataWithAddressInfo(getCurrentLocationData(), mapquestQueryResult);
+      currentValue = updatedLocationData.toJSON();
+      addressInfoLabel.setText(formatAddressInfo(updatedLocationData));
       binding.updateProperty(getValue());
    }
 
@@ -360,10 +369,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
       newMode.enterMode(mapViewer, this);
       currentInteractionMode = newMode;
-   }
-
-   private LocationDTO parseLocationDTOValue(String newValue) {
-       return module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, "".equals( newValue ) ? "{}" : newValue );
    }
 
    @Override
