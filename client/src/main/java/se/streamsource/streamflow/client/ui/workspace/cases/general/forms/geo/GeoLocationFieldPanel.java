@@ -56,6 +56,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -104,7 +105,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       this.formDraftSettings = model.getFormDraftModel().settings();
 
       mapViewer = createMapViewer();
-      mapViewer.setPreferredSize(new Dimension(500, 400));
       setMapType(MapType.ROAD_MAP);
 
       JPanel controlPanel = createControlPanel();
@@ -123,6 +123,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
        JXMapViewer mapViewer = new JXMapViewer();
 
        mapViewer.setZoom(7);
+       mapViewer.setBorder(new LineBorder(Color.GRAY));
        mapViewer.addComponentListener(new InitialMapScrollHandler());
        return mapViewer;
    }
@@ -156,8 +157,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
    private JPanel createModeButtonPanel() {
       modeButtonGroup = new ButtonGroup();
-      JPanel modeButtonPanel = new JPanel();
-      modeButtonPanel.setLayout(new BoxLayout(modeButtonPanel, BoxLayout.Y_AXIS));
+      FormLayout layout = new FormLayout("pref:grow", "pref, pref, pref");
+      PanelBuilder builder = new PanelBuilder(layout);
 
       if (fieldValue.point().get()) {
          JToggleButton selectPointButton = new JToggleButton("Select point");
@@ -169,7 +170,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          });
 
          modeButtonGroup.add(selectPointButton);
-         modeButtonPanel.add(selectPointButton);
+         builder.add(selectPointButton);
+         builder.nextRow();
       }
 
       if (fieldValue.polyline().get()) {
@@ -182,7 +184,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          });
 
          modeButtonGroup.add(selectLineButton);
-         modeButtonPanel.add(selectLineButton);
+         builder.add(selectLineButton);
+         builder.nextRow();
       }
 
       if (fieldValue.polygon().get()) {
@@ -195,10 +198,11 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          });
 
          modeButtonGroup.add(selectPolygonButton);
-         modeButtonPanel.add(selectPolygonButton);
+         builder.add(selectPolygonButton);
+         builder.nextRow();
       }
 
-      return modeButtonPanel;
+      return builder.getPanel();
    }
 
    private void setMapType(MapType mapType) {
