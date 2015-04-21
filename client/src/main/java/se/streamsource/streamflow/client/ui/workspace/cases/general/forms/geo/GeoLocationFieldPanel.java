@@ -92,8 +92,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    private FormDraftSettingsDTO formDraftSettings;
 
    private ButtonGroup modeButtonGroup;
-
    private JLabel addressInfoLabel;
+   private JLabel helpHintLabel;
 
 
    public GeoLocationFieldPanel(@Service ApplicationContext appContext, @Uses FieldSubmissionDTO field,
@@ -132,7 +132,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       JComboBox<MapType> mapTypeSelector = createMapTypeSelector();
       JPanel modeButtonPanel = createModeButtonPanel();
       addressInfoLabel = new JLabel();
-      JLabel helpHintLabel = new JLabel("Help hint here");
+      helpHintLabel = new JLabel("Help hint here");
 
       FormLayout layout = new FormLayout("60dlu", "pref, 4dlu, pref, 4dlu, pref, 4dlu, pref:grow");
       JPanel controlPanel = new JPanel(layout);
@@ -379,6 +379,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       }
 
       newMode.enterMode(mapViewer, this);
+      helpHintLabel.setText("<html>" + newMode.getHelpHint() + "</html>");
       currentInteractionMode = newMode;
    }
 

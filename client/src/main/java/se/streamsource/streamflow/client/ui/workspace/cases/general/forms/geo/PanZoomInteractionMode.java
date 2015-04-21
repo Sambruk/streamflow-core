@@ -83,4 +83,9 @@ public class PanZoomInteractionMode implements MapInteractionMode {
 
       mapViewer.setOverlayPainter(null);
    }
+
+   @Override
+   public String getHelpHint() {
+      return "Drag in the map to pan. Use mouse wheel to zoom.";
+   }
 }

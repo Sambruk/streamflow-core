@@ -55,6 +55,11 @@ public class LineSelectionInteractionMode
    }
 
    @Override
+   public String getHelpHint() {
+      return "Click multiple times to select a path. Doubleclick to end.";
+   }
+
+   @Override
    public void mouseClicked(MouseEvent e) {
       GeoPosition geoPosition = mapViewer.convertPointToGeoPosition(e.getPoint());
       points.add(geoPosition);

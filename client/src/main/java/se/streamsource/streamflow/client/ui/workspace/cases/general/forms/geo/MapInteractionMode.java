@@ -24,4 +24,6 @@ public interface MapInteractionMode {
 
    public void leaveMode(JXMapViewer mapViewer);
 
+   public String getHelpHint();
+
 }

@@ -55,6 +55,11 @@ public class AreaSelectionInteractionMode
    }
 
    @Override
+   public String getHelpHint() {
+      return "Click multiple times to select an area. Doubleclick to end.";
+   }
+
+   @Override
    public void mouseClicked(MouseEvent e) {
       GeoPosition geoPosition = mapViewer.convertPointToGeoPosition(e.getPoint());
       points.add(geoPosition);

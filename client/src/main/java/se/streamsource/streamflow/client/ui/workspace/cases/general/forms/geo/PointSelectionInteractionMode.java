@@ -32,4 +32,9 @@ public class PointSelectionInteractionMode implements MapInteractionMode {
    public void leaveMode(JXMapViewer mapViewer) {
       mapViewer.removeMouseListener(pointSelectionListener);
    }
+
+   @Override
+   public String getHelpHint() {
+      return "Click to select point on the map.";
+   }
 }
