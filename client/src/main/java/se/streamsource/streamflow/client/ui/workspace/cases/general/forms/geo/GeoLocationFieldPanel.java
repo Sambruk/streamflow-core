@@ -331,7 +331,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 
       prototype.street().set(street);
       prototype.zipcode().set(firstNonNull(address.getPostcode(), ""));
-      prototype.city().set(firstNonNull(address.getCity(), address.getCounty(), ""));
+      prototype.city().set(firstNonNull(address.getTown(), address.getCity(), address.getCounty(), ""));
       prototype.country().set(firstNonNull(address.getCountry(), ""));
 
       return builder.newInstance();

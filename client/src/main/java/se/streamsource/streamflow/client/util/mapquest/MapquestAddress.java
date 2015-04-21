@@ -26,6 +26,7 @@ public class MapquestAddress {
    private String postcode;
    private String pedestrian;
    private String road;
+   private String town;
    private String city;
    private String county;
 
@@ -67,6 +68,14 @@ public class MapquestAddress {
 
    public void setRoad(String road) {
       this.road = road;
+   }
+
+   public String getTown() {
+      return town;
+   }
+
+   public void setTown(String town) {
+      this.town = town;
    }
 
    public String getCity() {
