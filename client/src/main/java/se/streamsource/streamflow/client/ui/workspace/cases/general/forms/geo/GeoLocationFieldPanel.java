@@ -56,6 +56,9 @@ import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
 import se.streamsource.streamflow.api.administration.form.LocationDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
@@ -72,7 +75,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
 {
    private static final Logger logger = LoggerFactory.getLogger(GeoLocationFieldPanel.class);
 
-   private JTextField textField;
    private StateBinder.Binding binding;
    private JXMapViewer mapViewer;
    private MapInteractionMode currentInteractionMode;
@@ -98,30 +100,26 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    {
       super( field );
       this.model = model;
-      setLayout( new BorderLayout() );
       this.fieldValue = fieldValue;
+      this.formDraftSettings = model.getFormDraftModel().settings();
 
-      textField = new JTextField();
-      add(textField, BorderLayout.NORTH);
-      textField.setColumns( 50 ); // TODO: Fix magic number
-
-      setBorder(new LineBorder(Color.GREEN));
-
-      mapViewer = setUpMapViewer();
+      mapViewer = createMapViewer();
       mapViewer.setPreferredSize(new Dimension(500, 400));
       setMapType(MapType.ROAD_MAP);
-      add(mapViewer, BorderLayout.CENTER);
 
-      JPanel controlPanel = setupControlPanel();
-      add(controlPanel, BorderLayout.EAST);
+      JPanel controlPanel = createControlPanel();
+
+      FormLayout layout = new FormLayout("1dlu, 20dlu:grow, 4dlu, pref", "260dlu");
+      setLayout(layout);
+      add(mapViewer, new CellConstraints(2,1, CellConstraints.FILL, CellConstraints.FILL));
+      add(controlPanel, new CellConstraints(4,1, CellConstraints.DEFAULT, CellConstraints.FILL));
 
       setActionMap( appContext.getActionMap( this ) );
       ActionMap am = getActionMap();
 
-      formDraftSettings = model.getFormDraftModel().settings();
    }
 
-   private JXMapViewer setUpMapViewer() {
+   private JXMapViewer createMapViewer() {
        JXMapViewer mapViewer = new JXMapViewer();
 
        mapViewer.setZoom(7);
@@ -129,16 +127,23 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
        return mapViewer;
    }
 
-   private JPanel setupControlPanel() {
-      // TODO: Clean up this layout mess
+   private JPanel createControlPanel() {
+      JComboBox<MapType> mapTypeSelector = createMapTypeSelector();
+      JPanel modeButtonPanel = createModeButtonPanel();
+      addressInfoLabel = new JLabel();
+      JLabel helpHintLabel = new JLabel("Help hint here");
 
-      JPanel controlPanel = new JPanel(new BorderLayout(10, 0));
+      FormLayout layout = new FormLayout("60dlu", "pref, 4dlu, pref, 4dlu, pref, 4dlu, pref:grow");
+      JPanel controlPanel = new JPanel(layout);
+      controlPanel.add(mapTypeSelector, new CellConstraints(1,1));
+      controlPanel.add(modeButtonPanel, new CellConstraints(1,3, CellConstraints.FILL, CellConstraints.DEFAULT));
+      controlPanel.add(addressInfoLabel, new CellConstraints(1,5));
+      controlPanel.add(helpHintLabel, new CellConstraints(1,7,CellConstraints.DEFAULT, CellConstraints.BOTTOM));
 
-      JPanel dummyTopPanel = new JPanel();
-      controlPanel.add(dummyTopPanel, BorderLayout.NORTH);
+      return controlPanel;
+   }
 
-      dummyTopPanel.setLayout(new BoxLayout(dummyTopPanel, BoxLayout.Y_AXIS));
-
+   private JComboBox<MapType> createMapTypeSelector() {
       final JComboBox<MapType> mapTypeSelector = new JComboBox<MapType>(MapType.values());
       mapTypeSelector.addItemListener(new ItemListener() {
          @Override
@@ -146,51 +151,54 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
             setMapType((MapType) mapTypeSelector.getSelectedItem());
          }
       });
-      dummyTopPanel.add(mapTypeSelector);
+      return mapTypeSelector;
+   }
 
+   private JPanel createModeButtonPanel() {
       modeButtonGroup = new ButtonGroup();
+      JPanel modeButtonPanel = new JPanel();
+      modeButtonPanel.setLayout(new BoxLayout(modeButtonPanel, BoxLayout.Y_AXIS));
 
       if (fieldValue.point().get()) {
          JToggleButton selectPointButton = new JToggleButton("Select point");
-         modeButtonGroup.add(selectPointButton);
-         dummyTopPanel.add(selectPointButton);
          selectPointButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                switchInteractionMode(new PointSelectionInteractionMode());
             }
          });
+
+         modeButtonGroup.add(selectPointButton);
+         modeButtonPanel.add(selectPointButton);
       }
 
       if (fieldValue.polyline().get()) {
          JToggleButton selectLineButton = new JToggleButton("Select line");
-         modeButtonGroup.add(selectLineButton);
-         dummyTopPanel.add(selectLineButton);
          selectLineButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                switchInteractionMode(new LineSelectionInteractionMode());
             }
          });
+
+         modeButtonGroup.add(selectLineButton);
+         modeButtonPanel.add(selectLineButton);
       }
 
       if (fieldValue.polygon().get()) {
          JToggleButton selectPolygonButton = new JToggleButton("Select area");
-         modeButtonGroup.add(selectPolygonButton);
-         dummyTopPanel.add(selectPolygonButton);
          selectPolygonButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                switchInteractionMode(new AreaSelectionInteractionMode());
             }
          });
+
+         modeButtonGroup.add(selectPolygonButton);
+         modeButtonPanel.add(selectPolygonButton);
       }
 
-      addressInfoLabel = new JLabel();
-      dummyTopPanel.add(addressInfoLabel);
-      dummyTopPanel.add(new JLabel("Help hint here"));
-
-      return controlPanel;
+      return modeButtonPanel;
    }
 
    private void setMapType(MapType mapType) {
@@ -227,7 +235,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    @Override
    public void setValue(String newValue)
    {
-      textField.setText( newValue );
       this.currentValue = newValue;
       addressInfoLabel.setText(formatAddressInfo(getCurrentLocationData()));
       switchInteractionMode(new PanZoomInteractionMode());
