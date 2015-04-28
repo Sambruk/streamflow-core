@@ -25,6 +25,8 @@ import javax.swing.event.MouseInputListener;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 
+import se.streamsource.streamflow.client.util.i18n;
+
 public class LineSelectionInteractionMode
    implements MapInteractionMode, MouseInputListener {
 
@@ -56,7 +58,7 @@ public class LineSelectionInteractionMode
 
    @Override
    public String getHelpHint() {
-      return "Click multiple times to select a path. Doubleclick to end.";
+      return i18n.text(GeoLocationFieldPanelResources.mode_hint_select_line);
    }
 
    @Override

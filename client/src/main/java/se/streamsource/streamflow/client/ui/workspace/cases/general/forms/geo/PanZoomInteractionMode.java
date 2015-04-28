@@ -31,6 +31,8 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
 
+import se.streamsource.streamflow.client.util.i18n;
+
 public class PanZoomInteractionMode implements MapInteractionMode {
 
    private MouseInputListener panMouseInputListener;
@@ -86,6 +88,6 @@ public class PanZoomInteractionMode implements MapInteractionMode {
 
    @Override
    public String getHelpHint() {
-      return "Drag in the map to pan. Use mouse wheel to zoom.";
+      return i18n.text(GeoLocationFieldPanelResources.mode_hint_pan_zoom);
    }
 }

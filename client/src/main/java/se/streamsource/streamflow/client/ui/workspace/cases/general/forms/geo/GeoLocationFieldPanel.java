@@ -124,7 +124,7 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       JComboBox<MapType> mapTypeSelector = createMapTypeSelector();
       JPanel modeButtonPanel = createModeButtonPanel();
       addressInfoLabel = new JLabel();
-      helpHintLabel = new JLabel("Help hint here");
+      helpHintLabel = new JLabel();
 
       FormLayout layout = new FormLayout("60dlu", "pref, 4dlu, pref, 4dlu, pref, 4dlu, pref:grow");
       JPanel controlPanel = new JPanel(layout);

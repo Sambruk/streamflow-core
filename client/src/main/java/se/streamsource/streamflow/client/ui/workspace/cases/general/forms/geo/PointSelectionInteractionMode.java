@@ -18,6 +18,8 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
 import org.jxmapviewer.JXMapViewer;
 
+import se.streamsource.streamflow.client.util.i18n;
+
 public class PointSelectionInteractionMode implements MapInteractionMode {
 
    private PointSelectionListener pointSelectionListener;
@@ -35,6 +37,6 @@ public class PointSelectionInteractionMode implements MapInteractionMode {
 
    @Override
    public String getHelpHint() {
-      return "Click to select point on the map.";
+      return i18n.text(GeoLocationFieldPanelResources.mode_hint_select_point);
    }
 }
