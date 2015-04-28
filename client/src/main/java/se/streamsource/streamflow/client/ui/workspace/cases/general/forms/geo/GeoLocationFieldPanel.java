@@ -62,6 +62,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Abstra
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.StreamflowToggleButton;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.mapquest.MapquestAddress;
 import se.streamsource.streamflow.client.util.mapquest.MapquestNominatimService;
 import se.streamsource.streamflow.client.util.mapquest.MapquestQueryResult;
@@ -376,8 +377,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
    }
 
    enum MapType {
-      ROAD_MAP("Road map"),
-      SATELLITE("Satellite");
+      ROAD_MAP(i18n.text(GeoLocationFieldPanelResources.map_type_road_map)),
+      SATELLITE(i18n.text(GeoLocationFieldPanelResources.map_type_satellite));
 
       String name;
 
