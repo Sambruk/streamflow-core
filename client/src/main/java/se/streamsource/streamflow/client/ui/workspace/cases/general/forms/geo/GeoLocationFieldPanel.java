@@ -16,11 +16,7 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -30,18 +26,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingWorker;
 import javax.swing.border.LineBorder;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
@@ -67,7 +61,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsD
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.StreamflowToggleButton;
 import se.streamsource.streamflow.client.util.mapquest.MapquestAddress;
 import se.streamsource.streamflow.client.util.mapquest.MapquestNominatimService;
 import se.streamsource.streamflow.client.util.mapquest.MapquestQueryResult;
@@ -104,6 +98,8 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       this.fieldValue = fieldValue;
       this.formDraftSettings = model.getFormDraftModel().settings();
 
+      setActionMap( appContext.getActionMap( this ) );
+
       mapViewer = createMapViewer();
       setMapType(MapType.ROAD_MAP);
 
@@ -113,10 +109,6 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       setLayout(layout);
       add(mapViewer, new CellConstraints(2,1, CellConstraints.FILL, CellConstraints.FILL));
       add(controlPanel, new CellConstraints(4,1, CellConstraints.DEFAULT, CellConstraints.FILL));
-
-      setActionMap( appContext.getActionMap( this ) );
-      ActionMap am = getActionMap();
-
    }
 
    private JXMapViewer createMapViewer() {
@@ -161,42 +153,21 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
       PanelBuilder builder = new PanelBuilder(layout);
 
       if (fieldValue.point().get()) {
-         JToggleButton selectPointButton = new JToggleButton("Select point");
-         selectPointButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               switchInteractionMode(new PointSelectionInteractionMode());
-            }
-         });
-
+         JToggleButton selectPointButton = new StreamflowToggleButton(getActionMap().get("startPointSelection"));
          modeButtonGroup.add(selectPointButton);
          builder.add(selectPointButton);
          builder.nextRow();
       }
 
       if (fieldValue.polyline().get()) {
-         JToggleButton selectLineButton = new JToggleButton("Select line");
-         selectLineButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               switchInteractionMode(new LineSelectionInteractionMode());
-            }
-         });
-
+         JToggleButton selectLineButton = new StreamflowToggleButton(getActionMap().get("startLineSelection"));
          modeButtonGroup.add(selectLineButton);
          builder.add(selectLineButton);
          builder.nextRow();
       }
 
       if (fieldValue.polygon().get()) {
-         JToggleButton selectPolygonButton = new JToggleButton("Select area");
-         selectPolygonButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               switchInteractionMode(new AreaSelectionInteractionMode());
-            }
-         });
-
+         JToggleButton selectPolygonButton = new StreamflowToggleButton(getActionMap().get("startAreaSelection"));
          modeButtonGroup.add(selectPolygonButton);
          builder.add(selectPolygonButton);
          builder.nextRow();
@@ -367,6 +338,21 @@ public class GeoLocationFieldPanel extends AbstractFieldPanel implements GeoMark
          Set<GeoPosition> positionsForMarker = new HashSet<GeoPosition>(marker.getPoints());
          mapViewer.zoomToBestFit(positionsForMarker, 0.5);
       }
+   }
+
+   @Action
+   public void startPointSelection() {
+      switchInteractionMode(new PointSelectionInteractionMode());
+   }
+
+   @Action
+   public void startLineSelection() {
+      switchInteractionMode(new LineSelectionInteractionMode());
+   }
+
+   @Action
+   public void startAreaSelection() {
+      switchInteractionMode(new AreaSelectionInteractionMode());
    }
 
    private void switchInteractionMode(MapInteractionMode newMode) {
