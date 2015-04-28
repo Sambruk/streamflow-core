@@ -14,21 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.workspace.cases.general;
+package se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import org.jxmapviewer.JXMapViewer;
 
+public interface MapInteractionMode {
 
-public interface FormDraftSettingsDTO extends ValueComposite
-{
-   @Optional
-   Property<String> location();
+   public void enterMode(JXMapViewer mapViewer, GeoMarkerHolder geoMarkerHolder);
 
-   @Optional
-   Property<Integer> zoomLevel();
+   public void leaveMode(JXMapViewer mapViewer);
 
-   @Optional
-   Property<String> mapquestReverseLookupUrlPattern();
+   public String getHelpHint();
+
 }

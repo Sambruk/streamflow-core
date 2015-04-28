@@ -81,6 +81,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
@@ -147,7 +148,7 @@ public class FormSubmissionWizardPageView
       panel.setScrollableHeightHint( ScrollableSizeHint.VERTICAL_STRETCH );
 
       fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
-      FormLayout formLayout = new FormLayout( "200dlu, 70dlu:grow", "" );
+      FormLayout formLayout = new FormLayout( "250dlu, 70dlu:grow", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 

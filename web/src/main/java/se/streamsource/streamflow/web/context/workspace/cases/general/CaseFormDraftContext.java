@@ -69,10 +69,10 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
    @Optional
    @Service
    ServiceReference<StreetAddressLookupService> streetLookup;
-   
+
    @Structure
    Module module;
-   
+
    @Service
    SystemDefaultsService systemDefaults;
 
@@ -93,7 +93,7 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
          {
             visibilityrule = true;
          }
-         
+
          int fieldIndex = -1;
          for (FieldSubmissionDTO field : pageSubmissionDTO.fields().get())
          {
@@ -119,7 +119,7 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
                fieldPluginBuilder.prototype().message().set( field.message().get() );
                fieldPluginBuilder.prototype().enabled().set( field.enabled().get() );
                fieldPluginBuilder.prototype().plugin().set( linkValueBuilder.newInstance() );
-               
+
                draftBuilder.prototype().pages().get().get( pageIndex ).fields().get().set( fieldIndex, fieldPluginBuilder.newInstance() );
             }
          }
@@ -178,7 +178,7 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
             StreetAddressLookupService lookup = streetLookup.get();
             StreetList streetList = lookup.lookup( builder.newInstance() );
             List<StreetSearchDTO> streets = resultBuilder.prototype().streets().get();
-            
+
             for (StreetValue street : streetList.streets().get())
             {
                streets.add( module.valueBuilderFactory().newValueFromJSON( StreetSearchDTO.class, street.toJSON() ) );
@@ -194,14 +194,15 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
          return resultBuilder.newInstance();
       }
    }
-   
-   public FormDraftSettingsDTO settings() 
+
+   public FormDraftSettingsDTO settings()
    {
        ValueBuilder<FormDraftSettingsDTO> builder = module.valueBuilderFactory().newValueBuilder( FormDraftSettingsDTO.class );
-       
+
        builder.prototype().location().set( systemDefaults.config().configuration().mapDefaultStartLocation().get() );
        builder.prototype().zoomLevel().set( systemDefaults.config().configuration().mapDefaultZoomLevel().get() );
-       
+       builder.prototype().mapquestReverseLookupUrlPattern().set( systemDefaults.config().configuration().mapquestReverseLookupUrlPattern().get() );
+
        return builder.newInstance();
    }
 }

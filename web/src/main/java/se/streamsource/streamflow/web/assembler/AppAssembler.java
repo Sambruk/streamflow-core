@@ -113,7 +113,7 @@ public class AppAssembler
       system( layer.module( "System" ));
 
       archival(layer.module("Archival"));
-      
+
       replay(layer.module("Replay"));
 
       console( layer.module( "Console" ) );
@@ -190,6 +190,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultStartLocation().set( "59.324258,18.070450" );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultZoomLevel().set( 6 );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultUrlPattern().set( "<a href=\"http://maps.google.com/maps?z=13&t=m&q={0}\" alt=\"Google Maps\">Klicka här för att visa karta</a>" );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapquestReverseLookupUrlPattern().set("http://open.mapquestapi.com/nominatim/v1/reverse?lat=%f&lon=%f&format=json");
 
       // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
@@ -199,7 +200,7 @@ public class AppAssembler
       configuration().entities( AvailabilityConfiguration.class );
 
       system.services( CaseCountCacheService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-      
+
    }
 
    private void archival(ModuleAssembly archival)
@@ -270,7 +271,7 @@ public class AppAssembler
             instantiateOnStartup().
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
-      
+
       module.services( SendMailService.class ).
             identifiedBy( "sendmail" ).
             instantiateOnStartup().
@@ -362,7 +363,7 @@ public class AppAssembler
       }
       module.objects( HtmlMailGenerator.class ).visibleIn( Visibility.application );
    }
-   
+
    private void knowledgebase(ModuleAssembly knowledgebase) throws AssemblyException
    {
       knowledgebase.services(KnowledgebaseService.class).identifiedBy("knowledgebase").instantiateOnStartup().visibleIn(Visibility.application);

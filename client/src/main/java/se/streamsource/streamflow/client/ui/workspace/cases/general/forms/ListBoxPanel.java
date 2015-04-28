@@ -148,12 +148,6 @@ public class ListBoxPanel
    }
 
    @Override
-   public boolean validateValue( Object newValue )
-   {
-      return true;
-   }
-
-   @Override
    public void setBinding( StateBinder.Binding binding )
    {
       this.binding = binding;

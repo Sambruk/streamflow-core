@@ -80,13 +80,13 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Attach
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 /**

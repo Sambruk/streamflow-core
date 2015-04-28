@@ -55,10 +55,13 @@ public interface SystemDefaultsConfiguration
 
    @UseDefaults
    Property<String> mapDefaultStartLocation();
-   
+
    @UseDefaults
    Property<Integer> mapDefaultZoomLevel();
-   
+
+   @UseDefaults
+   Property<String> mapquestReverseLookupUrlPattern();
+
    /**
     * The name of the organizational unit responsible for mail receiver support.
     * @return A string property

@@ -62,12 +62,6 @@ public class TextAreaFieldPanel
    }
 
    @Override
-   public boolean validateValue( Object newValue )
-   {
-      return true;
-   }
-
-   @Override
    public void setBinding( final StateBinder.Binding binding )
    {
       text.setInputVerifier( new InputVerifier()

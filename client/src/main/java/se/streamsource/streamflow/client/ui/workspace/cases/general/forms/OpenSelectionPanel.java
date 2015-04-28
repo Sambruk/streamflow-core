@@ -57,7 +57,7 @@ public class OpenSelectionPanel
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
       group = new ButtonGroup();
-      selectionButtons = new ArrayList<JRadioButton>( fieldValue.values().get().size() ); 
+      selectionButtons = new ArrayList<JRadioButton>( fieldValue.values().get().size() );
       for ( String element : fieldValue.values().get() )
       {
          JRadioButton button = new JRadioButton( element );
@@ -121,12 +121,6 @@ public class OpenSelectionPanel
          openSelectionTextField.setText( newValue );
          openSelectionTextField.setEnabled( true );
       }
-   }
-
-   @Override
-   public boolean validateValue( Object newValue )
-   {
-      return true;
    }
 
    @Override

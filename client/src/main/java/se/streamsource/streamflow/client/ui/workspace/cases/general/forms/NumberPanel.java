@@ -66,12 +66,6 @@ public class NumberPanel
    }
 
    @Override
-   public boolean validateValue( Object newValue )
-   {
-      return true;
-   }
-
-   @Override
    public void setBinding( final StateBinder.Binding binding )
    {
       final NumberPanel panel = this;
