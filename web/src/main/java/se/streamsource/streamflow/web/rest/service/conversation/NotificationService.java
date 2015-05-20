@@ -65,6 +65,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessP
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -159,49 +160,16 @@ public interface NotificationService
                   if (recipientEmail != null)
                   {
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+
                      builder.prototype().fromName().set( determineFromName(message) );
-
-                     addEmailAccessPointHeaders(message, builder);
-
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );
                      builder.prototype().subject().set( determineSubject(message) );
                      builder.prototype().content().set( createHTMLMailContent(message) );
                      builder.prototype().contentType().set( Translator.HTML );
 
-                     // add message attachments if any
-                     if ( message.hasAttachments()) {
-
-                        List<AttachedFileValue> attachments = builder.prototype().attachments().get();
-                        ValueBuilder<AttachedFileValue> attachment = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
-
-                        for (Attachment caseAttachment : ((Attachments.Data)message).attachments())
-                        {
-                           AttachedFile.Data attachedFile = (AttachedFile.Data) caseAttachment;
-                           attachment.prototype().mimeType().set(attachedFile.mimeType().get());
-                           attachment.prototype().uri().set(attachedFile.uri().get());
-                           attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
-                           attachment.prototype().name().set(attachedFile.name().get());
-                           attachment.prototype().size().set(attachedFile.size().get());
-                           attachments.add( attachment.newInstance() );
-                        }
-                     }
-
-                     // Threading headers
-                     builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>" );
-                     ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
-                     StringBuilder references = new StringBuilder();
-                     String inReplyTo = null;
-                     for (Message previousMessage : messages)
-                     {
-                        if (references.length() > 0)
-                           references.append( " " );
-
-                        inReplyTo = "<"+previousMessage.toString()+"/"+URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>";
-                        references.append( inReplyTo );
-                     }
-                     builder.prototype().headers().get().put( "References", references.toString() );
-                     if (inReplyTo != null)
-                        builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
+                     addAttachmentsToBuilder(message, builder);
+                     addEmailAccessPointHeadersToBuilder(message, builder);
+                     addThreadingHeadersToBuilder(conversation, recipient, builder);
 
                      EmailValue emailValue = builder.newInstance();
 
@@ -302,7 +270,7 @@ public interface NotificationService
             return subject;
          }
 
-         private void addEmailAccessPointHeaders(Message message, ValueBuilder<EmailValue> builder) {
+         private void addEmailAccessPointHeadersToBuilder(Message message, ValueBuilder<EmailValue> builder) {
             Message.Data messageData = (Message.Data) message;
             Conversation conversation = messageData.conversation().get();
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
@@ -319,6 +287,48 @@ public interface NotificationService
                builder.prototype().headers().get().put( "Precedence", "auto_reply" );
                builder.prototype().headers().get().put( "X-Precedence", "auto_reply" );
             }
+         }
+
+         private void addAttachmentsToBuilder(Message message,
+               ValueBuilder<EmailValue> builder) {
+            // add message attachments if any
+            if ( message.hasAttachments()) {
+
+               List<AttachedFileValue> attachments = builder.prototype().attachments().get();
+               ValueBuilder<AttachedFileValue> attachment = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
+
+               for (Attachment caseAttachment : ((Attachments.Data)message).attachments())
+               {
+                  AttachedFile.Data attachedFile = (AttachedFile.Data) caseAttachment;
+                  attachment.prototype().mimeType().set(attachedFile.mimeType().get());
+                  attachment.prototype().uri().set(attachedFile.uri().get());
+                  attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
+                  attachment.prototype().name().set(attachedFile.name().get());
+                  attachment.prototype().size().set(attachedFile.size().get());
+                  attachments.add( attachment.newInstance() );
+               }
+            }
+         }
+
+         private void addThreadingHeadersToBuilder(Conversation conversation,
+               MessageReceiver recipient, ValueBuilder<EmailValue> builder)
+               throws UnsupportedEncodingException {
+            // Threading headers
+            builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>" );
+            ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
+            StringBuilder references = new StringBuilder();
+            String inReplyTo = null;
+            for (Message previousMessage : messages)
+            {
+               if (references.length() > 0)
+                  references.append( " " );
+
+               inReplyTo = "<"+previousMessage.toString()+"/"+URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>";
+               references.append( inReplyTo );
+            }
+            builder.prototype().headers().get().put( "References", references.toString() );
+            if (inReplyTo != null)
+               builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
          }
       }
    }
