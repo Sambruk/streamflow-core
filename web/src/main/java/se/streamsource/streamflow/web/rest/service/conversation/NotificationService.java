@@ -143,28 +143,16 @@ public interface NotificationService
          public void receivedMessage( DomainEvent event, Message message )
          {
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
             try
             {
                Message.Data messageData = (Message.Data) message;
                Conversation conversation = messageData.conversation().get();
-               ConversationOwner conversationOwner = conversation.conversationOwner().get();
                MessageReceiver recipient = uow.get( MessageReceiver.class, event.entity().get() );
                MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
 
                if (recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
                {
-                  Origin origin = (Origin) conversationOwner;
-                  EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
-
-
-
-                  String formattedMsg = determineFormattedMessage(message);
-                  String subject = determineSubject(message);
-
-
-
-                  if (formattedMsg.trim().equals("") && !message.hasAttachments())
+                  if (messageData.body().get().trim().equals("") && !message.hasAttachments())
                      return; // Don't try to send empty messages that have no attachments
 
                   ContactEmailDTO recipientEmail = ((Contactable.Data)recipient).contact().get().defaultEmail();
@@ -173,34 +161,11 @@ public interface NotificationService
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
                      builder.prototype().fromName().set( determineFromName(message) );
 
-                     if (emailAccessPoint != null)
-                     {
-                        builder.prototype().from().set(emailAccessPoint.getDescription() );
-                        builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
-                        builder.prototype().headers().get().put( "X-Auto-Response-Suppress", "OOF, DR, RN, NRN" );
-                        builder.prototype().headers().get().put( "X-Autoreply", "yes" );
-                        builder.prototype().headers().get().put( "X-Autorespond", "yes" );
-                        builder.prototype().headers().get().put( "Precedence", "auto_reply" );
-                        builder.prototype().headers().get().put( "X-Precedence", "auto_reply" );
-                     }
+                     addEmailAccessPointHeaders(message, builder);
 
-      //               builder.prototype().replyTo();
                      builder.prototype().to().set( recipientEmail.emailAddress().get() );
-                     builder.prototype().subject().set( subject );
-                     if( messageData.messageType().get().equals( MessageType.PLAIN ) ||
-                         messageData.messageType().get().equals( MessageType.SYSTEM ))
-                     {
-                        StringBuffer buf = new StringBuffer(  );
-                        Scanner scanner = new Scanner( formattedMsg );
-                        while( scanner.hasNextLine() )
-                        {
-                           buf.append( scanner.nextLine() + "<BR>" + System.getProperty( "line.separator" ) );
-
-                        }
-
-                        formattedMsg = buf.toString();
-                     }
-                     builder.prototype().content().set( htmlGenerator.createMailContent( formattedMsg, determineFooter(message) ) );
+                     builder.prototype().subject().set( determineSubject(message) );
+                     builder.prototype().content().set( createHTMLMailContent(message) );
                      builder.prototype().contentType().set( Translator.HTML );
 
                      // add message attachments if any
@@ -273,13 +238,13 @@ public interface NotificationService
 
          private String determineCaseId(ConversationOwner owner) {
             String caseId = "n/a";
-         
+
             if (owner != null)
                caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
             return caseId;
          }
 
-         private String determineFormattedMessage(Message message) {
+         private String createHTMLMailContent(Message message) {
             Message.Data messageData = (Message.Data) message;
             Conversation conversation = messageData.conversation().get();
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
@@ -296,7 +261,24 @@ public interface NotificationService
                   formattedMsg = message.translateBody(templateDefaults);
                }
             }
-            return formattedMsg;
+
+            if( messageData.messageType().get().equals( MessageType.PLAIN ) ||
+                  messageData.messageType().get().equals( MessageType.SYSTEM ))
+            {
+               StringBuffer buf = new StringBuffer(  );
+               Scanner scanner = new Scanner( formattedMsg );
+               while( scanner.hasNextLine() )
+               {
+                  buf.append( scanner.nextLine() + "<BR>" + System.getProperty( "line.separator" ) );
+
+               }
+               scanner.close();
+               formattedMsg = buf.toString();
+            }
+
+            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
+            String mailContent = htmlGenerator.createMailContent( formattedMsg, determineFooter(message) );
+            return mailContent;
          }
 
          private String determineSubject(Message message) {
@@ -318,6 +300,25 @@ public interface NotificationService
                }
             }
             return subject;
+         }
+
+         private void addEmailAccessPointHeaders(Message message, ValueBuilder<EmailValue> builder) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            Origin origin = (Origin) conversationOwner;
+            EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
+
+            if (emailAccessPoint != null)
+            {
+               builder.prototype().from().set(emailAccessPoint.getDescription() );
+               builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
+               builder.prototype().headers().get().put( "X-Auto-Response-Suppress", "OOF, DR, RN, NRN" );
+               builder.prototype().headers().get().put( "X-Autoreply", "yes" );
+               builder.prototype().headers().get().put( "X-Autorespond", "yes" );
+               builder.prototype().headers().get().put( "Precedence", "auto_reply" );
+               builder.prototype().headers().get().put( "X-Precedence", "auto_reply" );
+            }
          }
       }
    }
