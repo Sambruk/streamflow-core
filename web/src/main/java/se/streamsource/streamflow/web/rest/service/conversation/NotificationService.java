@@ -43,6 +43,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.util.Translator;
+import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
@@ -70,6 +71,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -290,7 +292,8 @@ public interface NotificationService
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
             String caseId = determineCaseId(conversationOwner);
 
-            String formattedMsg = "A message has been added to a conversation in the case: " + caseId;
+            ResourceBundle i18n = ResourceBundle.getBundle( NotificationService.class.getName(), new Locale("SV", "se"));
+            String formattedMsg = String.format(i18n.getString("notification.body"), caseId);
 
             HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
             String mailContent = htmlGenerator.createMailContent( formattedMsg, determineFooter(message) );
@@ -323,9 +326,9 @@ public interface NotificationService
             Conversation conversation = messageData.conversation().get();
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
             String caseId = determineCaseId(conversationOwner);
+            ResourceBundle i18n = ResourceBundle.getBundle( NotificationService.class.getName(), new Locale("SV", "se"));
 
-            // TODO: l14n
-            String subjectText = "A message has been added to a conversation in this case.";
+            String subjectText = i18n.getString("notification.subject");
             return  "[" + caseId + "] " + subjectText;
          }
 
