@@ -31,6 +31,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -146,60 +147,31 @@ public interface NotificationService
             try
             {
                Message.Data messageData = (Message.Data) message;
-
                Conversation conversation = messageData.conversation().get();
-
-               ConversationOwner owner = conversation.conversationOwner().get();
-
-               // check if sender is administrator and in that case dont set fromName - this will be picked up by
-               // MailSender and replaced with the configurated default fromName
-               String sender = null;
-               if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
-               {
-                  sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
-               }
-
-               String footer ="";
-               if( messageData.sender().get() instanceof MailFooter)
-               {
-                  footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
-               }
-
-               String caseId = "n/a";
-
-               if (owner != null)
-                  caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
-
-               MessageReceiver user = uow.get( MessageReceiver.class, event.entity().get() );
-
-               MessageRecipient.Data recipientSettings = (MessageRecipient.Data) user;
+               ConversationOwner conversationOwner = conversation.conversationOwner().get();
+               MessageReceiver recipient = uow.get( MessageReceiver.class, event.entity().get() );
+               MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
 
                if (recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
                {
-                  String subject;
-                  String formattedMsg;
-
-                  Origin origin = (Origin) owner;
+                  Origin origin = (Origin) conversationOwner;
                   EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
 
-                  if (emailAccessPoint != null)
-                  {
-                     formattedMsg = message.translateBody(emailAccessPoint.emailTemplates().get());
-                     subject = MessageTemplate.text(emailAccessPoint.subject().get()).bind("caseid", caseId).bind("subject", conversation.getDescription()).eval();
-                  } else
-                  {
-                     formattedMsg = message.translateBody(templateDefaults);
-                     subject = "[" + caseId + "] " + conversation.getDescription(); // Default subject format
-                  }
+
+
+                  String formattedMsg = determineFormattedMessage(message);
+                  String subject = determineSubject(message);
+
+
 
                   if (formattedMsg.trim().equals("") && !message.hasAttachments())
                      return; // Don't try to send empty messages that have no attachments
 
-                  ContactEmailDTO recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
+                  ContactEmailDTO recipientEmail = ((Contactable.Data)recipient).contact().get().defaultEmail();
                   if (recipientEmail != null)
                   {
                      ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
-                     builder.prototype().fromName().set( sender );
+                     builder.prototype().fromName().set( determineFromName(message) );
 
                      if (emailAccessPoint != null)
                      {
@@ -228,7 +200,7 @@ public interface NotificationService
 
                         formattedMsg = buf.toString();
                      }
-                     builder.prototype().content().set( htmlGenerator.createMailContent( formattedMsg, footer ) );
+                     builder.prototype().content().set( htmlGenerator.createMailContent( formattedMsg, determineFooter(message) ) );
                      builder.prototype().contentType().set( Translator.HTML );
 
                      // add message attachments if any
@@ -250,7 +222,7 @@ public interface NotificationService
                      }
 
                      // Threading headers
-                     builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(user.toString(), "UTF-8")+"@Streamflow>" );
+                     builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>" );
                      ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
                      StringBuilder references = new StringBuilder();
                      String inReplyTo = null;
@@ -259,7 +231,7 @@ public interface NotificationService
                         if (references.length() > 0)
                            references.append( " " );
 
-                        inReplyTo = "<"+previousMessage.toString()+"/"+URLEncoder.encode(user.toString(), "UTF-8")+"@Streamflow>";
+                        inReplyTo = "<"+previousMessage.toString()+"/"+URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>";
                         references.append( inReplyTo );
                      }
                      builder.prototype().headers().get().put( "References", references.toString() );
@@ -275,6 +247,77 @@ public interface NotificationService
             {
                logger.error("Could not send notification to user entity = " +  event.entity().get() , e);
             }
+         }
+
+         private String determineFromName(Message message) {
+            // check if sender is administrator and in that case dont set fromName - this will be picked up by
+            // MailSender and replaced with the configurated default fromName
+            Message.Data messageData = (Message.Data) message;
+            String fromName = null;
+            if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
+            {
+               fromName = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+            }
+            return fromName;
+         }
+
+         private String determineFooter(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            String footer ="";
+            if( messageData.sender().get() instanceof MailFooter)
+            {
+               footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
+            }
+            return footer;
+         }
+
+         private String determineCaseId(ConversationOwner owner) {
+            String caseId = "n/a";
+         
+            if (owner != null)
+               caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
+            return caseId;
+         }
+
+         private String determineFormattedMessage(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            Origin origin = (Origin) conversationOwner;
+            EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
+
+            String formattedMsg;
+            {
+               if (emailAccessPoint != null)
+               {
+                  formattedMsg = message.translateBody(emailAccessPoint.emailTemplates().get());
+               } else
+               {
+                  formattedMsg = message.translateBody(templateDefaults);
+               }
+            }
+            return formattedMsg;
+         }
+
+         private String determineSubject(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            Origin origin = (Origin) conversationOwner;
+            EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
+
+            String subject;
+            {
+               String caseId = determineCaseId(conversationOwner);
+               if (emailAccessPoint != null)
+               {
+                  subject = MessageTemplate.text(emailAccessPoint.subject().get()).bind("caseid", caseId).bind("subject", conversation.getDescription()).eval();
+               } else
+               {
+                  subject = "[" + caseId + "] " + conversation.getDescription(); // Default subject format
+               }
+            }
+            return subject;
          }
       }
    }
