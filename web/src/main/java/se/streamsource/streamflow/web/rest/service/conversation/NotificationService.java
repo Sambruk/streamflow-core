@@ -149,32 +149,24 @@ public interface NotificationService
                Message.Data messageData = (Message.Data) message;
                Conversation conversation = messageData.conversation().get();
                MessageReceiver recipient = uow.get( MessageReceiver.class, event.entity().get() );
-               MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
 
-               if (recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+               if (shouldSendMail(message, recipient))
                {
-                  if (messageData.body().get().trim().equals("") && !message.hasAttachments())
-                     return; // Don't try to send empty messages that have no attachments
+                  ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
 
-                  ContactEmailDTO recipientEmail = ((Contactable.Data)recipient).contact().get().defaultEmail();
-                  if (recipientEmail != null)
-                  {
-                     ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+                  builder.prototype().fromName().set( determineFromName(message) );
+                  builder.prototype().to().set( determineRecipientEmailAddress(recipient) );
+                  builder.prototype().subject().set( determineSubject(message) );
+                  builder.prototype().content().set( createHTMLMailContent(message) );
+                  builder.prototype().contentType().set( Translator.HTML );
 
-                     builder.prototype().fromName().set( determineFromName(message) );
-                     builder.prototype().to().set( recipientEmail.emailAddress().get() );
-                     builder.prototype().subject().set( determineSubject(message) );
-                     builder.prototype().content().set( createHTMLMailContent(message) );
-                     builder.prototype().contentType().set( Translator.HTML );
+                  addAttachmentsToBuilder(message, builder);
+                  addEmailAccessPointHeadersToBuilder(message, builder);
+                  addThreadingHeadersToBuilder(conversation, recipient, builder);
 
-                     addAttachmentsToBuilder(message, builder);
-                     addEmailAccessPointHeadersToBuilder(message, builder);
-                     addThreadingHeadersToBuilder(conversation, recipient, builder);
+                  EmailValue emailValue = builder.newInstance();
 
-                     EmailValue emailValue = builder.newInstance();
-
-                     mailSender.sentEmail( null, emailValue );
-                  }
+                  mailSender.sentEmail( null, emailValue );
                }
             } catch (Throwable e)
             {
@@ -210,6 +202,17 @@ public interface NotificationService
             if (owner != null)
                caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
             return caseId;
+         }
+
+         private String determineRecipientEmailAddress(MessageReceiver recipient) {
+            ContactEmailDTO recipientEmail = ((Contactable.Data)recipient).contact().get().defaultEmail();
+            if (recipientEmail == null) {
+               return null;
+            }
+            else {
+               return recipientEmail.emailAddress().get();
+            }
+
          }
 
          private String createHTMLMailContent(Message message) {
@@ -329,6 +332,17 @@ public interface NotificationService
             builder.prototype().headers().get().put( "References", references.toString() );
             if (inReplyTo != null)
                builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
+         }
+
+         private boolean shouldSendMail(Message message, MessageReceiver recipient) {
+            MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
+            Message.Data messageData = (Message.Data) message;
+
+            return (
+                  recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email )
+                  && (!messageData.body().get().trim().isEmpty() || message.hasAttachments())
+                  && determineRecipientEmailAddress(recipient) != null
+                  );
          }
       }
    }
