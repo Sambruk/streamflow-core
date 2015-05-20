@@ -50,6 +50,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MailFooter;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -146,32 +147,63 @@ public interface NotificationService
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
             try
             {
-               Message.Data messageData = (Message.Data) message;
-               Conversation conversation = messageData.conversation().get();
                MessageReceiver recipient = uow.get( MessageReceiver.class, event.entity().get() );
 
-               if (shouldSendMail(message, recipient))
+               if (shouldSendFullMail(message, recipient))
                {
-                  ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
-
-                  builder.prototype().fromName().set( determineFromName(message) );
-                  builder.prototype().to().set( determineRecipientEmailAddress(recipient) );
-                  builder.prototype().subject().set( determineSubject(message) );
-                  builder.prototype().content().set( createHTMLMailContent(message) );
-                  builder.prototype().contentType().set( Translator.HTML );
-
-                  addAttachmentsToBuilder(message, builder);
-                  addEmailAccessPointHeadersToBuilder(message, builder);
-                  addThreadingHeadersToBuilder(conversation, recipient, builder);
-
-                  EmailValue emailValue = builder.newInstance();
-
+                  EmailValue emailValue = buildFullMail(message, recipient);
+                  mailSender.sentEmail( null, emailValue );
+               }
+               else if (shouldSendNotificationMail(message, recipient))
+               {
+                  EmailValue emailValue = buildNotificationMail(message, recipient);
                   mailSender.sentEmail( null, emailValue );
                }
             } catch (Throwable e)
             {
                logger.error("Could not send notification to user entity = " +  event.entity().get() , e);
             }
+         }
+
+         private EmailValue buildFullMail(Message message, MessageReceiver recipient) throws UnsupportedEncodingException
+         {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+
+            ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+
+            builder.prototype().fromName().set( determineFromName(message) );
+            builder.prototype().to().set( determineRecipientEmailAddress(recipient) );
+            builder.prototype().subject().set( determineFullSubject(message) );
+            builder.prototype().content().set( createFullHTMLMailContent(message) );
+            builder.prototype().contentType().set( Translator.HTML );
+
+            addAttachmentsToBuilder(message, builder);
+            addEmailAccessPointHeadersToBuilder(message, builder);
+            addThreadingHeadersToBuilder(conversation, recipient, builder);
+
+            EmailValue emailValue = builder.newInstance();
+            return emailValue;
+         }
+
+         private EmailValue buildNotificationMail(Message message, MessageReceiver recipient) throws UnsupportedEncodingException
+         {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+
+            ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+
+            builder.prototype().fromName().set( determineFromName(message) );
+            builder.prototype().to().set( determineRecipientEmailAddress(recipient) );
+            builder.prototype().subject().set( determineNotificationSubject(message) );
+            builder.prototype().content().set( createNotificationHTMLMailContent(message) );
+            builder.prototype().contentType().set( Translator.HTML );
+
+            addEmailAccessPointHeadersToBuilder(message, builder);
+            addThreadingHeadersToBuilder(conversation, recipient, builder);
+
+            EmailValue emailValue = builder.newInstance();
+            return emailValue;
          }
 
          private String determineFromName(Message message) {
@@ -215,7 +247,7 @@ public interface NotificationService
 
          }
 
-         private String createHTMLMailContent(Message message) {
+         private String createFullHTMLMailContent(Message message) {
             Message.Data messageData = (Message.Data) message;
             Conversation conversation = messageData.conversation().get();
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
@@ -252,7 +284,20 @@ public interface NotificationService
             return mailContent;
          }
 
-         private String determineSubject(Message message) {
+         private String createNotificationHTMLMailContent(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            String caseId = determineCaseId(conversationOwner);
+
+            String formattedMsg = "A message has been added to a conversation in the case: " + caseId;
+
+            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
+            String mailContent = htmlGenerator.createMailContent( formattedMsg, determineFooter(message) );
+            return mailContent;
+         }
+
+         private String determineFullSubject(Message message) {
             Message.Data messageData = (Message.Data) message;
             Conversation conversation = messageData.conversation().get();
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
@@ -271,6 +316,17 @@ public interface NotificationService
                }
             }
             return subject;
+         }
+
+         private String determineNotificationSubject(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            String caseId = determineCaseId(conversationOwner);
+
+            // TODO: l14n
+            String subjectText = "A message has been added to a conversation in this case.";
+            return  "[" + caseId + "] " + subjectText;
          }
 
          private void addEmailAccessPointHeadersToBuilder(Message message, ValueBuilder<EmailValue> builder) {
@@ -334,14 +390,34 @@ public interface NotificationService
                builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
          }
 
-         private boolean shouldSendMail(Message message, MessageReceiver recipient) {
+         private boolean shouldSendFullMail(Message message, MessageReceiver recipient) {
             MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
             Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            boolean isRestricted = ((CaseAccessRestriction.Data) conversationOwner).restricted().get();
 
             return (
                   recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email )
                   && (!messageData.body().get().trim().isEmpty() || message.hasAttachments())
                   && determineRecipientEmailAddress(recipient) != null
+                  && !isRestricted
+                  );
+         }
+
+         private boolean shouldSendNotificationMail(Message message, MessageReceiver recipient) {
+            MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            boolean isRestricted = ((CaseAccessRestriction.Data) conversationOwner).restricted().get();
+            boolean isRecipientRegularUser = recipient instanceof UserEntity;
+
+            return (
+                  recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email )
+                  && (!messageData.body().get().trim().isEmpty() || message.hasAttachments())
+                  && determineRecipientEmailAddress(recipient) != null
+                  && (isRestricted && isRecipientRegularUser)
                   );
          }
       }
