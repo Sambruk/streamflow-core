@@ -38,7 +38,8 @@ import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
-/** Converter for converting a Query<Case> using a TableQuery
+/** Converter for converting a Query<Case> by applying query arguments such as ordering
+ * and pagination from a TableQuery object.
  */
 public class TableQueryConverter {
 
