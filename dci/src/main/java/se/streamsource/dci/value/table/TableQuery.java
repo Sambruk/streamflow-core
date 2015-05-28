@@ -118,4 +118,5 @@ public interface TableQuery
          return parts;
       }
    }
+
 }
