@@ -40,17 +40,11 @@ public interface TableQuery
 
    public String where();
 
-   public String groupBy();
-
-   public String pivot();
-
    public String orderBy();
 
    public String limit();
 
    public String offset();
-
-   public String label();
 
    public String options();
 
@@ -71,16 +65,6 @@ public interface TableQuery
          return getParts().get("where");
       }
 
-      public String groupBy()
-      {
-         return getParts().get("group by");
-      }
-
-      public String pivot()
-      {
-         return getParts().get("pivot");
-      }
-
       public String orderBy()
       {
          return getParts().get("order by");
@@ -94,11 +78,6 @@ public interface TableQuery
       public String offset()
       {
          return getParts().get("offset");
-      }
-
-      public String label()
-      {
-         return getParts().get("label");
       }
 
       public String options()

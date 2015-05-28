@@ -83,11 +83,6 @@ public class TableBuilder
       ValueBuilder<ColumnValue> builder = vbf.newValueBuilder(ColumnValue.class);
       builder.prototype().id().set(id);
 
-      if (tableQuery != null && tableQuery.label() != null)
-      {
-         // TODO Fix label selection
-      }
-
       builder.prototype().label().set(label);
       builder.prototype().columnType().set(type);
       tableBuilder.prototype().cols().get().add(builder.newInstance());
@@ -227,7 +222,7 @@ public class TableBuilder
 
       return this;
    }
-   
+
 //   public TableBuilder orderBy()
 //   {
 //      if (tableQuery.orderBy() != null)
