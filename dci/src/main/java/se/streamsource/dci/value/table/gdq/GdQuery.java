@@ -9,5 +9,5 @@ public class GdQuery {
    public List<OrderByElement> orderBy = new ArrayList<OrderByElement>();
    public Integer limit;
    public Integer offset;
-   public List<String> options = new ArrayList<String>();
+   public String options;
 }

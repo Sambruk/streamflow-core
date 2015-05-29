@@ -16,8 +16,7 @@ public class GdQueryParserTest {
       assertEquals(0, q.orderBy.size());
       assertNull(q.limit);
       assertNull(q.offset);
-      assertNotNull(q.options);
-      assertEquals(0, q.options.size());
+      assertNull(q.options);
    }
 
    @Test
@@ -163,6 +162,31 @@ public class GdQueryParserTest {
    }
 
    @Test
+   public void parseOptions() {
+      GdQuery q = GdQueryParser.parse("options foo");
+      assertNotNull(q);
+      assertEquals("foo", q.options);
+   }
+
+   @Test
+   public void parseOptionsMultiple() {
+      GdQuery q = GdQueryParser.parse("options foo  bar");
+      assertNotNull(q);
+      assertEquals("foo bar", q.options);
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyOptions() {
+      GdQueryParser.parse("options");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyOptions2() {
+      GdQueryParser.parse("options where foo");
+   }
+
+
+   @Test
    public void parseLongQuery() {
       GdQuery q = GdQueryParser.parse("select * where foo order by bar, baz desc limit 10 offset 20 options qux");
       assertNotNull(q);
@@ -179,8 +203,7 @@ public class GdQueryParserTest {
       assertEquals(new Integer(10), q.limit);
       assertEquals(new Integer(20), q.offset);
       assertNotNull(q.options);
-      assertEquals(1, q.options.size());
-      assertEquals("qux", q.options.get(0));
+      assertEquals("qux", q.options);
    }
 
    @Test(expected = GdQueryParseException.class)

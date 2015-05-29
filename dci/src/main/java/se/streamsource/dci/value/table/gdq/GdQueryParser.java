@@ -30,6 +30,9 @@ public class GdQueryParser {
          case KEYWORD_OFFSET:
             result.offset = parseIntegerClause(tokenizer);
             break;
+         case KEYWORD_OPTIONS:
+            result.options = parseMultiWordClause(tokenizer);
+            break;
          case KEYWORD_GROUP:
          case KEYWORD_PIVOT:
          case KEYWORD_FORMAT:
@@ -103,9 +106,19 @@ public class GdQueryParser {
    }
 
    private static Integer parseIntegerClause(GdqTokenizer tokenizer) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Not implemented");
+      String initialToken = tokenizer.tokenStringValue();
+      tokenizer.consumeToken();
 
+      if (tokenizer.hasToken(GdqTokenType.WORD)) {
+         try {
+            String s = tokenizer.tokenStringValue();
+            tokenizer.consumeToken();
+            return Integer.parseInt(s);
+         }
+         catch (NumberFormatException e) { }
+      }
+
+      throw new GdQueryParseException("Expected integer in "+ initialToken +" clause");
    }
 
    private static String consumeExpectedToken(GdqTokenizer tokenizer, GdqTokenType expectedTokenType, String description) {
