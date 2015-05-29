@@ -119,6 +119,50 @@ public class GdQueryParserTest {
    }
 
    @Test
+   public void parseLimit() {
+      GdQuery q = GdQueryParser.parse("limit 10");
+      assertNotNull(q);
+      assertEquals(new Integer(10), q.limit);
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseInvalidLimit() {
+      GdQueryParser.parse("limit invalid");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyLimit() {
+      GdQueryParser.parse("limit");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyLimit2() {
+      GdQueryParser.parse("limit offset 10");
+   }
+
+   @Test
+   public void parseOffset() {
+      GdQuery q = GdQueryParser.parse("offset 20");
+      assertNotNull(q);
+      assertEquals(new Integer(20), q.offset);
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseInvalidOffset() {
+      GdQueryParser.parse("offset invalid");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyOffset() {
+      GdQueryParser.parse("offset");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyOffset2() {
+      GdQueryParser.parse("offset limit 10");
+   }
+
+   @Test
    public void parseLongQuery() {
       GdQuery q = GdQueryParser.parse("select * where foo order by bar, baz desc limit 10 offset 20 options qux");
       assertNotNull(q);
@@ -138,5 +182,27 @@ public class GdQueryParserTest {
       assertEquals(1, q.options.size());
       assertEquals("qux", q.options.get(0));
    }
+
+   @Test(expected = GdQueryParseException.class)
+   public void groupByShouldBeUnsupported() {
+      GdQueryParser.parse("group by foo");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void pivotShouldBeUnsupported() {
+      GdQueryParser.parse("pivot foo");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void formatShouldBeUnsupported() {
+      GdQueryParser.parse("format foo");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void labelShouldBeUnsupported() {
+      GdQueryParser.parse("label foo bar");
+   }
+
+
 
 }

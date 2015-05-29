@@ -14,16 +14,28 @@ public class GdQueryParser {
       GdQuery result = new GdQuery();
 
       while (tokenizer.hasToken()) {
-         if (tokenizer.tokenType() == GdqTokenType.KEYWORD_SELECT) {
+         switch (tokenizer.tokenType()) {
+         case KEYWORD_SELECT:
             result.select = parseMultiWordClause(tokenizer);
-         }
-         else if (tokenizer.tokenType() == GdqTokenType.KEYWORD_WHERE) {
+            break;
+         case KEYWORD_WHERE:
             result.where = parseMultiWordClause(tokenizer);
-         }
-         else if (tokenizer.tokenType() == GdqTokenType.KEYWORD_ORDER) {
+            break;
+         case KEYWORD_ORDER:
             result.orderBy = parseOrderByClause(tokenizer);
-         }
-         else {
+            break;
+         case KEYWORD_LIMIT:
+            result.limit = parseIntegerClause(tokenizer);
+            break;
+         case KEYWORD_OFFSET:
+            result.offset = parseIntegerClause(tokenizer);
+            break;
+         case KEYWORD_GROUP:
+         case KEYWORD_PIVOT:
+         case KEYWORD_FORMAT:
+         case KEYWORD_LABEL:
+            throw new GdQueryParseException("Not supported: " + tokenizer.tokenStringValue());
+         default:
             throw new GdQueryParseException("Unexpected token: " + tokenizer.tokenStringValue());
          }
       }
@@ -88,6 +100,12 @@ public class GdQueryParser {
          tokenizer.consumeToken();
       }
       return new OrderByElement(name, direction);
+   }
+
+   private static Integer parseIntegerClause(GdqTokenizer tokenizer) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Not implemented");
+
    }
 
    private static String consumeExpectedToken(GdqTokenizer tokenizer, GdqTokenType expectedTokenType, String description) {
