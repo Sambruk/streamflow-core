@@ -29,6 +29,7 @@ import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.gdq.OrderByDirection;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
@@ -67,27 +68,27 @@ public class TableQueryConverter {
 
       // Paging
       if (tableQuery.offset() != null)
-         caseQuery.firstResult(Integer.parseInt(tableQuery.offset()));
+         caseQuery.firstResult(tableQuery.offset());
       if (tableQuery.limit() != null)
-         caseQuery.maxResults(Integer.parseInt(tableQuery.limit()));
-      if (tableQuery.orderBy() != null)
+         caseQuery.maxResults(tableQuery.limit());
+      if (tableQuery.orderBy() != null && tableQuery.orderBy().size()==1) // TODO support multiple order by
       {
-         String[] orderByValue = tableQuery.orderBy().split(" ");
-         Order order = orderByValue[1].equals("asc") ? Order.ASCENDING : Order.DESCENDING;
+         String orderByName = tableQuery.orderBy().get(0).name;
+         Order order = tableQuery.orderBy().get(0).direction == OrderByDirection.DESCENDING ? Order.DESCENDING : Order.ASCENDING;
 
-         if (tableQuery.orderBy().equals("status"))
+         if (orderByName.equals("status"))
          {
             caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order));
-         } else if (orderByValue[0].equals("description"))
+         } else if (orderByName.equals("description"))
          {
             caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order));
-         } else if (orderByValue[0].equals("dueOn"))
+         } else if (orderByName.equals("dueOn"))
          {
             caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
-         } else if (orderByValue[0].equals("createdOn"))
+         } else if (orderByName.equals("createdOn"))
          {
             caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
-         }else if( orderByValue[0].equals( "priority" ))
+         }else if (orderByName.equals( "priority" ))
          {
             caseQuery.orderBy( QueryExpressions.orderBy(
                   QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).casepriority().get() ).priority(), revertSortOrder( order ) ) );

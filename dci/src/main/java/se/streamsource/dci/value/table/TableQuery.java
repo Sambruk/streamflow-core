@@ -20,12 +20,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import se.streamsource.dci.value.table.gdq.GdQuery;
+import se.streamsource.dci.value.table.gdq.GdQueryParser;
+import se.streamsource.dci.value.table.gdq.OrderByElement;
+
 import java.util.List;
-import java.util.Map;
 
 /**
  * Query value for Google Data queries.
@@ -40,82 +39,56 @@ public interface TableQuery
 
    public String where();
 
-   public String orderBy();
+   public List<OrderByElement> orderBy();
 
-   public String limit();
+   public Integer limit();
 
-   public String offset();
+   public Integer offset();
 
    public String options();
 
    abstract class Mixin
            implements TableQuery
    {
-      private static Collection<String> keywords = Arrays.asList("select", "where", "group by", "pivot", "order by", "limit", "offset", "label", "options");
-
-      private Map<String, String> parts;
+      private GdQuery gdQuery;
 
       public String select()
       {
-         return getParts().get("select");
+         return getGdQuery().select;
       }
 
       public String where()
       {
-         return getParts().get("where");
+         return getGdQuery().where;
       }
 
-      public String orderBy()
+      public List<OrderByElement> orderBy()
       {
-         return getParts().get("order by");
+         return getGdQuery().orderBy;
       }
 
-      public String limit()
+      public Integer limit()
       {
-         return getParts().get("limit");
+         return getGdQuery().limit;
       }
 
-      public String offset()
+      public Integer offset()
       {
-         return getParts().get("offset");
+         return getGdQuery().offset;
       }
 
       public String options()
       {
-         return getParts().get("options");
+         return getGdQuery().options;
       }
 
-      private Map<String, String> getParts()
+      private GdQuery getGdQuery()
       {
-         if (parts == null)
-         {
-            parts = new HashMap<String, String>();
-
-            String value = tq().get();
-            List<String> values = Arrays.asList(value.split(" "));
-            Collections.reverse(values);
-            String currentPhrase = "";
-            for (String str : values)
-            {
-               currentPhrase = str + currentPhrase;
-               boolean found = false;
-               for (String keyword : keywords)
-               {
-                  if (currentPhrase.startsWith(keyword + " "))
-                  {
-                     found = true;
-                     parts.put(keyword, currentPhrase.substring(keyword.length() + 1));
-                     currentPhrase = "";
-                     break;
-                  }
-               }
-
-               if (!found)
-                  currentPhrase = " " + currentPhrase;
-            }
+         if (gdQuery == null) {
+            gdQuery = GdQueryParser.parse(tq().get());
          }
 
-         return parts;
+         return gdQuery;
       }
    }
 
