@@ -69,6 +69,56 @@ public class GdQueryParserTest {
    }
 
    @Test
+   public void parseOrderBy() {
+      GdQuery q = GdQueryParser.parse("order by foo");
+      assertNotNull(q);
+      assertEquals(1, q.orderBy.size());
+      assertNotNull(q.orderBy.get(0));
+      assertEquals("foo", q.orderBy.get(0).name);
+      assertEquals(OrderByDirection.UNDEFINED, q.orderBy.get(0).direction);
+   }
+
+   @Test
+   public void parseOrderByAscending() {
+      GdQuery q = GdQueryParser.parse("order by foo asc");
+      assertNotNull(q);
+      assertEquals(1, q.orderBy.size());
+      assertNotNull(q.orderBy.get(0));
+      assertEquals("foo", q.orderBy.get(0).name);
+      assertEquals(OrderByDirection.ASCENDING, q.orderBy.get(0).direction);
+   }
+
+   @Test
+   public void parseOrderByDescending() {
+      GdQuery q = GdQueryParser.parse("order by foo desc");
+      assertNotNull(q);
+      assertEquals(1, q.orderBy.size());
+      assertNotNull(q.orderBy.get(0));
+      assertEquals("foo", q.orderBy.get(0).name);
+      assertEquals(OrderByDirection.DESCENDING, q.orderBy.get(0).direction);
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyOrderBy() {
+      GdQueryParser.parse("order by");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseEmptyOrderBy2() {
+      GdQueryParser.parse("order by limit");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseMalformedOrderBy() {
+      GdQueryParser.parse("order foo asc");
+   }
+
+   @Test(expected = GdQueryParseException.class)
+   public void parseMalformedOrderBy2() {
+      GdQueryParser.parse("order by foo bar");
+   }
+
+   @Test
    public void parseLongQuery() {
       GdQuery q = GdQueryParser.parse("select * where foo order by bar, baz desc limit 10 offset 20 options qux");
       assertNotNull(q);

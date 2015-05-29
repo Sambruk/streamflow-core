@@ -66,4 +66,9 @@ class GdqTokenizer {
    public boolean hasToken() {
       return currentTokenType != null;
    }
+
+   public boolean hasToken(GdqTokenType type) {
+      return currentTokenType == type;
+   }
+
 }
