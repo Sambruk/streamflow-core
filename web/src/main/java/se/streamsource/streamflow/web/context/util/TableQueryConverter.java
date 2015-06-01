@@ -19,6 +19,9 @@ package se.streamsource.streamflow.web.context.util;
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -30,6 +33,7 @@ import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.gdq.OrderByDirection;
+import se.streamsource.dci.value.table.gdq.OrderByElement;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
@@ -71,34 +75,45 @@ public class TableQueryConverter {
          caseQuery.firstResult(tableQuery.offset());
       if (tableQuery.limit() != null)
          caseQuery.maxResults(tableQuery.limit());
-      if (tableQuery.orderBy() != null && tableQuery.orderBy().size()==1) // TODO support multiple order by
-      {
-         String orderByName = tableQuery.orderBy().get(0).name;
-         Order order = tableQuery.orderBy().get(0).direction == OrderByDirection.DESCENDING ? Order.DESCENDING : Order.ASCENDING;
-
-         if (orderByName.equals("status"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order));
-         } else if (orderByName.equals("description"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order));
-         } else if (orderByName.equals("dueOn"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
-         } else if (orderByName.equals("createdOn"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
-         }else if (orderByName.equals( "priority" ))
-         {
-            caseQuery.orderBy( QueryExpressions.orderBy(
-                  QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).casepriority().get() ).priority(), revertSortOrder( order ) ) );
-         }
+      if (tableQuery.orderBy() != null && tableQuery.orderBy().size()>0) {
+         caseQuery.orderBy(tableQueryToOrderByArray(tableQuery.orderBy()));
       }
 
       return caseQuery;
    }
 
-   public static OrderBy.Order revertSortOrder( OrderBy.Order order )
+   private static OrderBy[] tableQueryToOrderByArray(List<OrderByElement> orderByList) {
+      ArrayList<OrderBy> orderBys = new ArrayList<OrderBy>();
+      for (OrderByElement element: orderByList) {
+         orderBys.add(orderByElementToOrderBy(element));
+      }
+      return orderBys.toArray(new OrderBy[0]);
+   }
+
+   private static OrderBy orderByElementToOrderBy(OrderByElement element) {
+      Order order = element.direction == OrderByDirection.DESCENDING ? Order.DESCENDING : Order.ASCENDING;
+      if (element.name.equals("status")) {
+         return QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order);
+      }
+      else if (element.name.equals("description")) {
+         return QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order);
+      }
+      else if (element.name.equals("dueOn")) {
+         return QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order);
+      }
+      else if (element.name.equals("createdOn")) {
+         return QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order);
+      }
+      else if (element.name.equals( "priority" )) {
+         return QueryExpressions.orderBy(
+               QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).casepriority().get() ).priority(), revertSortOrder( order ) );
+      }
+      else {
+         throw new IllegalArgumentException("Order by '"+element.name+"' not supported");
+      }
+   }
+
+   private static OrderBy.Order revertSortOrder( OrderBy.Order order )
    {
       if( OrderBy.Order.ASCENDING.equals( order ))
          return OrderBy.Order.DESCENDING;
