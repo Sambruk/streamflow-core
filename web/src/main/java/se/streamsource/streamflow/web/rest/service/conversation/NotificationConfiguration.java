@@ -16,6 +16,9 @@
  */
 package se.streamsource.streamflow.web.rest.service.conversation;
 
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
 /**
@@ -24,4 +27,9 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Tran
 public interface NotificationConfiguration
       extends TransactionTrackerConfiguration
 {
+   @UseDefaults
+   Property<String> notificationOnlyMailSubject();
+
+   @UseDefaults
+   Property<String> notificationOnlyMailBody();
 }
