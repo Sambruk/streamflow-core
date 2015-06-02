@@ -97,6 +97,11 @@ public class ConfigurationAssembler
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().limit().set( 10 );
       module.forMixin( StreetAddressLookupConfiguration.class ).declareDefaults().url().set( "http://localhost:8086/streets/street" );
 
+      module.forMixin( NotificationConfiguration.class ).declareDefaults().notificationOnlyMailSubject().set(
+            "A message has been added to a conversation in this case.");
+      module.forMixin( NotificationConfiguration.class ).declareDefaults().notificationOnlyMailBody().set(
+            "A message has been added to a conversation in the case: %s.");
+
       MixinDeclaration<PdfGeneratorConfiguration> pdfConfig = module.forMixin( PdfGeneratorConfiguration.class );
       pdfConfig.declareDefaults().headerMargin().set( 100F );
       pdfConfig.declareDefaults().footerMargin().set( 80F );
