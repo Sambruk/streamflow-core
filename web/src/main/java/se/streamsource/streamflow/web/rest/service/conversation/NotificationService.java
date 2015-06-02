@@ -43,7 +43,6 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.util.MessageTemplate;
 import se.streamsource.streamflow.util.Translator;
-import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
@@ -71,7 +70,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -292,8 +290,8 @@ public interface NotificationService
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
             String caseId = determineCaseId(conversationOwner);
 
-            ResourceBundle i18n = ResourceBundle.getBundle( NotificationService.class.getName(), new Locale("SV", "se"));
-            String formattedMsg = String.format(i18n.getString("notification.body"), caseId);
+            String mailBody = config.configuration().notificationOnlyMailBody().get();
+            String formattedMsg = String.format(mailBody, caseId);
 
             HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
             String mailContent = htmlGenerator.createMailContent( formattedMsg, determineFooter(message) );
@@ -326,9 +324,7 @@ public interface NotificationService
             Conversation conversation = messageData.conversation().get();
             ConversationOwner conversationOwner = conversation.conversationOwner().get();
             String caseId = determineCaseId(conversationOwner);
-            ResourceBundle i18n = ResourceBundle.getBundle( NotificationService.class.getName(), new Locale("SV", "se"));
-
-            String subjectText = i18n.getString("notification.subject");
+            String subjectText = config.configuration().notificationOnlyMailSubject().get();
             return  "[" + caseId + "] " + subjectText;
          }
 
