@@ -75,14 +75,18 @@ public class GdQueryParserTest {
       assertEquals("foo bar", q.where);
    }
 
-   @Test(expected = GdQueryParseException.class)
+   @Test
    public void parseEmptyWhere() {
-      GdQueryParser.parse("where");
+      GdQuery q = GdQueryParser.parse("where");
+      assertNotNull(q);
+      assertEquals("", q.where);
    }
 
-   @Test(expected = GdQueryParseException.class)
+   @Test
    public void parseEmptyWhere2() {
-      GdQueryParser.parse("where limit 10");
+      GdQuery q = GdQueryParser.parse("where limit 10");
+      assertNotNull(q);
+      assertEquals("", q.where);
    }
 
    @Test
@@ -193,16 +197,11 @@ public class GdQueryParserTest {
       assertEquals("foo bar", q.options);
    }
 
-   @Test(expected = GdQueryParseException.class)
    public void parseEmptyOptions() {
-      GdQueryParser.parse("options");
+      GdQuery q = GdQueryParser.parse("options");
+      assertNotNull(q);
+      assertEquals("", q.options);
    }
-
-   @Test(expected = GdQueryParseException.class)
-   public void parseEmptyOptions2() {
-      GdQueryParser.parse("options where foo");
-   }
-
 
    @Test
    public void parseLongQuery() {

@@ -35,7 +35,7 @@ public class GdQueryParser {
             result.select = parseSelectClause(tokenizer);
             break;
          case KEYWORD_WHERE:
-            result.where = parseWhereClause(tokenizer);
+            result.where = parseMultiWordClause(tokenizer);
             break;
          case KEYWORD_ORDER:
             result.orderBy = parseOrderByClause(tokenizer);
@@ -47,7 +47,7 @@ public class GdQueryParser {
             result.offset = parseIntegerClause(tokenizer);
             break;
          case KEYWORD_OPTIONS:
-            result.options = parseWhereClause(tokenizer);
+            result.options = parseMultiWordClause(tokenizer);
             break;
          case KEYWORD_GROUP:
          case KEYWORD_PIVOT:
@@ -76,21 +76,17 @@ public class GdQueryParser {
       return result;
    }
 
-   /** Parses a clause of the form <keyword> <word>+, eg.
+   /** Parses a clause of the form <keyword> <word>*, eg.
     * "select foo bar baz".
     */
-   private static String parseWhereClause(GdqTokenizer tokenizer) {
-      String initialToken = tokenizer.tokenStringValue();
+   private static String parseMultiWordClause(GdqTokenizer tokenizer) {
       tokenizer.consumeToken();
 
-      if (!tokenizer.hasToken(GdqTokenType.WORD)) {
-         throw new GdQueryParseException("Expected word in "+ initialToken +" clause");
-      }
-
-      StringBuilder result = new StringBuilder(tokenizer.tokenStringValue());
-      tokenizer.consumeToken();
+      StringBuilder result = new StringBuilder();
       while (tokenizer.hasToken(GdqTokenType.WORD)) {
-         result.append(" ");
+         if (result.length() > 0) {
+            result.append(" ");
+         }
          result.append(tokenizer.tokenStringValue());
          tokenizer.consumeToken();
       }
