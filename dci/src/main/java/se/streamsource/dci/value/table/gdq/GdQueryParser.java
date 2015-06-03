@@ -32,10 +32,10 @@ public class GdQueryParser {
       while (tokenizer.hasToken()) {
          switch (tokenizer.tokenType()) {
          case KEYWORD_SELECT:
-            result.select = parseMultiWordClause(tokenizer);
+            result.select = parseSelectClause(tokenizer);
             break;
          case KEYWORD_WHERE:
-            result.where = parseMultiWordClause(tokenizer);
+            result.where = parseWhereClause(tokenizer);
             break;
          case KEYWORD_ORDER:
             result.orderBy = parseOrderByClause(tokenizer);
@@ -47,7 +47,7 @@ public class GdQueryParser {
             result.offset = parseIntegerClause(tokenizer);
             break;
          case KEYWORD_OPTIONS:
-            result.options = parseMultiWordClause(tokenizer);
+            result.options = parseWhereClause(tokenizer);
             break;
          case KEYWORD_GROUP:
          case KEYWORD_PIVOT:
@@ -62,10 +62,24 @@ public class GdQueryParser {
       return result;
    }
 
+   private static List<String> parseSelectClause(GdqTokenizer tokenizer) {
+      consumeExpectedToken(tokenizer, GdqTokenType.KEYWORD_SELECT, "select");
+
+      List<String> result = new ArrayList<String>();
+
+      result.add(consumeExpectedToken(tokenizer, GdqTokenType.WORD, "column name in select clause"));
+      while (tokenizer.hasToken(GdqTokenType.COMMA)) {
+         tokenizer.consumeToken();
+         result.add(consumeExpectedToken(tokenizer, GdqTokenType.WORD, "column name in select clause"));
+      }
+
+      return result;
+   }
+
    /** Parses a clause of the form <keyword> <word>+, eg.
     * "select foo bar baz".
     */
-   private static String parseMultiWordClause(GdqTokenizer tokenizer) {
+   private static String parseWhereClause(GdqTokenizer tokenizer) {
       String initialToken = tokenizer.tokenStringValue();
       tokenizer.consumeToken();
 

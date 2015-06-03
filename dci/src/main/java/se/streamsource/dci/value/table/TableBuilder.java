@@ -71,7 +71,7 @@ public class TableBuilder
          }
       } else
       {
-         for (String columnName : tableQuery.select().split("[, ]"))
+         for (String columnName : tableQuery.select())
          {
             TableBuilderFactory.Column column = columns.get(columnName.trim());
             if (column != null)

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GdQuery {
-   public String select;
+   public List<String> select;
    public String where;
    public List<OrderByElement> orderBy = new ArrayList<OrderByElement>();
    public Integer limit;

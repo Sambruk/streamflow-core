@@ -18,6 +18,8 @@ package se.streamsource.dci.value.table.gdq;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 public class GdQueryParserTest {
@@ -39,14 +41,14 @@ public class GdQueryParserTest {
    public void parseSelect() {
       GdQuery q = GdQueryParser.parse("select *");
       assertNotNull(q);
-      assertEquals("*", q.select);
+      assertEquals(Arrays.asList("*"), q.select);
    }
 
    @Test
    public void parseSelectMultiple() {
-      GdQuery q = GdQueryParser.parse("select foo  bar");
+      GdQuery q = GdQueryParser.parse("select foo,  bar");
       assertNotNull(q);
-      assertEquals("foo bar", q.select);
+      assertEquals(Arrays.asList("foo", "bar"), q.select);
    }
 
    @Test(expected = GdQueryParseException.class)
@@ -206,7 +208,7 @@ public class GdQueryParserTest {
    public void parseLongQuery() {
       GdQuery q = GdQueryParser.parse("select * where foo order by bar, baz desc limit 10 offset 20 options qux");
       assertNotNull(q);
-      assertEquals("*", q.select);
+      assertEquals(Arrays.asList("*"), q.select);
       assertEquals("foo", q.where);
       assertNotNull(q.orderBy);
       assertEquals(2, q.orderBy.size());

@@ -51,14 +51,13 @@ public class TableQueryTest
    }
 
    @Test
-   @Ignore
    public void testQueryParsing1()
    {
       ValueBuilder<TableQuery> builder = assembler.valueBuilderFactory().newValueBuilder(TableQuery.class);
       builder.prototype().tq().set("select a,b,c order by foo offset 5 limit 1");
       TableQuery tq = builder.newInstance();
 
-      Assert.assertThat(tq.select(), equalTo("a,b,c"));
+      Assert.assertThat(tq.select(), equalTo(Arrays.asList("a", "b", "c")));
       Assert.assertThat(tq.orderBy(), equalTo(Arrays.asList(new OrderByElement("foo", OrderByDirection.UNDEFINED))));
       Assert.assertThat(tq.offset(), equalTo(5));
       Assert.assertThat(tq.limit(), equalTo(1));
@@ -68,10 +67,10 @@ public class TableQueryTest
    public void testQueryParsing2()
    {
       ValueBuilder<TableQuery> builder = assembler.valueBuilderFactory().newValueBuilder(TableQuery.class);
-      builder.prototype().tq().set("select caseid description created owner status href order by `created` limit 6 offset 0");
+      builder.prototype().tq().set("select caseid, description, created, owner, status, href order by `created` limit 6 offset 0");
       TableQuery tq = builder.newInstance();
 
-      Assert.assertThat(tq.select(), equalTo("caseid description created owner status href"));
+      Assert.assertThat(tq.select(), equalTo(Arrays.asList("caseid", "description", "created", "owner", "status", "href")));
       Assert.assertThat(tq.orderBy(), equalTo(Arrays.asList(new OrderByElement("`created`", OrderByDirection.UNDEFINED))));
       Assert.assertThat(tq.offset(), equalTo(0));
       Assert.assertThat(tq.limit(), equalTo(6));

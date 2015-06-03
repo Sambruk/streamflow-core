@@ -35,7 +35,7 @@ public interface TableQuery
 {
    Property<String> tq();
 
-   public String select();
+   public List<String> select();
 
    public String where();
 
@@ -52,7 +52,7 @@ public interface TableQuery
    {
       private GdQuery gdQuery;
 
-      public String select()
+      public List<String> select()
       {
          return getGdQuery().select;
       }

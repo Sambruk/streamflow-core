@@ -77,7 +77,7 @@ public class StreamflowResultConverter
 {
    @Structure
    Module module;
-   
+
    @Structure
    Qi4jSPI spi;
 
@@ -85,7 +85,7 @@ public class StreamflowResultConverter
    ServiceReference<KnowledgebaseService> knowledgeBaseService;
 
    static final String STANDARD_COLUMNS = ",description,created,creator,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent,";
-   
+
    public Object convert(Object result, Request request, Object[] arguments)
    {
       if (result instanceof String)
@@ -122,7 +122,7 @@ public class StreamflowResultConverter
                //same here relative path needed
                return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
-      } 
+      }
 
       if (result instanceof Iterable)
       {
@@ -161,13 +161,13 @@ public class StreamflowResultConverter
          prototype.createdBy().set(((Describable) aCase.createdBy().get()).getDescription());
       if (aCase.caseId().get() != null)
          prototype.caseId().set(aCase.caseId().get());
-      
+
       // Not so fancy solution to the v2 problem...
       if (v2)
       {
          prototype.href().set(basePath + "/workspacev2/cases/" + aCase.identity().get() + "/");
       }
-      else 
+      else
       {
          prototype.href().set(basePath + "/workspace/cases/" + aCase.identity().get() + "/");
       }
@@ -251,7 +251,7 @@ public class StreamflowResultConverter
       }
 
       prototype.restricted().set( aCase.restricted().get() );
-      
+
       prototype.lastLogEntryTime().set(new Date(spi.getEntityState((CaseLogEntity) aCase.caselog().get()).lastModified()));
       prototype.dueOn().set(aCase.dueOn().get());
       if (aCase.casepriority().get() != null)
@@ -496,10 +496,10 @@ public class StreamflowResultConverter
                   return caseEntity.isUnread();
                }
             });
-      
+
       if (!"*".equals( query.select() ))
       {
-         for(String name : query.select().split( "," ))
+         for(String name : query.select())
          {
             final String fieldName = name.trim();
             if (!STANDARD_COLUMNS.contains( "," + fieldName + "," ))
@@ -516,9 +516,9 @@ public class StreamflowResultConverter
                               FieldEntity fieldEntity = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, item.field().get().identity() );
                               return fieldEntity.fieldId().get().equals( fieldName );
                            };
-                           
+
                         }, form.fields() ));
-                        
+
                         if (submittedFieldValue != null)
                         {
                            return submittedFieldValue.value().get();
