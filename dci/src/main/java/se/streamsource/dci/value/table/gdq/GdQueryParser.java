@@ -29,34 +29,33 @@ public class GdQueryParser {
       GdqTokenizer tokenizer = new GdqTokenizer(s);
       GdQuery result = new GdQuery();
 
-      while (tokenizer.hasToken()) {
-         switch (tokenizer.tokenType()) {
-         case KEYWORD_SELECT:
-            result.select = parseSelectClause(tokenizer);
-            break;
-         case KEYWORD_WHERE:
-            result.where = parseMultiWordClause(tokenizer);
-            break;
-         case KEYWORD_ORDER:
-            result.orderBy = parseOrderByClause(tokenizer);
-            break;
-         case KEYWORD_LIMIT:
-            result.limit = parseIntegerClause(tokenizer);
-            break;
-         case KEYWORD_OFFSET:
-            result.offset = parseIntegerClause(tokenizer);
-            break;
-         case KEYWORD_OPTIONS:
-            result.options = parseMultiWordClause(tokenizer);
-            break;
-         case KEYWORD_GROUP:
-         case KEYWORD_PIVOT:
-         case KEYWORD_FORMAT:
-         case KEYWORD_LABEL:
-            throw new GdQueryParseException("Not supported: " + tokenizer.tokenStringValue());
-         default:
-            throw new GdQueryParseException("Unexpected token: " + tokenizer.tokenStringValue());
-         }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_SELECT)) {
+         result.select = parseSelectClause(tokenizer);
+      }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_WHERE)) {
+         result.where = parseMultiWordClause(tokenizer);
+      }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_ORDER)) {
+         result.orderBy = parseOrderByClause(tokenizer);
+      }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_LIMIT)) {
+         result.limit = parseIntegerClause(tokenizer);
+      }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_OFFSET)) {
+         result.offset = parseIntegerClause(tokenizer);
+      }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_OPTIONS)) {
+         result.options = parseMultiWordClause(tokenizer);
+      }
+      if (tokenizer.hasToken(GdqTokenType.KEYWORD_GROUP)
+          || tokenizer.hasToken(GdqTokenType.KEYWORD_PIVOT)
+          || tokenizer.hasToken(GdqTokenType.KEYWORD_FORMAT)
+          || tokenizer.hasToken(GdqTokenType.KEYWORD_LABEL)
+          ) {
+         throw new GdQueryParseException("Unsupported query clause: " + tokenizer.tokenStringValue());
+      }
+      if (tokenizer.hasToken()) {
+         throw new GdQueryParseException("Unexpected token: " + tokenizer.tokenStringValue());
       }
 
       return result;

@@ -224,6 +224,11 @@ public class GdQueryParserTest {
    }
 
    @Test(expected = GdQueryParseException.class)
+   public void parseInvalidClauseOrder() {
+      GdQueryParser.parse("where foo select bar");
+   }
+
+   @Test(expected = GdQueryParseException.class)
    public void groupByShouldBeUnsupported() {
       GdQueryParser.parse("group by foo");
    }

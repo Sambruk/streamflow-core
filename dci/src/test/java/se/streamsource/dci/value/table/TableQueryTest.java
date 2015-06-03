@@ -54,7 +54,7 @@ public class TableQueryTest
    public void testQueryParsing1()
    {
       ValueBuilder<TableQuery> builder = assembler.valueBuilderFactory().newValueBuilder(TableQuery.class);
-      builder.prototype().tq().set("select a,b,c order by foo offset 5 limit 1");
+      builder.prototype().tq().set("select a,b,c order by foo limit 1 offset 5");
       TableQuery tq = builder.newInstance();
 
       Assert.assertThat(tq.select(), equalTo(Arrays.asList("a", "b", "c")));
