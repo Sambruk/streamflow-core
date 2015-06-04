@@ -497,7 +497,7 @@ public class StreamflowResultConverter
                }
             });
 
-      if (!"*".equals( query.select() ))
+      if (!(query.select().size() == 1 && "*".equals( query.select().get(0) )))
       {
          for(String name : query.select())
          {

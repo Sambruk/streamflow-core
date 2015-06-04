@@ -63,7 +63,7 @@ public class TableBuilder
 
       tableBuilder = vbf.newValueBuilder(TableValue.class);
 
-      if (tableQuery.select().equals("*"))
+      if (tableQuery.select().size()==1 && "*".equals(tableQuery.select().get(0)))
       {
          for (TableBuilderFactory.Column column : columns.values())
          {
