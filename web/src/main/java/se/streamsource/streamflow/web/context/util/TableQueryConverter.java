@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -103,6 +104,10 @@ public class TableQueryConverter {
       }
       else if (element.name.equals("createdOn")) {
          return QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order);
+      }
+      else if (element.name.equals("caseType")) {
+         return QueryExpressions.orderBy(
+               QueryExpressions.templateFor(Describable.Data.class, QueryExpressions.templateFor(TypedCase.Data.class).caseType().get()).description(), order);
       }
       else if (element.name.equals( "priority" )) {
          return QueryExpressions.orderBy(
