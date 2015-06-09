@@ -25,17 +25,22 @@ import java.util.List;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
+import org.qi4j.runtime.query.grammar.impl.OrderByImpl;
 
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.gdq.OrderByDirection;
 import se.streamsource.dci.value.table.gdq.OrderByElement;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable.Data;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
@@ -108,6 +113,19 @@ public class TableQueryConverter {
       else if (element.name.equals("caseType")) {
          return QueryExpressions.orderBy(
                QueryExpressions.templateFor(Describable.Data.class, QueryExpressions.templateFor(TypedCase.Data.class).caseType().get()).description(), order);
+      }
+      else if (element.name.equals("assignedTo")) {
+         return new OrderByImpl(new DerivedPropertyReference<String>(String.class) {
+            @Override
+            public Property<String> eval(Object target) {
+               Assignable.Data assignableData = (Data) target;
+               Assignee assignee = assignableData.assignedTo().get();
+               if (assignee instanceof Describable.Data) {
+                  return ((Describable.Data) assignee).description();
+               }
+               return null;
+            }
+         }, order);
       }
       else if (element.name.equals( "priority" )) {
          return QueryExpressions.orderBy(
