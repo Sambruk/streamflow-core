@@ -39,9 +39,10 @@ import se.streamsource.dci.value.table.gdq.OrderByElement;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable.Data;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -118,10 +119,23 @@ public class TableQueryConverter {
          return new OrderByImpl(new DerivedPropertyReference<String>(String.class) {
             @Override
             public Property<String> eval(Object target) {
-               Assignable.Data assignableData = (Data) target;
+               Assignable.Data assignableData = (Assignable.Data) target;
                Assignee assignee = assignableData.assignedTo().get();
                if (assignee instanceof Describable.Data) {
                   return ((Describable.Data) assignee).description();
+               }
+               return null;
+            }
+         }, order);
+      }
+      else if (element.name.equals("project")) {
+         return new OrderByImpl(new DerivedPropertyReference<String>(String.class) {
+            @Override
+            public Property<String> eval(Object target) {
+               Ownable.Data ownableData = (Ownable.Data) target;
+               Owner owner = ownableData.owner().get();
+               if (owner instanceof Describable.Data) {
+                  return ((Describable.Data) owner).description();
                }
                return null;
             }
