@@ -16,9 +16,6 @@
  */
 package se.streamsource.streamflow.web.context.util;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +27,8 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.query.grammar.OrderBy.Order;
+import org.qi4j.api.query.grammar.PropertyReference;
 import org.qi4j.api.structure.Module;
-import org.qi4j.runtime.query.grammar.impl.OrderByImpl;
 
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.gdq.OrderByDirection;
@@ -70,11 +67,11 @@ public class TableQueryConverter {
    public Query<Case> convert(Query<Case> originalQuery) {
 
       Query<Case> caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( originalQuery )
-            .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
+            .orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
 
       if( systemConfig.config().configuration().sortOrderAscending().get())
       {
-         caseQuery.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
+         caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
       }
 
       // Paging
@@ -116,30 +113,10 @@ public class TableQueryConverter {
                QueryExpressions.templateFor(Describable.Data.class, QueryExpressions.templateFor(TypedCase.Data.class).caseType().get()).description(), order);
       }
       else if (element.name.equals("assignedTo")) {
-         return new OrderByImpl(new DerivedPropertyReference<String>(String.class) {
-            @Override
-            public Property<String> eval(Object target) {
-               Assignable.Data assignableData = (Assignable.Data) target;
-               Assignee assignee = assignableData.assignedTo().get();
-               if (assignee instanceof Describable.Data) {
-                  return ((Describable.Data) assignee).description();
-               }
-               return null;
-            }
-         }, order);
+         return orderByMapper(caseToAssigneeDescriptionMapper, order);
       }
       else if (element.name.equals("project")) {
-         return new OrderByImpl(new DerivedPropertyReference<String>(String.class) {
-            @Override
-            public Property<String> eval(Object target) {
-               Ownable.Data ownableData = (Ownable.Data) target;
-               Owner owner = ownableData.owner().get();
-               if (owner instanceof Describable.Data) {
-                  return ((Describable.Data) owner).description();
-               }
-               return null;
-            }
-         }, order);
+         return orderByMapper(caseToOwnerDescriptionMapper, order);
       }
       else if (element.name.equals( "priority" )) {
          return QueryExpressions.orderBy(
@@ -158,4 +135,41 @@ public class TableQueryConverter {
          return OrderBy.Order.ASCENDING;
    }
 
+   private static <T> OrderBy orderByMapper(final PropertyReference<T> mapper, final OrderBy.Order order) {
+      return new OrderBy() {
+         @Override
+         public PropertyReference<?> propertyReference() {
+            return mapper;
+         }
+
+         @Override
+         public Order order() {
+            return order;
+         }
+      };
+   }
+
+   private static DerivedPropertyReference<String> caseToAssigneeDescriptionMapper = new DerivedPropertyReference<String>(String.class) {
+      @Override
+      public Property<String> eval(Object target) {
+         Assignable.Data assignableData = (Assignable.Data) target;
+         Assignee assignee = assignableData.assignedTo().get();
+         if (assignee instanceof Describable.Data) {
+            return ((Describable.Data) assignee).description();
+         }
+         return null;
+      }
+   };
+
+   private static DerivedPropertyReference<String> caseToOwnerDescriptionMapper = new DerivedPropertyReference<String>(String.class) {
+      @Override
+      public Property<String> eval(Object target) {
+         Ownable.Data ownableData = (Ownable.Data) target;
+         Owner owner = ownableData.owner().get();
+         if (owner instanceof Describable.Data) {
+            return ((Describable.Data) owner).description();
+         }
+         return null;
+      }
+   };
 }
