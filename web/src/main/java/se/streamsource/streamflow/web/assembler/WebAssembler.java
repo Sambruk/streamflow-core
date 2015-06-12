@@ -46,6 +46,7 @@ import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.util.ClassScanner;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
+import se.streamsource.streamflow.web.context.util.SearchResultDTO;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.rest.StreamflowCaseResponseWriter;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
@@ -95,7 +96,7 @@ public class WebAssembler
             importedBy( ServiceSelectorImporter.class ).
             setMetaInfo( ServiceQualifier.withId( "solr" ) ).
             setMetaInfo( namedQueries );
-      
+
       // Resources
       module.objects(
               APIRouter.class,
@@ -112,6 +113,7 @@ public class WebAssembler
 
       module.importedServices(ResultConverter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
       module.objects(StreamflowResultConverter.class);
+      module.values(SearchResultDTO.class);
 
       module.importedServices(StreamflowCaseResponseWriter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
       module.objects(StreamflowCaseResponseWriter.class);

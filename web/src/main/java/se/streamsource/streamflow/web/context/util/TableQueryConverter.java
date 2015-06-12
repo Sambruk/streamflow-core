@@ -64,7 +64,7 @@ public class TableQueryConverter {
       this.tableQuery = tableQuery;
    }
 
-   public Query<Case> convert(Query<Case> originalQuery) {
+   public Query<Case> convert(Iterable<Case> originalQuery) {
 
       Query<Case> caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( originalQuery )
             .orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );

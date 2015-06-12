@@ -46,6 +46,8 @@ import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.util.SearchResult;
+import se.streamsource.streamflow.web.context.util.SearchResultDTO;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -122,6 +124,21 @@ public class StreamflowResultConverter
                //same here relative path needed
                return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
+      } else if (result instanceof SearchResult)
+      {
+         // TODO: Assume SearchResult<Case>
+
+         if (request.getResourceRef().getPath().contains( "workspacev2" )) {
+            return buildCaseListFromSearchResult((SearchResult<Case>) result, module, request.getResourceRef().getBaseRef().getPath(), true);
+         }
+         else if (arguments.length > 0 && arguments[0] instanceof TableQuery) {
+            Iterable<CaseEntity> iterableCases = ((SearchResult<CaseEntity>) result).getResult();
+            return caseTable(iterableCases, module, request, arguments);
+         }
+         else {
+            //same here relative path needed
+            return buildCaseListFromSearchResult((SearchResult<Case>) result, module, request.getResourceRef().getBaseRef().getPath(), false);
+         }
       }
 
       if (result instanceof Iterable)
@@ -147,6 +164,18 @@ public class StreamflowResultConverter
          }
       }
       return linksBuilder.newLinks();
+   }
+
+   private LinksValue buildCaseListFromSearchResult(SearchResult<Case> result, Module module, String basePath, boolean v2)
+   {
+      ValueBuilder<SearchResultDTO> builder = module.valueBuilderFactory().newValueBuilder(SearchResultDTO.class);
+      builder.prototype().unlimitedResultCount().set(result.getUnlimitedCount());
+
+      for (Case aCase : result.getResult()) {
+         builder.prototype().links().get().add(caseDTO((CaseEntity) aCase, module, basePath, v2));
+      }
+
+      return builder.newInstance();
    }
 
    private CaseDTO caseDTO(CaseEntity aCase, Module module, String basePath, boolean v2)

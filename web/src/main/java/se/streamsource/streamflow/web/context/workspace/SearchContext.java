@@ -38,6 +38,7 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.util.SearchResult;
 import se.streamsource.streamflow.web.context.util.TableQueryConverter;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -58,6 +59,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
+import com.google.common.collect.Lists;
+
 /**
  * JAVADOC
  */
@@ -69,14 +72,18 @@ public class SearchContext
    @Service
    SystemDefaultsService systemConfig;
 
-   public Iterable<Case> cases(TableQuery tableQuery)
+   public SearchResult<Case> cases(TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
       Query<Case> caseQuery = caseQueries.search(tableQuery.where(), systemConfig.config().configuration().includeNotesInSearch().get() );
 
+      List<Case> rawResults = Lists.newArrayList(caseQuery);
+      int unlimitedResultCount = rawResults.size();
+
       TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
-      caseQuery = tableQueryConverter.convert(caseQuery);
-      return caseQuery;
+      Iterable<Case> results = tableQueryConverter.convert(rawResults);
+
+      return new SearchResult<Case>(results, unlimitedResultCount);
    }
 
    public LinksValue possibleLabels()
