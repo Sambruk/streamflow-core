@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.util;
+package se.streamsource.streamflow.web.context.workspace;
 
-public class SearchResult<T> {
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
-   private final Iterable<T> result;
+public class CaseSearchResult {
+
+   private final Iterable<Case> result;
    private final Integer unlimitedCount;
 
-   public SearchResult(Iterable<T> result, Integer unlimitedCount) {
+   public CaseSearchResult(Iterable<Case> result, Integer unlimitedCount) {
       this.result = result;
       this.unlimitedCount = unlimitedCount;
    }
 
-   public Iterable<T> getResult() {
+   public Iterable<Case> getResult() {
       return result;
    }
 

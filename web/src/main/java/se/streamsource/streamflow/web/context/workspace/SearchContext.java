@@ -38,7 +38,6 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.context.util.SearchResult;
 import se.streamsource.streamflow.web.context.util.TableQueryConverter;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
@@ -72,7 +71,7 @@ public class SearchContext
    @Service
    SystemDefaultsService systemConfig;
 
-   public SearchResult<Case> cases(TableQuery tableQuery)
+   public CaseSearchResult cases(TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
       Query<Case> caseQuery = caseQueries.search(tableQuery.where(), systemConfig.config().configuration().includeNotesInSearch().get() );
@@ -83,7 +82,7 @@ public class SearchContext
       TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
       Iterable<Case> results = tableQueryConverter.convert(rawResults);
 
-      return new SearchResult<Case>(results, unlimitedResultCount);
+      return new CaseSearchResult(results, unlimitedResultCount);
    }
 
    public LinksValue possibleLabels()

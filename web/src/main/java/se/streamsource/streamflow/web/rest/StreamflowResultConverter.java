@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.web.rest;
 
+import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
+
+import java.util.Collections;
+import java.util.Date;
+
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -47,7 +54,7 @@ import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
-import se.streamsource.streamflow.web.context.util.SearchResult;
+import se.streamsource.streamflow.web.context.workspace.CaseSearchResult;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -65,11 +72,6 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
-
-import java.util.Collections;
-import java.util.Date;
-
-import static se.streamsource.dci.value.table.TableValue.*;
 
 /**
  * JAVADOC
@@ -124,20 +126,18 @@ public class StreamflowResultConverter
                //same here relative path needed
                return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
-      } else if (result instanceof SearchResult)
+      } else if (result instanceof CaseSearchResult)
       {
-         // TODO: Assume SearchResult<Case>
-
          if (request.getResourceRef().getPath().contains( "workspacev2" )) {
-            return buildCaseListFromSearchResult((SearchResult<Case>) result, module, request.getResourceRef().getBaseRef().getPath(), true);
+            return buildCaseListFromSearchResult((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), true);
          }
          else if (arguments.length > 0 && arguments[0] instanceof TableQuery) {
-            Iterable<CaseEntity> iterableCases = ((SearchResult<CaseEntity>) result).getResult();
+            Iterable iterableCases = ((CaseSearchResult) result).getResult();
             return caseTable(iterableCases, module, request, arguments);
          }
          else {
             //same here relative path needed
-            return buildCaseListFromSearchResult((SearchResult<Case>) result, module, request.getResourceRef().getBaseRef().getPath(), false);
+            return buildCaseListFromSearchResult((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
       }
 
@@ -166,7 +166,7 @@ public class StreamflowResultConverter
       return linksBuilder.newLinks();
    }
 
-   private SearchResultDTO buildCaseListFromSearchResult(SearchResult<Case> result, Module module, String basePath, boolean v2)
+   private SearchResultDTO buildCaseListFromSearchResult(CaseSearchResult result, Module module, String basePath, boolean v2)
    {
       ValueBuilder<SearchResultDTO> builder = module.valueBuilderFactory().newValueBuilder(SearchResultDTO.class);
       builder.prototype().unlimitedResultCount().set(result.getUnlimitedCount());
