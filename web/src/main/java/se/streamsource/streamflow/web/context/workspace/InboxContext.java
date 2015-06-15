@@ -36,7 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 public interface InboxContext
         extends AbstractFilterContext
 {
-   public Query<Case> cases(TableQuery tableQuery);
+   public CaseSearchResult cases(TableQuery tableQuery);
 
    abstract class Mixin
            implements InboxContext
@@ -47,14 +47,14 @@ public interface InboxContext
       @Service
       SystemDefaultsService systemConfig;
 
-      public Query<Case> cases(TableQuery tableQuery)
+      public CaseSearchResult cases(TableQuery tableQuery)
       {
          InboxQueries inbox = RoleMap.role(InboxQueries.class);
          Query<Case> inboxQuery = inbox.inbox(tableQuery.where()).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
          Query<Case> convertedQuery = tableQueryConverter.convert(inboxQuery);
-         return convertedQuery;
+         return new CaseSearchResult(convertedQuery);
       }
    }
 }

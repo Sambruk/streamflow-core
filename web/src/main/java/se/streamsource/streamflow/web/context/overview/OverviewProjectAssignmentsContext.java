@@ -27,6 +27,7 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.util.TableQueryConverter;
 import se.streamsource.streamflow.web.context.workspace.AbstractFilterContext;
+import se.streamsource.streamflow.web.context.workspace.CaseSearchResult;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
@@ -37,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 public interface OverviewProjectAssignmentsContext
       extends AbstractFilterContext
 {
-   public Query<Case> cases( TableQuery tableQuery );
+   public CaseSearchResult cases( TableQuery tableQuery );
 
    abstract class Mixin
          implements OverviewProjectAssignmentsContext
@@ -48,14 +49,14 @@ public interface OverviewProjectAssignmentsContext
       @Service
       SystemDefaultsService systemConfig;
 
-      public Query<Case> cases( TableQuery tableQuery )
+      public CaseSearchResult cases( TableQuery tableQuery )
       {
          AssignmentsQueries assignmentsQueries = RoleMap.role( AssignmentsQueries.class );
          Query<Case> query = assignmentsQueries.assignments( null, tableQuery.where() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
          TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
          Query<Case> convertedQuery = tableQueryConverter.convert(query);
-         return convertedQuery;
+         return new CaseSearchResult(convertedQuery);
       }
    }
 }

@@ -28,6 +28,10 @@ public class CaseSearchResult {
       this.unlimitedCount = unlimitedCount;
    }
 
+   public CaseSearchResult(Iterable<Case> result) {
+      this(result, null);
+   }
+
    public Iterable<Case> getResult() {
       return result;
    }

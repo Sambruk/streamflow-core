@@ -70,7 +70,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.PrioritySett
 public interface DraftsContext
         extends Context
 {
-   Query<Case> cases(TableQuery tableQuery);
+   CaseSearchResult cases(TableQuery tableQuery);
 
    void createcase();
 
@@ -91,14 +91,14 @@ public interface DraftsContext
       @Service
       SystemDefaultsService systemConfig;
 
-      public Query<Case> cases(TableQuery tableQuery)
+      public CaseSearchResult cases(TableQuery tableQuery)
       {
          DraftsQueries inbox = role(DraftsQueries.class);
          Query<Case> query = inbox.drafts(tableQuery.where()).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
          Query<Case> convertedQuery = tableQueryConverter.convert(query);
-         return convertedQuery;
+         return new CaseSearchResult(convertedQuery);
       }
 
       public void createcase()

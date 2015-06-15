@@ -42,7 +42,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 public interface AssignmentsContext
         extends AbstractFilterContext
 {
-   public Query<Case> cases(TableQuery tableQuery);
+   public CaseSearchResult cases(TableQuery tableQuery);
 
    public void createcase();
 
@@ -55,14 +55,14 @@ public interface AssignmentsContext
       @Service
       SystemDefaultsService systemConfig;
 
-      public Query<Case> cases(TableQuery tableQuery)
+      public CaseSearchResult cases(TableQuery tableQuery)
       {
          AssignmentsQueries assignments = RoleMap.role(AssignmentsQueries.class);
          Query<Case> query = assignments.assignments(RoleMap.role(Assignee.class), tableQuery.where()).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
 
          TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
          Query<Case> convertedQuery = tableQueryConverter.convert(query);
-         return convertedQuery;
+         return new CaseSearchResult(convertedQuery);
       }
 
       public void createcase()

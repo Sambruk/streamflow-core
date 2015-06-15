@@ -111,25 +111,10 @@ public class StreamflowResultConverter
          else
             //needs to be relative path in case there is a proxy in front of streamflow server
             return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath(), false);
-      } else if (result instanceof Query)
-      {
-         Query query = (Query) result;
-         if (query.resultType().equals(Case.class))
-         {
-            if (request.getResourceRef().getPath().contains( "workspacev2" ))
-            {
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), true);
-            }
-            else if (arguments.length > 0 && arguments[0] instanceof TableQuery)
-               return caseTable(query, module, request, arguments);
-            else
-               //same here relative path needed
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
-         }
       } else if (result instanceof CaseSearchResult)
       {
          if (request.getResourceRef().getPath().contains( "workspacev2" )) {
-            return buildCaseListFromSearchResult((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), true);
+            return buildCaseList((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), true);
          }
          else if (arguments.length > 0 && arguments[0] instanceof TableQuery) {
             Iterable iterableCases = ((CaseSearchResult) result).getResult();
@@ -137,7 +122,7 @@ public class StreamflowResultConverter
          }
          else {
             //same here relative path needed
-            return buildCaseListFromSearchResult((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), false);
+            return buildCaseList((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), false);
          }
       }
 
@@ -150,23 +135,7 @@ public class StreamflowResultConverter
       return result;
    }
 
-   private LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath, boolean v2)
-   {
-      LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path(basePath);
-      for (Case aCase : query)
-      {
-         try
-         {
-            linksBuilder.addLink(caseDTO((CaseEntity) aCase, module, basePath, v2));
-         } catch (Exception e)
-         {
-            LoggerFactory.getLogger(getClass()).error("Could not create link for case:" + ((Identity) aCase).identity().get(), e);
-         }
-      }
-      return linksBuilder.newLinks();
-   }
-
-   private SearchResultDTO buildCaseListFromSearchResult(CaseSearchResult result, Module module, String basePath, boolean v2)
+   private SearchResultDTO buildCaseList(CaseSearchResult result, Module module, String basePath, boolean v2)
    {
       ValueBuilder<SearchResultDTO> builder = module.valueBuilderFactory().newValueBuilder(SearchResultDTO.class);
       builder.prototype().unlimitedResultCount().set(result.getUnlimitedCount());
