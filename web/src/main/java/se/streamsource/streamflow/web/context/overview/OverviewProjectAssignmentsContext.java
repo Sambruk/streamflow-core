@@ -16,28 +16,20 @@
  */
 package se.streamsource.streamflow.web.context.overview;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
+import se.streamsource.streamflow.web.context.util.TableQueryConverter;
 import se.streamsource.streamflow.web.context.workspace.AbstractFilterContext;
-import se.streamsource.streamflow.web.domain.Describable;
+import se.streamsource.streamflow.web.context.workspace.CaseSearchResult;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 /**
  * JAVADOC
@@ -46,57 +38,25 @@ import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 public interface OverviewProjectAssignmentsContext
       extends AbstractFilterContext
 {
-   public Query<Case> cases( TableQuery tableQuery );
-   
+   public CaseSearchResult cases( TableQuery tableQuery );
+
    abstract class Mixin
          implements OverviewProjectAssignmentsContext
    {
       @Structure
       Module module;
-      
+
       @Service
       SystemDefaultsService systemConfig;
 
-      public Query<Case> cases( TableQuery tableQuery )
+      public CaseSearchResult cases( TableQuery tableQuery )
       {
          AssignmentsQueries assignmentsQueries = RoleMap.role( AssignmentsQueries.class );
+         Query<Case> query = assignmentsQueries.assignments( null, tableQuery.where() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
-         QueryBuilder<Case> builder = assignmentsQueries.assignments( null, tableQuery.where() );
-
-         Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() )
-               .orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.DESCENDING) );
-         
-         if( systemConfig.config().configuration().sortOrderAscending().get())
-         {
-            query.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
-         }
-         
-         // Paging
-         if (tableQuery.offset() != null)
-            query.firstResult( Integer.parseInt( tableQuery.offset() ) );
-         if (tableQuery.limit() != null)
-            query.maxResults( Integer.parseInt( tableQuery.limit() ) );
-
-         if (tableQuery.orderBy() != null)
-         {
-            String[] orderByValue = tableQuery.orderBy().split( " " );
-            OrderBy.Order order = orderByValue[1].equals( "asc" ) ? OrderBy.Order.ASCENDING : OrderBy.Order.DESCENDING;
-
-            if (tableQuery.orderBy().equals( "status" ))
-            {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Status.Data.class ).status(), order ) );
-            } else if (orderByValue[0].equals( "description" ))
-            {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description(), order ) );
-            } else if (orderByValue[0].equals( "dueOn" ))
-            {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( DueOn.Data.class ).dueOn(), order ) );
-            } else if (orderByValue[0].equals( "createdOn" ))
-            {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( CreatedOn.class ).createdOn(), order ) );
-            }
-         }
-         return query;
+         TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
+         Query<Case> convertedQuery = tableQueryConverter.convert(query);
+         return new CaseSearchResult(convertedQuery);
       }
    }
 }

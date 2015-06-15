@@ -23,6 +23,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.streamsource.dci.value.table.gdq.OrderByDirection;
+
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -61,7 +63,7 @@ public class TableBuilder
 
       tableBuilder = vbf.newValueBuilder(TableValue.class);
 
-      if (tableQuery.select().equals("*"))
+      if (tableQuery.select().size()==1 && "*".equals(tableQuery.select().get(0)))
       {
          for (TableBuilderFactory.Column column : columns.values())
          {
@@ -69,7 +71,7 @@ public class TableBuilder
          }
       } else
       {
-         for (String columnName : tableQuery.select().split("[, ]"))
+         for (String columnName : tableQuery.select())
          {
             TableBuilderFactory.Column column = columns.get(columnName.trim());
             if (column != null)
@@ -82,11 +84,6 @@ public class TableBuilder
    {
       ValueBuilder<ColumnValue> builder = vbf.newValueBuilder(ColumnValue.class);
       builder.prototype().id().set(id);
-
-      if (tableQuery != null && tableQuery.label() != null)
-      {
-         // TODO Fix label selection
-      }
 
       builder.prototype().label().set(label);
       builder.prototype().columnType().set(type);
@@ -171,20 +168,21 @@ public class TableBuilder
 
    public TableBuilder orderBy()
    {
-      if (tableQuery.orderBy() != null)
+      // TODO support multiple order by
+      if (tableQuery.orderBy() != null && tableQuery.orderBy().size() == 1)
       {
          // Sort table
          // Find sort column index
 
-         String[] orderBy = tableQuery.orderBy().split(" ");
-         boolean descending = orderBy.length == 2 && orderBy[1].equals("desc");
+         String orderByName = tableQuery.orderBy().get(0).name;
+         boolean descending = tableQuery.orderBy().get(0).direction == OrderByDirection.DESCENDING;
 
          int sortIndex = -1;
          List<ColumnValue> columnValues = tableBuilder.prototype().cols().get();
          for (int i = 0; i < columnValues.size(); i++)
          {
             ColumnValue columnValue = columnValues.get(i);
-            if (columnValue.id().get().equals(orderBy[0]))
+            if (columnValue.id().get().equals(orderByName))
             {
                sortIndex = i;
                break;
@@ -227,7 +225,7 @@ public class TableBuilder
 
       return this;
    }
-   
+
 //   public TableBuilder orderBy()
 //   {
 //      if (tableQuery.orderBy() != null)
@@ -283,9 +281,9 @@ public class TableBuilder
       int start = 0;
       int end = tableBuilder.prototype().rows().get().size();
       if (tableQuery.offset() != null)
-         start = Integer.parseInt(tableQuery.offset());
+         start = tableQuery.offset();
       if (tableQuery.limit() != null)
-         end = Math.min(end, start + Integer.parseInt(tableQuery.limit()));
+         end = Math.min(end, start + tableQuery.limit());
 
       if (!(start == 0 && end == tableBuilder.prototype().rows().get().size()))
          tableBuilder.prototype().rows().set(tableBuilder.prototype().rows().get().subList(start, end));

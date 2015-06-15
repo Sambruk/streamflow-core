@@ -68,6 +68,7 @@ import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.surface.AccessPointSettingsDTO;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.ProjectListValue;
+import se.streamsource.streamflow.api.workspace.SearchResultDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
@@ -122,7 +123,7 @@ public class ClientAPIAssembler
    {
       surface.values( AccessPointSettingsDTO.class );
    }
-   
+
    private void external( ModuleAssembly external )
    {
       external.values( ShadowCaseLinkValue.class,
@@ -142,7 +143,7 @@ public class ClientAPIAssembler
               ContactsDTO.class,
               ConversationDTO.class,
               MessageDTO.class,
-              AttachmentDTO.class, 
+              AttachmentDTO.class,
               UpdateAttachmentDTO.class,
               CaseLogEntryDTO.class,
               CaseLogFilterValue.class,
@@ -151,7 +152,8 @@ public class ClientAPIAssembler
               PermissionsDTO.class,
               PriorityValue.class,
               PriorityDTO.class,
-              ProjectListValue.class);
+              ProjectListValue.class,
+              SearchResultDTO.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,
@@ -177,7 +179,7 @@ public class ClientAPIAssembler
               StreetsDTO.class,
               StreetSearchDTO.class,
               UserProfileDTO.class);
-      
+
       workspace.values(LocationDTO.class);
    }
 

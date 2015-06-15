@@ -42,6 +42,7 @@ import se.streamsource.streamflow.util.ClassScanner;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.HasJoined;
+import se.streamsource.streamflow.web.context.util.TableQueryConverter;
 import se.streamsource.streamflow.web.context.workspace.cases.HasFormOnDelete;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
@@ -70,6 +71,7 @@ public class ContextAssembler
               importedBy(NewObjectImporter.class).
               visibleIn(Visibility.application);
       module.objects(InteractionConstraintsService.class);
+      module.objects(TableQueryConverter.class);
 
       module.objects(RequiresPermission.RequiresPermissionConstraint.class,
               ServiceAvailable.ServiceAvailableConstraint.class, HasJoined.HasJoinedConstraint.class,  HasFormOnDelete.HasFormOnRemoveConstraint.class).visibleIn(Visibility.application);

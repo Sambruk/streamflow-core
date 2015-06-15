@@ -16,14 +16,19 @@
  */
 package se.streamsource.dci.value.table;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.bootstrap.SingletonAssembler;
 
+import se.streamsource.dci.value.table.gdq.OrderByDirection;
+import se.streamsource.dci.value.table.gdq.OrderByElement;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 /**
@@ -49,25 +54,25 @@ public class TableQueryTest
    public void testQueryParsing1()
    {
       ValueBuilder<TableQuery> builder = assembler.valueBuilderFactory().newValueBuilder(TableQuery.class);
-      builder.prototype().tq().set("select a,b,c order by foo offset 5 limit 1");
+      builder.prototype().tq().set("select a,b,c order by foo limit 1 offset 5");
       TableQuery tq = builder.newInstance();
 
-      Assert.assertThat(tq.select(), equalTo("a,b,c"));
-      Assert.assertThat(tq.orderBy(), equalTo("foo"));
-      Assert.assertThat(tq.offset(), equalTo("5"));
-      Assert.assertThat(tq.limit(), equalTo("1"));
+      Assert.assertThat(tq.select(), equalTo(Arrays.asList("a", "b", "c")));
+      Assert.assertThat(tq.orderBy(), equalTo(Arrays.asList(new OrderByElement("foo", OrderByDirection.UNDEFINED))));
+      Assert.assertThat(tq.offset(), equalTo(5));
+      Assert.assertThat(tq.limit(), equalTo(1));
    }
 
    @Test
    public void testQueryParsing2()
    {
       ValueBuilder<TableQuery> builder = assembler.valueBuilderFactory().newValueBuilder(TableQuery.class);
-      builder.prototype().tq().set("select caseid description created owner status href order by `created` limit 6 offset 0");
+      builder.prototype().tq().set("select caseid, description, created, owner, status, href order by `created` limit 6 offset 0");
       TableQuery tq = builder.newInstance();
 
-      Assert.assertThat(tq.select(), equalTo("caseid description created owner status href"));
-      Assert.assertThat(tq.orderBy(), equalTo("`created`"));
-      Assert.assertThat(tq.offset(), equalTo("0"));
-      Assert.assertThat(tq.limit(), equalTo("6"));
+      Assert.assertThat(tq.select(), equalTo(Arrays.asList("caseid", "description", "created", "owner", "status", "href")));
+      Assert.assertThat(tq.orderBy(), equalTo(Arrays.asList(new OrderByElement("`created`", OrderByDirection.UNDEFINED))));
+      Assert.assertThat(tq.offset(), equalTo(0));
+      Assert.assertThat(tq.limit(), equalTo(6));
    }
 }
