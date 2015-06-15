@@ -42,12 +42,12 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
+import se.streamsource.streamflow.api.workspace.SearchResultDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
 import se.streamsource.streamflow.web.context.util.SearchResult;
-import se.streamsource.streamflow.web.context.util.SearchResultDTO;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -166,7 +166,7 @@ public class StreamflowResultConverter
       return linksBuilder.newLinks();
    }
 
-   private LinksValue buildCaseListFromSearchResult(SearchResult<Case> result, Module module, String basePath, boolean v2)
+   private SearchResultDTO buildCaseListFromSearchResult(SearchResult<Case> result, Module module, String basePath, boolean v2)
    {
       ValueBuilder<SearchResultDTO> builder = module.valueBuilderFactory().newValueBuilder(SearchResultDTO.class);
       builder.prototype().unlimitedResultCount().set(result.getUnlimitedCount());

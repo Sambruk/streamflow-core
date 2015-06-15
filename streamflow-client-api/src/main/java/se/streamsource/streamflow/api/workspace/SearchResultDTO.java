@@ -14,23 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.context.util;
+package se.streamsource.streamflow.api.workspace;
 
-public class SearchResult<T> {
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
 
-   private final Iterable<T> result;
-   private final Integer unlimitedCount;
+import se.streamsource.dci.value.link.LinksValue;
 
-   public SearchResult(Iterable<T> result, Integer unlimitedCount) {
-      this.result = result;
-      this.unlimitedCount = unlimitedCount;
-   }
-
-   public Iterable<T> getResult() {
-      return result;
-   }
-
-   public Integer getUnlimitedCount() {
-      return unlimitedCount;
-   }
+public interface SearchResultDTO extends LinksValue {
+   @UseDefaults
+   Property<Integer> unlimitedResultCount();
 }

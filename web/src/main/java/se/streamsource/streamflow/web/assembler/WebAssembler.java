@@ -43,10 +43,10 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.dci.restlet.server.ResultConverter;
+import se.streamsource.streamflow.api.workspace.SearchResultDTO;
 import se.streamsource.streamflow.util.ClassScanner;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
-import se.streamsource.streamflow.web.context.util.SearchResultDTO;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.rest.StreamflowCaseResponseWriter;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
@@ -113,7 +113,6 @@ public class WebAssembler
 
       module.importedServices(ResultConverter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
       module.objects(StreamflowResultConverter.class);
-      module.values(SearchResultDTO.class);
 
       module.importedServices(StreamflowCaseResponseWriter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
       module.objects(StreamflowCaseResponseWriter.class);
