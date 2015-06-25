@@ -90,6 +90,26 @@ public class CommandQueryClient
       return query( link.href().get(), queryResult );
    }
 
+   public boolean hasQueryWithRelation(String relation)
+   {
+      return Iterables.matchesAny( Links.withRel( relation ), resourceValue.queries().get() );
+   }
+
+   public synchronized <T> T queryByRelation(String relation, Class<T> resultClass)
+   {
+      LinkValue link = Iterables.first( Iterables.filter( Links.withRel( relation ), resourceValue.queries().get()));
+      if (link == null) {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+      }
+
+      return queryLink(link, resultClass);
+   }
+
+   public boolean hasCommandWithRelation(String relation)
+   {
+      return Iterables.matchesAny( Links.withRel( relation ), resourceValue.commands().get() );
+   }
+
    // Commands
    public synchronized void command(String relation)
       throws ResourceException
@@ -386,7 +406,7 @@ public class CommandQueryClient
       Response response = new Response( request );
 
       cqcFactory.getClient().handle( request, response );
-      
+
       return response;
    }
 
