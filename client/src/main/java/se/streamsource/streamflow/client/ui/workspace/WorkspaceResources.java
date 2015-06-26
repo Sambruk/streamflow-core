@@ -170,8 +170,9 @@ public enum WorkspaceResources
    printing_configuration,
    caze_reinstate, priority_label, case_priority_header, no_priority,
 
-   // Form on Close
-   formondelete_confirmation,
+   // Form
+   formondelete_confirmation, // on close
+   form_unavailable,
 
    change_password_prohibited,
    selected_labels,

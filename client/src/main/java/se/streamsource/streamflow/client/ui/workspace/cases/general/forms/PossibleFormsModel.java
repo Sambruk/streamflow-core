@@ -30,6 +30,11 @@ public class PossibleFormsModel
       possibleFormClient.query();
 
       if (!possibleFormClient.hasQueryWithRelation("formdraft")
+            && !possibleFormClient.hasCommandWithRelation("create")) {
+         return null;
+      }
+
+      if (!possibleFormClient.hasQueryWithRelation("formdraft")
             && possibleFormClient.hasCommandWithRelation("create")) {
          possibleFormClient.command("create");
          possibleFormClient.query();
