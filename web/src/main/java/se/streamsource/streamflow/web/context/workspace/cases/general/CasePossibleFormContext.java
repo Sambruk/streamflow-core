@@ -39,9 +39,11 @@ public interface CasePossibleFormContext extends Context
 {
 
    @HasFormDraft(false)
+   @HasSignedSubmittedForm(false)
    void create();
 
    @HasFormDraft(true)
+   @HasSignedSubmittedForm(false)
    LinkValue formdraft();
 
    abstract class Mixin implements CasePossibleFormContext
@@ -49,7 +51,7 @@ public interface CasePossibleFormContext extends Context
 
       @Structure
       Module module;
-      
+
       public void create()
       {
          FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
