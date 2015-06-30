@@ -16,9 +16,6 @@
  */
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
@@ -30,21 +27,26 @@ public class PossibleFormsModel
    {
       CommandQueryClient possibleFormClient = client.getSubClient( id );
 
-      LinkValue formDraftLink = null;
-      try {
-         formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
-      } catch (ResourceException e) {
-         if (e.getStatus().getCode() == Status.CLIENT_ERROR_NOT_FOUND.getCode()) {
-            possibleFormClient.postCommand( "create" );
-            formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
-         } else {
-            throw e;
-         }
+      possibleFormClient.query();
+
+      if (!possibleFormClient.hasQueryWithRelation("formdraft")
+            && !possibleFormClient.hasCommandWithRelation("create")) {
+         return null;
       }
 
-      // get the form submission value;
-      final CommandQueryClient formDraftClient = possibleFormClient.getClient( formDraftLink );
+      if (!possibleFormClient.hasQueryWithRelation("formdraft")
+            && possibleFormClient.hasCommandWithRelation("create")) {
+         possibleFormClient.command("create");
+         possibleFormClient.query();
+      }
 
-      return module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
+      if (possibleFormClient.hasQueryWithRelation("formdraft")) {
+         LinkValue formDraftLink = possibleFormClient.queryByRelation("formdraft", LinkValue.class );
+         CommandQueryClient formDraftClient = possibleFormClient.getClient( formDraftLink );
+         return module.objectBuilderFactory().newObjectBuilder(FormDraftModel.class).use(formDraftClient).newInstance();
+      }
+      else {
+         throw new RuntimeException("Formdraft unavailable after create. This shouldn't happen.");
+      }
    }
 }
