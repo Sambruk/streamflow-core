@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
@@ -25,6 +26,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
@@ -37,6 +39,7 @@ import se.streamsource.streamflow.infrastructure.event.application.source.helper
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
@@ -54,6 +57,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -92,6 +96,9 @@ public interface SendMailService
 
       @Uses
       ServiceDescriptor descriptor;
+
+      @Service
+      SystemDefaultsService systemDefaults;
 
       public Logger logger;
 
@@ -225,7 +232,7 @@ public interface SendMailService
 
                // Add attachments
                Iterator<AttachedFileValue> attachments = email.attachments().get().iterator();
-               
+
                if (attachments.hasNext())
                {
                   AttachedFileValue attachedFileValue = attachments.next();
@@ -249,6 +256,7 @@ public interface SendMailService
                logger.debug( "Sent mail to " + email.to().get() );
             } catch (Throwable e)
             {
+               systemDefaults.createCaseOnSendMailFailure(email);
                throw new ApplicationEventReplayException( event, e );
             }
          }

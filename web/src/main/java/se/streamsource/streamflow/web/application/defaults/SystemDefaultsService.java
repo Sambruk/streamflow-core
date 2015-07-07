@@ -27,6 +27,9 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
@@ -55,7 +58,6 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
@@ -69,7 +71,9 @@ public interface SystemDefaultsService
    public Configuration<SystemDefaultsConfiguration> config();
 
    public void createCaseOnEmailFailure( EmailValue email );
-   
+
+   public void createCaseOnSendMailFailure( EmailValue email );
+
    public Drafts getUser( EmailValue email );
 
    abstract class Mixin
@@ -77,7 +81,7 @@ public interface SystemDefaultsService
    {
       @Structure
       Module module;
-      
+
       @Service
       CachingService cache;
 
@@ -85,7 +89,9 @@ public interface SystemDefaultsService
 
       @This
       Configuration<SystemDefaultsConfiguration> config;
-      
+
+      private Logger logger;
+
       public Configuration<SystemDefaultsConfiguration> config()
       {
          return config;
@@ -96,7 +102,7 @@ public interface SystemDefaultsService
          // Read arbitrary property just to activate config-handler
          config().configuration().enabled();
          caching = new Caching(cache, Caches.CASECOUNTS);
-
+         logger = LoggerFactory.getLogger(SystemDefaultsService.class);
       }
 
       public void createCaseOnEmailFailure( EmailValue email )
@@ -192,6 +198,84 @@ public interface SystemDefaultsService
          }
 
          return user;
+      }
+
+      public void createCaseOnSendMailFailure( EmailValue email )
+      {
+
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( newUsecase( "Create case on email failure" ) );
+         RoleMap.newCurrentRoleMap();
+
+         try
+         {
+
+            Organizations.Data organizations = uow.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+            Organization organization = organizations.organization().get();
+            OrganizationalUnit ou = ((OrganizationalUnitsQueries) organization).getOrganizationalUnitByName( config.configuration().supportOrganizationName().get() );
+            Project project = ou.getProjectByName( config.configuration().supportProjectName().get() );
+            CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForIncomingEmailName().get() );
+
+            Drafts user = getUser( email );
+            ConversationParticipant participant = (ConversationParticipant) user;
+
+
+            RoleMap.current().set( organization );
+            RoleMap.current().set( project );
+            RoleMap.current().set( user );
+
+            CaseEntity caze = user.createDraft();
+            caze.changeCaseType( caseType );
+            caze.changeOwner( project );
+
+            RoleMap.current().set( caze );
+
+            caze.caselog().get().addTypedEntry( "{receivererror,description=Could not parse email.}", CaseLogEntryTypes.system );
+
+            caze.changeDescription( email.subject().get() );
+
+            // Create conversation
+            Conversation conversation = caze.createConversation( email.subject().get(), (Creator) user );
+
+            if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
+            {
+               caze.addNote( email.contentHtml().get() == null ? email.content().get() : email.contentHtml().get(), Translator.HTML );
+               conversation.createMessage( email.content().get(), MessageType.HTML, participant );
+            } else
+            {
+               caze.addNote( email.content().get(), Translator.PLAIN );
+               conversation.createMessage( email.content().get(), MessageType.PLAIN, participant );
+            }
+
+
+            // Create attachments
+            for (AttachedFileValue attachedFileValue : email.attachments().get())
+            {
+               Attachment attachment = caze.createAttachment( attachedFileValue.uri().get() );
+               attachment.changeName( attachedFileValue.name().get() );
+               attachment.changeMimeType( attachedFileValue.mimeType().get() );
+               attachment.changeModificationDate( attachedFileValue.modificationDate().get() );
+               attachment.changeSize( attachedFileValue.size().get() );
+               attachment.changeUri( attachedFileValue.uri().get() );
+            }
+
+            // Add contact info
+            caze.updateContact(0, ((Contactable.Data)user).contact().get());
+
+            // open the case
+            caze.open();
+
+            caching.addToCaseCountCache( ((ProjectEntity)project).identity().get(), 1 );
+
+            uow.complete();
+
+         }
+         catch (Exception e) {
+            logger.warn("Failed createCaseOnSendMailFailure", e);
+            uow.discard();
+         }
+         finally {
+            RoleMap.clearCurrentRoleMap();
+         }
       }
    }
 }
