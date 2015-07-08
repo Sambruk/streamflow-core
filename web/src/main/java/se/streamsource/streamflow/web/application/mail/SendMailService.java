@@ -256,8 +256,8 @@ public interface SendMailService
                logger.debug( "Sent mail to " + email.to().get() );
             } catch (Throwable e)
             {
+               logger.warn("Caught exception when sending mail, attempting to create error case", e);
                systemDefaults.createCaseOnSendMailFailure(email);
-               throw new ApplicationEventReplayException( event, e );
             }
          }
 

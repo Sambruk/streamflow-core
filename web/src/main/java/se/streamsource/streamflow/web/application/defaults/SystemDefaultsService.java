@@ -41,6 +41,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalU
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -51,6 +52,7 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 import se.streamsource.streamflow.web.domain.structure.user.User;
@@ -215,15 +217,15 @@ public interface SystemDefaultsService
             Project project = ou.getProjectByName( config.configuration().supportProjectName().get() );
             CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForIncomingEmailName().get() );
 
-            Drafts user = getUser( email );
-            ConversationParticipant participant = (ConversationParticipant) user;
+            UserEntity supportUser = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
 
+            ConversationParticipant participant = (ConversationParticipant) supportUser;
 
             RoleMap.current().set( organization );
             RoleMap.current().set( project );
-            RoleMap.current().set( user );
+            RoleMap.current().set( supportUser );
 
-            CaseEntity caze = user.createDraft();
+            CaseEntity caze = supportUser.createDraft();
             caze.changeCaseType( caseType );
             caze.changeOwner( project );
 
@@ -234,7 +236,7 @@ public interface SystemDefaultsService
             caze.changeDescription( email.subject().get() );
 
             // Create conversation
-            Conversation conversation = caze.createConversation( email.subject().get(), (Creator) user );
+            Conversation conversation = caze.createConversation( email.subject().get(), (Creator) supportUser );
 
             if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
             {
@@ -259,7 +261,7 @@ public interface SystemDefaultsService
             }
 
             // Add contact info
-            caze.updateContact(0, ((Contactable.Data)user).contact().get());
+            caze.updateContact(0, ((Contactable.Data)supportUser).contact().get());
 
             // open the case
             caze.open();
