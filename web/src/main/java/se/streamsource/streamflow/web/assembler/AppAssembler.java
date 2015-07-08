@@ -185,6 +185,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportOrganizationName().set( bundle.getString( "supportOuName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportProjectName().set( bundle.getString( "supportProjectName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForIncomingEmailName().set( bundle.getString( "supportCaseTypeForIncomingEmailName" ) );
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().supportCaseTypeForOutgoingEmailName().set( bundle.getString( "supportCaseTypeForOutgoingEmailName" ) );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webFormsProxyUrl().set( "https://localhost:8443/surface" );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().defaultMarkReadTimeout().set( 15L );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultStartLocation().set( "59.324258,18.070450" );

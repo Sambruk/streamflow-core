@@ -84,6 +84,13 @@ public interface SystemDefaultsConfiguration
    Property<String> supportCaseTypeForIncomingEmailName();
 
    /**
+    * The name of the support case type for send mail failures
+    * @return
+    */
+   @UseDefaults
+   Property<String> supportCaseTypeForOutgoingEmailName();
+
+   /**
     * The base url for Surface Webforms
     * @return
     */

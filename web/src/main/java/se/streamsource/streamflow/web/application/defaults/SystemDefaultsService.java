@@ -215,7 +215,7 @@ public interface SystemDefaultsService
             Organization organization = organizations.organization().get();
             OrganizationalUnit ou = ((OrganizationalUnitsQueries) organization).getOrganizationalUnitByName( config.configuration().supportOrganizationName().get() );
             Project project = ou.getProjectByName( config.configuration().supportProjectName().get() );
-            CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForIncomingEmailName().get() );
+            CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForOutgoingEmailName().get() );
 
             UserEntity supportUser = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
 
