@@ -231,7 +231,7 @@ public interface SystemDefaultsService
 
             RoleMap.current().set( caze );
 
-            caze.caselog().get().addTypedEntry( "{receivererror,description=Could not parse email.}", CaseLogEntryTypes.system );
+            caze.caselog().get().addTypedEntry( "{sendmailerror,description=Could not send email.}", CaseLogEntryTypes.system );
 
             caze.changeDescription( email.subject().get() );
 
