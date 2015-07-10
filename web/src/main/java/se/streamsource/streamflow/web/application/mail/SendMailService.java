@@ -257,7 +257,7 @@ public interface SendMailService
             } catch (Throwable e)
             {
                logger.warn("Caught exception when sending mail, attempting to create error case", e);
-               systemDefaults.createCaseOnSendMailFailure(email);
+               systemDefaults.createCaseOnSendMailFailure(email, e);
             }
          }
 

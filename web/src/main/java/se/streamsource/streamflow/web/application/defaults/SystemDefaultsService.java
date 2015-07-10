@@ -16,13 +16,17 @@
  */
 package se.streamsource.streamflow.web.application.defaults;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
@@ -40,7 +44,6 @@ import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitsQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
@@ -52,15 +55,12 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
-import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * A service holding system default configuration properties.
@@ -74,7 +74,7 @@ public interface SystemDefaultsService
 
    public void createCaseOnEmailFailure( EmailValue email );
 
-   public void createCaseOnSendMailFailure( EmailValue email );
+   public void createCaseOnSendMailFailure( EmailValue email, Throwable originalException );
 
    public Drafts getUser( EmailValue email );
 
@@ -202,7 +202,7 @@ public interface SystemDefaultsService
          return user;
       }
 
-      public void createCaseOnSendMailFailure( EmailValue email )
+      public void createCaseOnSendMailFailure( EmailValue email, Throwable originalException )
       {
 
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( newUsecase( "Create case on email failure" ) );
@@ -235,33 +235,16 @@ public interface SystemDefaultsService
 
             caze.changeDescription( email.subject().get() );
 
-            // Create conversation
-            Conversation conversation = caze.createConversation( email.subject().get(), (Creator) supportUser );
-
             if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
             {
-               caze.addNote( email.contentHtml().get() == null ? email.content().get() : email.contentHtml().get(), Translator.HTML );
-               conversation.createMessage( email.content().get(), MessageType.HTML, participant );
-            } else
-            {
-               caze.addNote( email.content().get(), Translator.PLAIN );
-               conversation.createMessage( email.content().get(), MessageType.PLAIN, participant );
+               String htmlNote = getHtmlNote(email, originalException);
+               caze.addNote( htmlNote, Translator.HTML );
             }
-
-
-            // Create attachments
-            for (AttachedFileValue attachedFileValue : email.attachments().get())
+            else
             {
-               Attachment attachment = caze.createAttachment( attachedFileValue.uri().get() );
-               attachment.changeName( attachedFileValue.name().get() );
-               attachment.changeMimeType( attachedFileValue.mimeType().get() );
-               attachment.changeModificationDate( attachedFileValue.modificationDate().get() );
-               attachment.changeSize( attachedFileValue.size().get() );
-               attachment.changeUri( attachedFileValue.uri().get() );
+               String plainNote = getPlainNote(email, originalException);
+               caze.addNote( plainNote , Translator.PLAIN );
             }
-
-            // Add contact info
-            caze.updateContact(0, ((Contactable.Data)supportUser).contact().get());
 
             // open the case
             caze.open();
@@ -278,6 +261,33 @@ public interface SystemDefaultsService
          finally {
             RoleMap.clearCurrentRoleMap();
          }
+      }
+
+      private static String getPlainNote(EmailValue email, Throwable originalException) {
+         StringBuilder result = new StringBuilder();
+         result.append(getExceptionString(originalException));
+         result.append("\n\n-------------------------\n");
+         result.append(email.content().get());
+         return result.toString();
+      }
+
+      private static String getExceptionString(Throwable t) {
+         StringBuilder result = new StringBuilder();
+         result.append(t.getMessage());
+         result.append("\n\n");
+         ByteArrayOutputStream stackTraceStream = new ByteArrayOutputStream();
+         t.printStackTrace(new PrintStream(stackTraceStream));
+         result.append(stackTraceStream.toString());
+         return result.toString();
+      }
+
+      private static String getHtmlNote(EmailValue email, Throwable originalException) {
+         StringBuilder result = new StringBuilder();
+         result.append("<pre>");
+         result.append(getExceptionString(originalException));
+         result.append("</pre><br/><br/>-------------------------<br/>");
+         result.append( email.contentHtml().get() == null ? email.content().get() : email.contentHtml().get());
+         return result.toString();
       }
    }
 }
