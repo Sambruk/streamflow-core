@@ -43,14 +43,35 @@
   <security>
      <all-permissions/>
   </security>
+
+  <resources os="Mac\ OS">
+      <j2se
+            version="1.7+"
+            href="http://java.sun.com/products/autodl/j2se"
+            java-vm-args="-Djava.net.preferIPv4Stack=true"
+            initial-heap-size="64m"
+            max-heap-size="300m"
+      />
+  </resources>
+  <resources os="Linux">
+      <j2se
+            version="1.7+"
+            href="http://java.sun.com/products/autodl/j2se"
+            java-vm-args="-Djava.net.preferIPv4Stack=true"
+            initial-heap-size="64m"
+            max-heap-size="300m"
+      />
+  </resources>
+  <resources os="Windows">
+      <j2se
+          version="1.7+"
+          href="http://java.sun.com/products/autodl/j2se"
+          initial-heap-size="64m"
+          max-heap-size="300m"
+      />
+  </resources>
+
   <resources>
-     <j2se 
-     	version="1.6.10+" 
-     	href="http://java.sun.com/products/autodl/j2se" 
-     	java-vm-args="-Djava.net.preferIPv4Stack=true" 
-     	initial-heap-size="64m"
-     	max-heap-size="300m"
-     />
 
     #set($start = '<jar href=\"streamflow-help-sv_gov-')
     #set($middle = ${project.version})
