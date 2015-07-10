@@ -235,33 +235,13 @@ public interface SystemDefaultsService
 
             caze.changeDescription( email.subject().get() );
 
-            // Create conversation
-            Conversation conversation = caze.createConversation( email.subject().get(), (Creator) supportUser );
-
             if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
             {
                caze.addNote( email.contentHtml().get() == null ? email.content().get() : email.contentHtml().get(), Translator.HTML );
-               conversation.createMessage( email.content().get(), MessageType.HTML, participant );
             } else
             {
                caze.addNote( email.content().get(), Translator.PLAIN );
-               conversation.createMessage( email.content().get(), MessageType.PLAIN, participant );
             }
-
-
-            // Create attachments
-            for (AttachedFileValue attachedFileValue : email.attachments().get())
-            {
-               Attachment attachment = caze.createAttachment( attachedFileValue.uri().get() );
-               attachment.changeName( attachedFileValue.name().get() );
-               attachment.changeMimeType( attachedFileValue.mimeType().get() );
-               attachment.changeModificationDate( attachedFileValue.modificationDate().get() );
-               attachment.changeSize( attachedFileValue.size().get() );
-               attachment.changeUri( attachedFileValue.uri().get() );
-            }
-
-            // Add contact info
-            caze.updateContact(0, ((Contactable.Data)supportUser).contact().get());
 
             // open the case
             caze.open();
