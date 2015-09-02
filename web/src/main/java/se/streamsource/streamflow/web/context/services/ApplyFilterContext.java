@@ -42,6 +42,7 @@ import se.streamsource.streamflow.api.administration.filter.RuleValue;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
@@ -74,7 +75,7 @@ import java.util.ResourceBundle;
 import static se.streamsource.streamflow.util.ForEach.*;
 
 /**
- * TODO
+ *
  */
 public class ApplyFilterContext
 {
@@ -85,8 +86,9 @@ public class ApplyFilterContext
    private AttachmentStore attachmentStore;
    private ResourceBundle bundle;
    private HtmlMailGenerator htmlGenerator;
+   private SystemDefaultsService systemDefaults;
 
-   public ApplyFilterContext(@Structure Module module, @Uses MailSender mailSender, @Service AttachmentStore attachmentStore)
+   public ApplyFilterContext(@Structure Module module, @Uses MailSender mailSender, @Service AttachmentStore attachmentStore, @Service SystemDefaultsService systemDefaults)
    {
       this.module = module;
       this.mailSender = mailSender;
@@ -94,7 +96,8 @@ public class ApplyFilterContext
       this.filterCheck = new FilterCheck();
       this.filterable = new Filterable();
       this.htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
-      this.bundle = ResourceBundle.getBundle( ApplyFilterContext.class.getName(), new Locale("SV","se") ); // TODO These texts need to use the locale for the user
+      this.bundle = ResourceBundle.getBundle(ApplyFilterContext.class.getName(), new Locale("SV", "se")); // TODO These texts need to use the locale for the user
+      this.systemDefaults = systemDefaults;
    }
 
    public ApplyFilterContext rebind(Filters.Data filters, CaseEntity caze)
@@ -418,7 +421,17 @@ public class ApplyFilterContext
          }
          notification.append( "<BR>" );
 
-         ((MessageDraft)conversation).changeDraftMessage(  notification.toString() );
+         // add link to case for the possibility to open by webclient
+         notification.append( "<a href='" );
+         notification.append( systemDefaults.config().configuration().webclientBaseUrl() );
+         notification.append( self.identity().get() );
+         notification.append( "'>" );
+         notification.append( bundle.getString( "openlink" ) );
+         notification.append( "</a>");
+
+         notification.append( "<br>" );
+
+         ((MessageDraft)conversation).changeDraftMessage(notification.toString());
 
          conversation.createMessageFromDraft( administrator, MessageType.HTML );
       }

@@ -114,4 +114,12 @@ public interface SystemDefaultsConfiguration
      */
     @UseDefaults
     Property<String> mapDefaultUrlPattern();
+
+   /**
+    * The base URL for opening cases directly in the webclient
+    * f.ex. http://<host>/webclient/#/cases/
+    * @return  The base URL as String
+    */
+   @UseDefaults
+   Property<String> webclientBaseUrl();
 }

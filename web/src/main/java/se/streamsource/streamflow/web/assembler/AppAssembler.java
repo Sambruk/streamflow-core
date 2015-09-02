@@ -162,16 +162,16 @@ public class AppAssembler
    private void system( ModuleAssembly system )
    {
        NamedQueries namedQueries = new NamedQueries();
-       namedQueries.addQuery( new NamedESDescriptor("esquery", ""));
+       namedQueries.addQuery(new NamedESDescriptor("esquery", ""));
        system.importedServices(NamedEntityFinder.class).
                importedBy(ServiceSelectorImporter.class).
                setMetaInfo(namedQueries).
                setMetaInfo(ServiceQualifier.withId("es-indexing"));
 
       system.services( SystemDefaultsService.class )
-            .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn( Visibility.application );
+            .identifiedBy( "systemdefaults" ).instantiateOnStartup().visibleIn(Visibility.application);
 
-      configuration().entities( SystemDefaultsConfiguration.class );
+      configuration().entities(SystemDefaultsConfiguration.class);
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().sortOrderAscending().set( false );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogAttachmentVisible().set( false );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().caseLogContactVisible().set( false );
@@ -192,6 +192,7 @@ public class AppAssembler
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultZoomLevel().set( 6 );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapDefaultUrlPattern().set( "<a href=\"http://maps.google.com/maps?z=13&t=m&q={0}\" alt=\"Google Maps\">Klicka här för att visa karta</a>" );
       configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().mapquestReverseLookupUrlPattern().set("http://open.mapquestapi.com/nominatim/v1/reverse?lat=%f&lon=%f&format=json");
+      configuration().forMixin( SystemDefaultsConfiguration.class ).declareDefaults().webclientBaseUrl().set("http://localhost/webclient/#/cases/" );
 
       // set circuitbreaker time out to 12 hours - availability circuit breaker should only be able to be handled manually
       system.services( AvailabilityService.class ).identifiedBy( "availability" ).
