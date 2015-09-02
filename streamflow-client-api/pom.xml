@@ -3,7 +3,7 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.25</version>
+        <version>1.26-SNAPSHOT</version>
     </parent>
     <artifactId>streamflow-client-api</artifactId>
     <packaging>jar</packaging>
