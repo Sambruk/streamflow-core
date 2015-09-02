@@ -58,7 +58,14 @@ class GdqTokenizer {
          while ( firstNonWord < s.length()
                  && !isDelimiter(s.charAt(firstNonWord))
                  && !Character.isWhitespace(s.charAt(firstNonWord))) {
-            firstNonWord++;
+            // keep together nonwords surrounded by quotation marks
+            // i.e. "<longuid>,<anotherlonguid>,<andonemorelonguid>"
+            if((s.charAt(firstNonWord)) == '"' ){
+               firstNonWord = s.indexOf('"', firstNonWord + 1) + 1;
+            }  else {
+               firstNonWord++;
+            }
+
          }
 
          currentTokenStringValue = s.substring(nextTokenPosition, firstNonWord);
