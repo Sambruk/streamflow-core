@@ -270,7 +270,11 @@ public interface CreateCaseFromEmailService
           private boolean hasAutoReplyHeader(Map<String,String> headers)
           {
               List autoReplyHeaders = new ArrayList(
-                      Arrays.asList( "auto-submitted", "x-autoreply", "x-autorespond", "precedence", "x-precedence")
+                      Arrays.asList( "auto-submitted", "x-autoreply", "x-autorespond")
+              );
+
+              List precedenceHeaders = new ArrayList(
+                      Arrays.asList("precedence", "x-precedence")
               );
 
               for( String key : headers.keySet() )
@@ -278,6 +282,14 @@ public interface CreateCaseFromEmailService
                 if( autoReplyHeaders.contains( key.toLowerCase()))
                 {
                     return true;
+                }
+
+                if( precedenceHeaders.contains( key.toLowerCase()) )
+                {
+                    if( !"list".equalsIgnoreCase(headers.get(key)))
+                    {
+                        return true;
+                    }
                 }
               }
               return false;
