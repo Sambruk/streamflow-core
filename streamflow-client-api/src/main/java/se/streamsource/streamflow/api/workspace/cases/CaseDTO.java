@@ -19,8 +19,10 @@ package se.streamsource.streamflow.api.workspace.cases;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 
 import java.util.Date;
 
@@ -87,5 +89,13 @@ public interface CaseDTO
    @Optional
    @UseDefaults
    Property<String> location();
+
+   @Optional
+   Property<Date> lastLogEntryTime();
    
+   @Optional
+   Property<Date> dueOn();
+
+   @Optional
+   Property<PriorityDTO> priority();
 }

@@ -46,6 +46,7 @@ import se.streamsource.streamflow.api.ErrorResources;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -119,6 +120,11 @@ public class PossibleFormsView extends JPanel
          final PossibleFormView form = (PossibleFormView) e.getSource();
 
          final FormDraftModel formDraftModel = modelForms.getFormDraftModel(form.form().id().get());
+         if (formDraftModel == null) {
+            dialogs.showMessageDialog( this, i18n.text(WorkspaceResources.form_unavailable), i18n.text( ErrorResources.information  ) );
+            return;
+         }
+
          FormDraftDTO formDraftDTO = (FormDraftDTO) ((FormDraftModel) formDraftModel).getFormDraftDTO().buildWith().prototype();
 
          if( formDraftDTO.visibilityrules().get() )

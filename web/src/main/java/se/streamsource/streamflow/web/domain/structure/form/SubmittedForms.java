@@ -49,6 +49,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Location;
@@ -76,6 +77,11 @@ public interface SubmittedForms
     * Find a given submitted form
     */
    boolean hasUnreadForm();
+
+
+   /** Gets all submitted forms of the given kind of form.
+    */
+   Iterable<SubmittedFormValue> getSubmittedFormValues(Form form);
 
    void read( int index );
 
@@ -173,7 +179,7 @@ public interface SubmittedForms
                         // ignore
                      }
                   }
-                  
+
                   // Move Location from draft to Case
                   if (field.field().get().fieldValue().get() instanceof GeoLocationFieldValue )
                   {
@@ -268,6 +274,16 @@ public interface SubmittedForms
                return submittedForm.unread().get();
             }
          }, state.submittedForms().get() );
+      }
+
+      @Override
+      public Iterable<SubmittedFormValue> getSubmittedFormValues(final Form form) {
+         return Iterables.filter(new Specification<SubmittedFormValue>() {
+            @Override
+            public boolean satisfiedBy(SubmittedFormValue item) {
+               return item.form().get().identity().equals(((FormEntity) form).identity().get());
+            }
+         }, state.submittedForms().get());
       }
 
       public void read( int index )

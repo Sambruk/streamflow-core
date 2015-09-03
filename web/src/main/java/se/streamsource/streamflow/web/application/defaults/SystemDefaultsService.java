@@ -16,17 +16,24 @@
  */
 package se.streamsource.streamflow.web.application.defaults;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
@@ -37,7 +44,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitsQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -50,13 +57,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
-import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * A service holding system default configuration properties.
@@ -69,7 +73,9 @@ public interface SystemDefaultsService
    public Configuration<SystemDefaultsConfiguration> config();
 
    public void createCaseOnEmailFailure( EmailValue email );
-   
+
+   public void createCaseOnSendMailFailure( EmailValue email, Throwable originalException );
+
    public Drafts getUser( EmailValue email );
 
    abstract class Mixin
@@ -77,7 +83,7 @@ public interface SystemDefaultsService
    {
       @Structure
       Module module;
-      
+
       @Service
       CachingService cache;
 
@@ -85,7 +91,9 @@ public interface SystemDefaultsService
 
       @This
       Configuration<SystemDefaultsConfiguration> config;
-      
+
+      private Logger logger;
+
       public Configuration<SystemDefaultsConfiguration> config()
       {
          return config;
@@ -96,7 +104,7 @@ public interface SystemDefaultsService
          // Read arbitrary property just to activate config-handler
          config().configuration().enabled();
          caching = new Caching(cache, Caches.CASECOUNTS);
-
+         logger = LoggerFactory.getLogger(SystemDefaultsService.class);
       }
 
       public void createCaseOnEmailFailure( EmailValue email )
@@ -192,6 +200,94 @@ public interface SystemDefaultsService
          }
 
          return user;
+      }
+
+      public void createCaseOnSendMailFailure( EmailValue email, Throwable originalException )
+      {
+
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( newUsecase( "Create case on email failure" ) );
+         RoleMap.newCurrentRoleMap();
+
+         try
+         {
+
+            Organizations.Data organizations = uow.get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+            Organization organization = organizations.organization().get();
+            OrganizationalUnit ou = ((OrganizationalUnitsQueries) organization).getOrganizationalUnitByName( config.configuration().supportOrganizationName().get() );
+            Project project = ou.getProjectByName( config.configuration().supportProjectName().get() );
+            CaseType caseType = project.getCaseTypeByName( config.configuration().supportCaseTypeForOutgoingEmailName().get() );
+
+            UserEntity supportUser = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
+
+            ConversationParticipant participant = (ConversationParticipant) supportUser;
+
+            RoleMap.current().set( organization );
+            RoleMap.current().set( project );
+            RoleMap.current().set( supportUser );
+
+            CaseEntity caze = supportUser.createDraft();
+            caze.changeCaseType( caseType );
+            caze.changeOwner( project );
+
+            RoleMap.current().set( caze );
+
+            caze.caselog().get().addTypedEntry( "{sendmailerror,description=Could not send email.}", CaseLogEntryTypes.system );
+
+            caze.changeDescription( email.subject().get() );
+
+            if( Translator.HTML.equalsIgnoreCase( email.contentType().get() ))
+            {
+               String htmlNote = getHtmlNote(email, originalException);
+               caze.addNote( htmlNote, Translator.HTML );
+            }
+            else
+            {
+               String plainNote = getPlainNote(email, originalException);
+               caze.addNote( plainNote , Translator.PLAIN );
+            }
+
+            // open the case
+            caze.open();
+
+            caching.addToCaseCountCache( ((ProjectEntity)project).identity().get(), 1 );
+
+            uow.complete();
+
+         }
+         catch (Exception e) {
+            logger.warn("Failed createCaseOnSendMailFailure", e);
+            uow.discard();
+         }
+         finally {
+            RoleMap.clearCurrentRoleMap();
+         }
+      }
+
+      private static String getPlainNote(EmailValue email, Throwable originalException) {
+         StringBuilder result = new StringBuilder();
+         result.append(getExceptionString(originalException));
+         result.append("\n\n-------------------------\n");
+         result.append(email.content().get());
+         return result.toString();
+      }
+
+      private static String getExceptionString(Throwable t) {
+         StringBuilder result = new StringBuilder();
+         result.append(t.getMessage());
+         result.append("\n\n");
+         ByteArrayOutputStream stackTraceStream = new ByteArrayOutputStream();
+         t.printStackTrace(new PrintStream(stackTraceStream));
+         result.append(stackTraceStream.toString());
+         return result.toString();
+      }
+
+      private static String getHtmlNote(EmailValue email, Throwable originalException) {
+         StringBuilder result = new StringBuilder();
+         result.append("<pre>");
+         result.append(getExceptionString(originalException));
+         result.append("</pre><br/><br/>-------------------------<br/>");
+         result.append( email.contentHtml().get() == null ? email.content().get() : email.contentHtml().get());
+         return result.toString();
       }
    }
 }

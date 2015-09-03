@@ -55,10 +55,13 @@ public interface SystemDefaultsConfiguration
 
    @UseDefaults
    Property<String> mapDefaultStartLocation();
-   
+
    @UseDefaults
    Property<Integer> mapDefaultZoomLevel();
-   
+
+   @UseDefaults
+   Property<String> mapquestReverseLookupUrlPattern();
+
    /**
     * The name of the organizational unit responsible for mail receiver support.
     * @return A string property
@@ -79,6 +82,13 @@ public interface SystemDefaultsConfiguration
     */
    @UseDefaults
    Property<String> supportCaseTypeForIncomingEmailName();
+
+   /**
+    * The name of the support case type for send mail failures
+    * @return
+    */
+   @UseDefaults
+   Property<String> supportCaseTypeForOutgoingEmailName();
 
    /**
     * The base url for Surface Webforms
@@ -104,4 +114,12 @@ public interface SystemDefaultsConfiguration
      */
     @UseDefaults
     Property<String> mapDefaultUrlPattern();
+
+   /**
+    * The base URL for opening cases directly in the webclient
+    * f.ex. http://<host>/webclient/#/cases/
+    * @return  The base URL as String
+    */
+   @UseDefaults
+   Property<String> webclientBaseUrl();
 }

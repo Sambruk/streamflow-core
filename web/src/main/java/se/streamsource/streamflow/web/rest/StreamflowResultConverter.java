@@ -16,6 +16,13 @@
  */
 package se.streamsource.streamflow.web.rest;
 
+import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
+import static se.streamsource.dci.value.table.TableValue.DATETIME;
+import static se.streamsource.dci.value.table.TableValue.STRING;
+
+import java.util.Collections;
+import java.util.Date;
+
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
@@ -28,9 +35,11 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.spi.Qi4jSPI;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -38,13 +47,17 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
+import se.streamsource.streamflow.api.workspace.SearchResultDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.application.knowledgebase.KnowledgebaseService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.workspace.CaseSearchResult;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
+import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -60,10 +73,6 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 
-import java.util.Collections;
-
-import static se.streamsource.dci.value.table.TableValue.*;
-
 /**
  * JAVADOC
  */
@@ -73,11 +82,14 @@ public class StreamflowResultConverter
    @Structure
    Module module;
 
+   @Structure
+   Qi4jSPI spi;
+
    @Service
    ServiceReference<KnowledgebaseService> knowledgeBaseService;
 
    static final String STANDARD_COLUMNS = ",description,created,creator,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent,";
-   
+
    public Object convert(Object result, Request request, Object[] arguments)
    {
       if (result instanceof String)
@@ -99,22 +111,20 @@ public class StreamflowResultConverter
          else
             //needs to be relative path in case there is a proxy in front of streamflow server
             return caseDTO((CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath(), false);
-      } else if (result instanceof Query)
+      } else if (result instanceof CaseSearchResult)
       {
-         Query query = (Query) result;
-         if (query.resultType().equals(Case.class))
-         {
-            if (request.getResourceRef().getPath().contains( "workspacev2" ))
-            {
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), true);
-            }
-            else if (arguments.length > 0 && arguments[0] instanceof TableQuery)
-               return caseTable(query, module, request, arguments);
-            else
-               //same here relative path needed
-               return buildCaseList(query, module, request.getResourceRef().getBaseRef().getPath(), false);
+         if (request.getResourceRef().getPath().contains( "workspacev2" )) {
+            return buildCaseList((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), true);
          }
-      } 
+         else if (arguments.length > 0 && arguments[0] instanceof TableQuery) {
+            Iterable iterableCases = ((CaseSearchResult) result).getResult();
+            return caseTable(iterableCases, module, request, arguments);
+         }
+         else {
+            //same here relative path needed
+            return buildCaseList((CaseSearchResult) result, module, request.getResourceRef().getBaseRef().getPath(), false);
+         }
+      }
 
       if (result instanceof Iterable)
       {
@@ -125,20 +135,16 @@ public class StreamflowResultConverter
       return result;
    }
 
-   private LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath, boolean v2)
+   private SearchResultDTO buildCaseList(CaseSearchResult result, Module module, String basePath, boolean v2)
    {
-      LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path(basePath);
-      for (Case aCase : query)
-      {
-         try
-         {
-            linksBuilder.addLink(caseDTO((CaseEntity) aCase, module, basePath, v2));
-         } catch (Exception e)
-         {
-            LoggerFactory.getLogger(getClass()).error("Could not create link for case:" + ((Identity) aCase).identity().get(), e);
-         }
+      ValueBuilder<SearchResultDTO> builder = module.valueBuilderFactory().newValueBuilder(SearchResultDTO.class);
+      builder.prototype().unlimitedResultCount().set(result.getUnlimitedCount());
+
+      for (Case aCase : result.getResult()) {
+         builder.prototype().links().get().add(caseDTO((CaseEntity) aCase, module, basePath, v2));
       }
-      return linksBuilder.newLinks();
+
+      return builder.newInstance();
    }
 
    private CaseDTO caseDTO(CaseEntity aCase, Module module, String basePath, boolean v2)
@@ -153,13 +159,13 @@ public class StreamflowResultConverter
          prototype.createdBy().set(((Describable) aCase.createdBy().get()).getDescription());
       if (aCase.caseId().get() != null)
          prototype.caseId().set(aCase.caseId().get());
-      
+
       // Not so fancy solution to the v2 problem...
       if (v2)
       {
          prototype.href().set(basePath + "/workspacev2/cases/" + aCase.identity().get() + "/");
       }
-      else 
+      else
       {
          prototype.href().set(basePath + "/workspace/cases/" + aCase.identity().get() + "/");
       }
@@ -243,6 +249,20 @@ public class StreamflowResultConverter
       }
 
       prototype.restricted().set( aCase.restricted().get() );
+
+      prototype.lastLogEntryTime().set(new Date(spi.getEntityState((CaseLogEntity) aCase.caselog().get()).lastModified()));
+      prototype.dueOn().set(aCase.dueOn().get());
+      if (aCase.casepriority().get() != null)
+      {
+         Priority priority = aCase.casepriority().get();
+
+         ValueBuilder<PriorityDTO> priorityDTOBuilder = module.valueBuilderFactory().newValueBuilder(PriorityDTO.class);
+         priorityDTOBuilder.prototype().text().set(priority.getDescription());
+         priorityDTOBuilder.prototype().id().set(EntityReference.getEntityReference( priority ).identity());
+         priorityDTOBuilder.prototype().priority().set(((PrioritySettings.Data)priority).priority().get());
+         prototype.priority().set(priorityDTOBuilder.newInstance());
+      }
+
       return builder.newInstance();
    }
 
@@ -474,10 +494,10 @@ public class StreamflowResultConverter
                   return caseEntity.isUnread();
                }
             });
-      
-      if (!"*".equals( query.select() ))
+
+      if (!(query.select().size() == 1 && "*".equals( query.select().get(0) )))
       {
-         for(String name : query.select().split( "," ))
+         for(String name : query.select())
          {
             final String fieldName = name.trim();
             if (!STANDARD_COLUMNS.contains( "," + fieldName + "," ))
@@ -494,9 +514,9 @@ public class StreamflowResultConverter
                               FieldEntity fieldEntity = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, item.field().get().identity() );
                               return fieldEntity.fieldId().get().equals( fieldName );
                            };
-                           
+
                         }, form.fields() ));
-                        
+
                         if (submittedFieldValue != null)
                         {
                            return submittedFieldValue.value().get();

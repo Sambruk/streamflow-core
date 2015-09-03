@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
@@ -93,15 +92,12 @@ public class CaseTypeContext
       {
          public boolean satisfiedBy( CaseTypes item )
          {
-            Owner owner = ((Ownable.Data) item).owner().get();
-
-            return !item.equals( thisCaseTypes ) && !((Removable.Data) owner).removed().get();
+            return !item.equals( thisCaseTypes );
          }
       }, module.queryBuilderFactory().newQueryBuilder( CaseTypes.class )
-            .where( and(
-                  eq( templateFor( Removable.Data.class ).removed(), false ),
-                  QueryExpressions.isNotNull( templateFor( Ownable.Data.class ).owner() )
-            ) )
+            .where(
+                  eq( templateFor( Removable.Data.class ).removed(), false )
+            )
             .newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
    }
 

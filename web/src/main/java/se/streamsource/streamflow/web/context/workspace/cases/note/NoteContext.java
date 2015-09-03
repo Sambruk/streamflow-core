@@ -30,6 +30,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.SkipResourceValidityCheck;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.web.context.LinksBuilder;
@@ -49,7 +50,7 @@ import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 public interface NoteContext
    extends IndexContext<NoteDTO>, Context
 {
-
+   @SkipResourceValidityCheck
    LinksValue allnotes();
 
    @RequiresStatus({DRAFT, OPEN})

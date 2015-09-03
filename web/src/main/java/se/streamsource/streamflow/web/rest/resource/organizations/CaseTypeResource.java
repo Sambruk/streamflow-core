@@ -57,7 +57,7 @@ public class CaseTypeResource
       {
          if(caseTypes instanceof OrganizationEntity )
          {
-            builder.addDescribable( ((Describable)caseTypes), "" );
+            builder.addDescribable( ((Describable)caseTypes), "--" );
          } else
          {
             builder.addDescribable( ((Describable)caseTypes), ((Describable)((Ownable.Data)caseTypes).owner().get()).getDescription() );

@@ -53,6 +53,7 @@ import se.streamsource.streamflow.api.administration.form.SelectionFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextAreaFieldValue;
 import se.streamsource.streamflow.api.administration.form.TextFieldValue;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
+import se.streamsource.streamflow.api.administration.priority.PriorityDTO;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
 import se.streamsource.streamflow.api.administration.surface.EmailAccessPointDTO;
@@ -67,6 +68,7 @@ import se.streamsource.streamflow.api.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.api.surface.AccessPointSettingsDTO;
 import se.streamsource.streamflow.api.workspace.PerspectiveDTO;
 import se.streamsource.streamflow.api.workspace.ProjectListValue;
+import se.streamsource.streamflow.api.workspace.SearchResultDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseDTO;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
 import se.streamsource.streamflow.api.workspace.cases.attachment.AttachmentDTO;
@@ -95,6 +97,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.NoteDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
@@ -120,7 +123,7 @@ public class ClientAPIAssembler
    {
       surface.values( AccessPointSettingsDTO.class );
    }
-   
+
    private void external( ModuleAssembly external )
    {
       external.values( ShadowCaseLinkValue.class,
@@ -140,7 +143,7 @@ public class ClientAPIAssembler
               ContactsDTO.class,
               ConversationDTO.class,
               MessageDTO.class,
-              AttachmentDTO.class, 
+              AttachmentDTO.class,
               UpdateAttachmentDTO.class,
               CaseLogEntryDTO.class,
               CaseLogFilterValue.class,
@@ -148,10 +151,13 @@ public class ClientAPIAssembler
               ExternalEmailValue.class,
               PermissionsDTO.class,
               PriorityValue.class,
-              ProjectListValue.class);
+              PriorityDTO.class,
+              ProjectListValue.class,
+              SearchResultDTO.class);
 
       workspace.values(FieldDTO.class,
               FormDraftDTO.class,
+              FormDraftSettingsDTO.class,
               PageSubmissionDTO.class,
               FieldSubmissionDTO.class,
               FieldSubmissionPluginDTO.class,
@@ -173,7 +179,7 @@ public class ClientAPIAssembler
               StreetsDTO.class,
               StreetSearchDTO.class,
               UserProfileDTO.class);
-      
+
       workspace.values(LocationDTO.class);
    }
 

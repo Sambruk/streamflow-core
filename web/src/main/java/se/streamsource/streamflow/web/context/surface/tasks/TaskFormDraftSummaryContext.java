@@ -46,6 +46,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.util.Translator;
 import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.HtmlMailGenerator;
 import se.streamsource.streamflow.web.application.mail.MailSender;
@@ -113,9 +114,10 @@ public interface TaskFormDraftSummaryContext extends Context, MailSender, IndexC
       protected ApplyFilterContext applyFilterContext;
       private HtmlMailGenerator htmlGenerator;
 
-      public Mixin(@Structure Module module, @This MailSender mailSender, @Service AttachmentStore attachmentStore)
+      public Mixin(@Structure Module module, @This MailSender mailSender, @Service AttachmentStore attachmentStore, @Service SystemDefaultsService systemDefaults
+      )
       {
-         applyFilterContext = new ApplyFilterContext(module, mailSender, attachmentStore);
+         applyFilterContext = new ApplyFilterContext(module, mailSender, attachmentStore, systemDefaults);
          htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
       }
       

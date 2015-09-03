@@ -30,6 +30,7 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerMixin;
+import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.context.services.ApplyFilterContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -54,9 +55,10 @@ public interface FilterService
    {
       protected ApplyFilterContext applyFilterContext;
 
-      public FilterMixin(@Structure Module module, @This MailSender mailSender, @Service AttachmentStore attachmentStore)
+      public FilterMixin(@Structure Module module, @This MailSender mailSender, @Service AttachmentStore attachmentStore, @Service SystemDefaultsService systemDefaults
+      )
       {
-         applyFilterContext = new ApplyFilterContext(module, mailSender, attachmentStore);
+         applyFilterContext = new ApplyFilterContext(module, mailSender, attachmentStore, systemDefaults);
       }
 
       @This

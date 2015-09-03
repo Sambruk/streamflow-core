@@ -38,7 +38,7 @@ public abstract class AbstractFieldPanel extends JPanel
    protected StateBinder.Binding binding;
 
    @Structure
-   Module module;
+   protected Module module;
 
    public AbstractFieldPanel( FieldSubmissionDTO field )
    {
@@ -48,8 +48,6 @@ public abstract class AbstractFieldPanel extends JPanel
    abstract public String getValue();
 
    abstract public void setValue( String newValue );
-
-   abstract public boolean validateValue( Object newValue );
 
    public StateBinder bindComponent( BindingFormBuilder bb, FieldSubmissionDTO DTO)
    {
@@ -73,7 +71,7 @@ public abstract class AbstractFieldPanel extends JPanel
    {
       return field;
    }
-   
+
    public String title()
    {
       return field.field().get().description().get();

@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.web.context.workspace;
 
 import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 import java.util.Collections;
@@ -30,8 +29,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.OrderBy;
-import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 
@@ -41,6 +38,7 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.api.administration.priority.PriorityValue;
 import se.streamsource.streamflow.web.application.defaults.SystemDefaultsService;
 import se.streamsource.streamflow.web.context.LinksBuilder;
+import se.streamsource.streamflow.web.context.util.TableQueryConverter;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -48,13 +46,9 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEn
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.caze.CasePriority;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -63,6 +57,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.Priorities;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
+import com.google.common.collect.Lists;
 
 /**
  * JAVADOC
@@ -75,48 +71,18 @@ public class SearchContext
    @Service
    SystemDefaultsService systemConfig;
 
-   public Iterable<Case> cases(TableQuery tableQuery)
+   public CaseSearchResult cases(TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
       Query<Case> caseQuery = caseQueries.search(tableQuery.where(), systemConfig.config().configuration().includeNotesInSearch().get() );
 
-      caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( caseQuery )
-            .orderBy( orderBy( templateFor( CreatedOn.class ).createdOn(), OrderBy.Order.DESCENDING ) );
+      List<Case> rawResults = Lists.newArrayList(caseQuery);
+      int unlimitedResultCount = rawResults.size();
 
-      if( systemConfig.config().configuration().sortOrderAscending().get())
-      {
-         caseQuery.orderBy( orderBy( templateFor(CreatedOn.class).createdOn(), OrderBy.Order.ASCENDING) );
-      }
+      TableQueryConverter tableQueryConverter = module.objectBuilderFactory().newObjectBuilder(TableQueryConverter.class).use(tableQuery).newInstance();
+      Iterable<Case> results = tableQueryConverter.convert(rawResults);
 
-      // Paging
-      if (tableQuery.offset() != null)
-         caseQuery.firstResult(Integer.parseInt(tableQuery.offset()));
-      if (tableQuery.limit() != null)
-         caseQuery.maxResults(Integer.parseInt(tableQuery.limit()));
-      if (tableQuery.orderBy() != null)
-      {
-         String[] orderByValue = tableQuery.orderBy().split(" ");
-         Order order = orderByValue[1].equals("asc") ? Order.ASCENDING : Order.DESCENDING;
-
-         if (tableQuery.orderBy().equals("status"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order));
-         } else if (orderByValue[0].equals("description"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order));
-         } else if (orderByValue[0].equals("dueOn"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
-         } else if (orderByValue[0].equals("createdOn"))
-         {
-            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
-         }else if( orderByValue[0].equals( "priority" ))
-         {
-            caseQuery.orderBy( QueryExpressions.orderBy(
-                  QueryExpressions.templateFor( PrioritySettings.Data.class, QueryExpressions.templateFor( CasePriority.Data.class ).casepriority().get() ).priority(), revertSortOrder( order ) ) );
-         }
-      }
-      return caseQuery;
+      return new CaseSearchResult(results, unlimitedResultCount);
    }
 
    public LinksValue possibleLabels()
@@ -229,13 +195,4 @@ public class SearchContext
       }
       return builder.newLinks();
    }
-
-   public OrderBy.Order revertSortOrder( OrderBy.Order order )
-   {
-      if( OrderBy.Order.ASCENDING.equals( order ))
-         return OrderBy.Order.DESCENDING;
-      else
-         return OrderBy.Order.ASCENDING;
-   }
-
 }

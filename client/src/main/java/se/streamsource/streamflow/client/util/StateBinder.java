@@ -86,6 +86,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSe
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 /**
@@ -110,6 +111,7 @@ public class StateBinder
       registerBinder( defaultBinder,
             AbstractFieldPanel.class,
             TextFieldPanel.class,
+            GeoLocationFieldPanel.class,
             TextAreaFieldPanel.class,
             NumberPanel.class,
             CheckboxesPanel.class,

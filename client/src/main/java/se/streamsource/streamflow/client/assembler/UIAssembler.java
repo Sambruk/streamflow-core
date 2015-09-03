@@ -22,6 +22,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
+
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -159,6 +160,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.geo.GeoLocationFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.note.CaseNoteView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
@@ -180,7 +182,7 @@ import se.streamsource.streamflow.client.util.dialog.InputDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
-
+import se.streamsource.streamflow.client.util.mapquest.MapquestNominatimService;
 import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
@@ -231,6 +233,7 @@ public class UIAssembler
             UncaughtExceptionHandler.class,
             JavaHelp.class
       ).visibleIn(layer);
+      module.objects(MapquestNominatimService.class).visibleIn(application);
 
       module.importedServices(UncaughtExceptionHandler.class,
             JavaHelp.class).importedBy(NewObjectImporter.class).visibleIn(application);
@@ -291,6 +294,7 @@ public class UIAssembler
             NumberPanel.class,
             TextAreaFieldPanel.class,
             TextFieldPanel.class,
+            GeoLocationFieldPanel.class,
             AttachmentFieldPanel.class,
             MessagesConversationView.class,
             ConversationsView.class,
@@ -344,7 +348,7 @@ public class UIAssembler
 
 
       module.objects(ProjectModel.class ).visibleIn(layer);
-      
+
       addMV(module, SelectedFormsModel.class, SelectedFormsView.class);
 
       addViews(module,

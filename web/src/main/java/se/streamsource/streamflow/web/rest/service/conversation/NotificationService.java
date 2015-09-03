@@ -31,6 +31,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactEmailDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -49,6 +50,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MailFooter;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessRestriction;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -64,6 +66,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessP
 import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
 import se.streamsource.streamflow.web.domain.structure.user.Contactable;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -142,139 +145,279 @@ public interface NotificationService
          public void receivedMessage( DomainEvent event, Message message )
          {
             UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
             try
             {
-               Message.Data messageData = (Message.Data) message;
+               MessageReceiver recipient = uow.get( MessageReceiver.class, event.entity().get() );
 
-               Conversation conversation = messageData.conversation().get();
-
-               ConversationOwner owner = conversation.conversationOwner().get();
-
-               // check if sender is administrator and in that case dont set fromName - this will be picked up by
-               // MailSender and replaced with the configurated default fromName
-               String sender = null;
-               if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
+               if (shouldSendFullMail(message, recipient))
                {
-                  sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+                  EmailValue emailValue = buildFullMail(message, recipient);
+                  mailSender.sentEmail( null, emailValue );
                }
-
-               String footer ="";
-               if( messageData.sender().get() instanceof MailFooter)
+               else if (shouldSendNotificationMail(message, recipient))
                {
-                  footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
-               }
-
-               String caseId = "n/a";
-
-               if (owner != null)
-                  caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
-
-               MessageReceiver user = uow.get( MessageReceiver.class, event.entity().get() );
-
-               MessageRecipient.Data recipientSettings = (MessageRecipient.Data) user;
-
-               if (recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
-               {
-                  String subject;
-                  String formattedMsg;
-
-                  Origin origin = (Origin) owner;
-                  EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
-
-                  if (emailAccessPoint != null)
-                  {
-                     formattedMsg = message.translateBody(emailAccessPoint.emailTemplates().get());
-                     subject = MessageTemplate.text(emailAccessPoint.subject().get()).bind("caseid", caseId).bind("subject", conversation.getDescription()).eval();
-                  } else
-                  {
-                     formattedMsg = message.translateBody(templateDefaults);
-                     subject = "[" + caseId + "] " + conversation.getDescription(); // Default subject format
-                  }
-
-                  if (formattedMsg.trim().equals("") && !message.hasAttachments())
-                     return; // Don't try to send empty messages that have no attachments
-
-                  ContactEmailDTO recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
-                  if (recipientEmail != null)
-                  {
-                     ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
-                     builder.prototype().fromName().set( sender );
-
-                     if (emailAccessPoint != null)
-                     {
-                        builder.prototype().from().set(emailAccessPoint.getDescription() );
-                        builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
-                        builder.prototype().headers().get().put( "X-Auto-Response-Suppress", "OOF, DR, RN, NRN" );
-                        builder.prototype().headers().get().put( "X-Autoreply", "yes" );
-                        builder.prototype().headers().get().put( "X-Autorespond", "yes" );
-                        builder.prototype().headers().get().put( "Precedence", "auto_reply" );
-                        builder.prototype().headers().get().put( "X-Precedence", "auto_reply" );
-                     }
-
-      //               builder.prototype().replyTo();
-                     builder.prototype().to().set( recipientEmail.emailAddress().get() );
-                     builder.prototype().subject().set( subject );
-                     if( messageData.messageType().get().equals( MessageType.PLAIN ) ||
-                         messageData.messageType().get().equals( MessageType.SYSTEM ))
-                     {
-                        StringBuffer buf = new StringBuffer(  );
-                        Scanner scanner = new Scanner( formattedMsg );
-                        while( scanner.hasNextLine() )
-                        {
-                           buf.append( scanner.nextLine() + "<BR>" + System.getProperty( "line.separator" ) );
-
-                        }
-
-                        formattedMsg = buf.toString();
-                     }
-                     builder.prototype().content().set( htmlGenerator.createMailContent( formattedMsg, footer ) );
-                     builder.prototype().contentType().set( Translator.HTML );
-
-                     // add message attachments if any
-                     if ( message.hasAttachments()) {
-
-                        List<AttachedFileValue> attachments = builder.prototype().attachments().get();
-                        ValueBuilder<AttachedFileValue> attachment = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
-
-                        for (Attachment caseAttachment : ((Attachments.Data)message).attachments())
-                        {
-                           AttachedFile.Data attachedFile = (AttachedFile.Data) caseAttachment;
-                           attachment.prototype().mimeType().set(attachedFile.mimeType().get());
-                           attachment.prototype().uri().set(attachedFile.uri().get());
-                           attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
-                           attachment.prototype().name().set(attachedFile.name().get());
-                           attachment.prototype().size().set(attachedFile.size().get());
-                           attachments.add( attachment.newInstance() );
-                        }
-                     }
-
-                     // Threading headers
-                     builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(user.toString(), "UTF-8")+"@Streamflow>" );
-                     ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
-                     StringBuilder references = new StringBuilder();
-                     String inReplyTo = null;
-                     for (Message previousMessage : messages)
-                     {
-                        if (references.length() > 0)
-                           references.append( " " );
-
-                        inReplyTo = "<"+previousMessage.toString()+"/"+URLEncoder.encode(user.toString(), "UTF-8")+"@Streamflow>";
-                        references.append( inReplyTo );
-                     }
-                     builder.prototype().headers().get().put( "References", references.toString() );
-                     if (inReplyTo != null)
-                        builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
-
-                     EmailValue emailValue = builder.newInstance();
-
-                     mailSender.sentEmail( null, emailValue );
-                  }
+                  EmailValue emailValue = buildNotificationMail(message, recipient);
+                  mailSender.sentEmail( null, emailValue );
                }
             } catch (Throwable e)
             {
                logger.error("Could not send notification to user entity = " +  event.entity().get() , e);
             }
+         }
+
+         private EmailValue buildFullMail(Message message, MessageReceiver recipient) throws UnsupportedEncodingException
+         {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+
+            ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+
+            builder.prototype().fromName().set( determineFromName(message) );
+            builder.prototype().to().set( determineRecipientEmailAddress(recipient) );
+            builder.prototype().subject().set( determineFullSubject(message) );
+            builder.prototype().content().set( createFullHTMLMailContent(message) );
+            builder.prototype().contentType().set( Translator.HTML );
+
+            addAttachmentsToBuilder(message, builder);
+            addEmailAccessPointHeadersToBuilder(message, builder);
+            addThreadingHeadersToBuilder(conversation, recipient, builder);
+
+            EmailValue emailValue = builder.newInstance();
+            return emailValue;
+         }
+
+         private EmailValue buildNotificationMail(Message message, MessageReceiver recipient) throws UnsupportedEncodingException
+         {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+
+            ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+
+            builder.prototype().fromName().set( determineFromName(message) );
+            builder.prototype().to().set( determineRecipientEmailAddress(recipient) );
+            builder.prototype().subject().set( determineNotificationSubject(message) );
+            builder.prototype().content().set( createNotificationHTMLMailContent(message) );
+            builder.prototype().contentType().set( Translator.HTML );
+
+            addEmailAccessPointHeadersToBuilder(message, builder);
+            addThreadingHeadersToBuilder(conversation, recipient, builder);
+
+            EmailValue emailValue = builder.newInstance();
+            return emailValue;
+         }
+
+         private String determineFromName(Message message) {
+            // check if sender is administrator and in that case dont set fromName - this will be picked up by
+            // MailSender and replaced with the configurated default fromName
+            Message.Data messageData = (Message.Data) message;
+            String fromName = null;
+            if( ! EntityReference.getEntityReference( messageData.sender().get() ).identity().equals( UserEntity.ADMINISTRATOR_USERNAME ))
+            {
+               fromName = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+            }
+            return fromName;
+         }
+
+         private String determineFooter(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            String footer ="";
+            if( messageData.sender().get() instanceof MailFooter)
+            {
+               footer = ((MailFooter.Data)messageData.sender().get()).footer().get();
+            }
+            return footer;
+         }
+
+         private String determineCaseId(ConversationOwner owner) {
+            String caseId = "n/a";
+
+            if (owner != null)
+               caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
+            return caseId;
+         }
+
+         private String determineRecipientEmailAddress(MessageReceiver recipient) {
+            ContactEmailDTO recipientEmail = ((Contactable.Data)recipient).contact().get().defaultEmail();
+            if (recipientEmail == null) {
+               return null;
+            }
+            else {
+               return recipientEmail.emailAddress().get();
+            }
+
+         }
+
+         private String createFullHTMLMailContent(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            Origin origin = (Origin) conversationOwner;
+            EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
+
+            String formattedMsg;
+            {
+               if (emailAccessPoint != null)
+               {
+                  formattedMsg = message.translateBody(emailAccessPoint.emailTemplates().get());
+               } else
+               {
+                  formattedMsg = message.translateBody(templateDefaults);
+               }
+            }
+
+            if( messageData.messageType().get().equals( MessageType.PLAIN ) ||
+                  messageData.messageType().get().equals( MessageType.SYSTEM ))
+            {
+               StringBuffer buf = new StringBuffer(  );
+               Scanner scanner = new Scanner( formattedMsg );
+               while( scanner.hasNextLine() )
+               {
+                  buf.append( scanner.nextLine() + "<BR>" + System.getProperty( "line.separator" ) );
+
+               }
+               scanner.close();
+               formattedMsg = buf.toString();
+            }
+
+            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
+            String mailContent = htmlGenerator.createMailContent( formattedMsg, determineFooter(message) );
+            return mailContent;
+         }
+
+         private String createNotificationHTMLMailContent(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            String caseId = determineCaseId(conversationOwner);
+
+            String mailBody = config.configuration().notificationOnlyMailBody().get();
+            String formattedMsg = String.format(mailBody, caseId);
+
+            HtmlMailGenerator htmlGenerator = module.objectBuilderFactory().newObject( HtmlMailGenerator.class );
+            String mailContent = htmlGenerator.createMailContent( formattedMsg, determineFooter(message) );
+            return mailContent;
+         }
+
+         private String determineFullSubject(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            Origin origin = (Origin) conversationOwner;
+            EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
+
+            String subject;
+            {
+               String caseId = determineCaseId(conversationOwner);
+               if (emailAccessPoint != null)
+               {
+                  subject = MessageTemplate.text(emailAccessPoint.subject().get()).bind("caseid", caseId).bind("subject", conversation.getDescription()).eval();
+               } else
+               {
+                  subject = "[" + caseId + "] " + conversation.getDescription(); // Default subject format
+               }
+            }
+            return subject;
+         }
+
+         private String determineNotificationSubject(Message message) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            String caseId = determineCaseId(conversationOwner);
+            String subjectText = config.configuration().notificationOnlyMailSubject().get();
+            return  "[" + caseId + "] " + subjectText;
+         }
+
+         private void addEmailAccessPointHeadersToBuilder(Message message, ValueBuilder<EmailValue> builder) {
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            Origin origin = (Origin) conversationOwner;
+            EmailAccessPoint emailAccessPoint = origin.accesspoint().get();
+
+            if (emailAccessPoint != null)
+            {
+               builder.prototype().from().set(emailAccessPoint.getDescription() );
+               builder.prototype().headers().get().put( "Auto-Submitted", "auto-replied" );
+               builder.prototype().headers().get().put( "X-Auto-Response-Suppress", "OOF, DR, RN, NRN" );
+               builder.prototype().headers().get().put( "X-Autoreply", "yes" );
+               builder.prototype().headers().get().put( "X-Autorespond", "yes" );
+               builder.prototype().headers().get().put( "Precedence", "auto_reply" );
+               builder.prototype().headers().get().put( "X-Precedence", "auto_reply" );
+            }
+         }
+
+         private void addAttachmentsToBuilder(Message message,
+               ValueBuilder<EmailValue> builder) {
+            // add message attachments if any
+            if ( message.hasAttachments()) {
+
+               List<AttachedFileValue> attachments = builder.prototype().attachments().get();
+               ValueBuilder<AttachedFileValue> attachment = module.valueBuilderFactory().newValueBuilder(AttachedFileValue.class);
+
+               for (Attachment caseAttachment : ((Attachments.Data)message).attachments())
+               {
+                  AttachedFile.Data attachedFile = (AttachedFile.Data) caseAttachment;
+                  attachment.prototype().mimeType().set(attachedFile.mimeType().get());
+                  attachment.prototype().uri().set(attachedFile.uri().get());
+                  attachment.prototype().modificationDate().set(attachedFile.modificationDate().get());
+                  attachment.prototype().name().set(attachedFile.name().get());
+                  attachment.prototype().size().set(attachedFile.size().get());
+                  attachments.add( attachment.newInstance() );
+               }
+            }
+         }
+
+         private void addThreadingHeadersToBuilder(Conversation conversation,
+               MessageReceiver recipient, ValueBuilder<EmailValue> builder)
+               throws UnsupportedEncodingException {
+            // Threading headers
+            builder.prototype().messageId().set( "<"+conversation.toString()+"/"+ URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>" );
+            ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
+            StringBuilder references = new StringBuilder();
+            String inReplyTo = null;
+            for (Message previousMessage : messages)
+            {
+               if (references.length() > 0)
+                  references.append( " " );
+
+               inReplyTo = "<"+previousMessage.toString()+"/"+URLEncoder.encode(recipient.toString(), "UTF-8")+"@Streamflow>";
+               references.append( inReplyTo );
+            }
+            builder.prototype().headers().get().put( "References", references.toString() );
+            if (inReplyTo != null)
+               builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
+         }
+
+         private boolean shouldSendFullMail(Message message, MessageReceiver recipient) {
+            MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            boolean isRestricted = ((CaseAccessRestriction.Data) conversationOwner).restricted().get();
+
+            return (
+                  recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email )
+                  && (!messageData.body().get().trim().isEmpty() || message.hasAttachments())
+                  && determineRecipientEmailAddress(recipient) != null
+                  && !isRestricted
+                  );
+         }
+
+         private boolean shouldSendNotificationMail(Message message, MessageReceiver recipient) {
+            MessageRecipient.Data recipientSettings = (MessageRecipient.Data) recipient;
+            Message.Data messageData = (Message.Data) message;
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner conversationOwner = conversation.conversationOwner().get();
+            boolean isRestricted = ((CaseAccessRestriction.Data) conversationOwner).restricted().get();
+            boolean isRecipientRegularUser = recipient instanceof UserEntity;
+
+            return (
+                  recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email )
+                  && (!messageData.body().get().trim().isEmpty() || message.hasAttachments())
+                  && determineRecipientEmailAddress(recipient) != null
+                  && (isRestricted && isRecipientRegularUser)
+                  );
          }
       }
    }

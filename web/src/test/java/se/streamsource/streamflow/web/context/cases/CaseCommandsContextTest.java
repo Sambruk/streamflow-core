@@ -16,22 +16,31 @@
  */
 package se.streamsource.streamflow.web.context.cases;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.qi4j.api.util.Iterables.first;
+
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.ArrayStack;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.dci.api.Contexts;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
@@ -49,32 +58,21 @@ import se.streamsource.streamflow.web.context.administration.labels.SelectedLabe
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
 import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
 import se.streamsource.streamflow.web.context.users.UsersContextTest;
+import se.streamsource.streamflow.web.context.workspace.CaseSearchResult;
 import se.streamsource.streamflow.web.context.workspace.DraftsContext;
 import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
 import se.streamsource.streamflow.web.domain.entity.organization.GlobalCaseIdStateEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
-import static org.junit.Assert.*;
-import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Check lifecycle of a case
@@ -177,9 +175,9 @@ public class CaseCommandsContextTest
          RoleMap.current().set( new UserPrincipal( "testing" ) );
 
          DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-         assertThat( Iterables.count( caseList ), equalTo( 1L ) );
-         caze = first( caseList );
+         CaseSearchResult result = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
+         assertThat( Iterables.count( result.getResult() ), equalTo( 1L ) );
+         caze = first( result.getResult() );
          uow.discard();
       }
 
@@ -452,9 +450,9 @@ public class CaseCommandsContextTest
          RoleMap.current().set( new UserPrincipal( "testing" ) );
 
          DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
+         CaseSearchResult result = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
          //assertThat( Iterables.count( caseList ), equalTo( 1L ) );
-         caze1 = first( caseList );
+         caze1 = first( result.getResult() );
       }
 
       // Create draft2
@@ -478,9 +476,9 @@ public class CaseCommandsContextTest
          RoleMap.current().set( new UserPrincipal( "testing" ) );
 
          DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
+         CaseSearchResult result = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
          //assertThat( Iterables.count( caseList ), equalTo( 2L ) );
-         caze2 = first( caseList );
+         caze2 = first( result.getResult() );
       }
 
       // Send to project
@@ -524,8 +522,8 @@ public class CaseCommandsContextTest
       playRole( User.class, "testing" );
       RoleMap.current().set( new UserPrincipal( "testing" ) );
       DraftsContext drafts = context( DraftsContext.class );
-      Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-      long caseCount = currentId + Iterables.count( caseList );
+      CaseSearchResult result = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
+      long caseCount = currentId + Iterables.count( result.getResult() );
 
       assertTrue( "expected " + date +"-" + (caseCount - 1) ,  ((CaseId.Data) readUow.get( Case.class, caseUUID1 )).caseId().get().equals( date + "-" + (caseCount - 1) ) );
       assertTrue( "expected " + date +"-" + (caseCount), ((CaseId.Data) readUow.get( Case.class, caseUUID2 )).caseId().get().equals( date + "-" + (caseCount) ) );
