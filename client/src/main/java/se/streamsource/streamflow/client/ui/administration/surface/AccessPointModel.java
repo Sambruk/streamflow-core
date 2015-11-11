@@ -34,6 +34,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.util.Strings;
 
 import java.util.Observable;
 
@@ -316,4 +317,13 @@ public class AccessPointModel extends Observable
     public ReplacementSelectionFieldValuesModel getReplacementSelectionFieldValuesModel() {
         return module.objectBuilderFactory().newObjectBuilder(ReplacementSelectionFieldValuesModel.class).use(client.getSubClient( "replacementselectionfields" )).newInstance();
     }
+
+   public void changeCookieExpirationHours( Integer hours )
+   {
+      if( !accessPoint.cookieExpirationHours().equals(hours)) {
+         Form form = new Form();
+         form.set("cookieexpirationhours", hours == null ? null : Integer.toString(hours));
+         client.postCommand("changecookieexpirationhours", form);
+      }
+   }
 }

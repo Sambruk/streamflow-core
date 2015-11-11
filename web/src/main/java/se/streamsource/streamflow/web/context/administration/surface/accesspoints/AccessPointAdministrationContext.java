@@ -46,6 +46,7 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.api.administration.form.RequiredSignatureValue;
 import se.streamsource.streamflow.api.administration.surface.AccessPointDTO;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
@@ -123,6 +124,8 @@ public interface AccessPointAdministrationContext
 
    void changetemplate(@Name("key") String key, @Optional @Name("template") String template);
 
+   void changecookieexpirationhours( @Optional @Name("cookieexpirationhours") String cookieExpiration );
+
    abstract class Mixin
          implements AccessPointAdministrationContext
    {
@@ -149,6 +152,8 @@ public interface AccessPointAdministrationContext
 
          if (forms.selectedForms().toList().size() > 0)
             builder.prototype().form().set( createLinkValue( forms.selectedForms().toList().get( 0 ) ) );
+
+         builder.prototype().cookieExpirationHours().set(accessPointData.cookieExpirationHours().get());
 
          Attachment attachment = null;
          try {
@@ -555,6 +560,16 @@ public interface AccessPointAdministrationContext
       public void changetemplate(@Name("key") String key, @Optional @Name("template") String template)
       {
          role(WebAPMailTemplates.class).changeTemplate(key, template);
+      }
+
+      public void changecookieexpirationhours( @Optional @Name("cookieexpirationhours") String cookieExpiration )
+      {
+         if(Strings.empty( cookieExpiration ))
+         {
+            role(AccessPointSettings.class).changeCookieExpirationHours(null);
+         } else {
+            role(AccessPointSettings.class).changeCookieExpirationHours(Integer.parseInt(cookieExpiration));
+         }
       }
    }
 
