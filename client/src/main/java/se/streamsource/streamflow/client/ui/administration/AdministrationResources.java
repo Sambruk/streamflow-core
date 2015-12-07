@@ -225,6 +225,6 @@ public enum AdministrationResources
     owner_name_label,
     owner_id_label,
     casetype_id_separator,
-    id_label, casetype_separator;
+    id_label, casetype_separator, cookieExpirationHours;
 
 }

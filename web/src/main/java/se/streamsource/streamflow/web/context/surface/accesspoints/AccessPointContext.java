@@ -61,4 +61,21 @@ public class AccessPointContext
       builder.prototype().string().set( sb.toString() );
       return builder.newInstance();
    }
+
+   public StringValue cookieexpirationhours()
+   {
+      AccessPointSettings.Data data = RoleMap.role( AccessPointSettings.Data.class );
+      String result;
+
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder(StringValue.class);
+      if ( data.cookieExpirationHours().get() == null )
+      {
+         result = "" + 14 * 24; // two weeks
+      } else
+      {
+         result = "" + data.cookieExpirationHours().get();
+      }
+      builder.prototype().string().set(result);
+      return builder.newInstance();
+   }
 }

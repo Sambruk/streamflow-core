@@ -21,6 +21,7 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 
+import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -35,6 +36,8 @@ public interface AccessPointSettings
    void changedCaseType(CaseType caseType);
    void removeCaseType();
 
+   void changeCookieExpirationHours( @Optional Integer hours );
+
    interface Data
    {
       @Optional
@@ -42,6 +45,9 @@ public interface AccessPointSettings
 
       @Optional
       Association<CaseType> caseType();
+
+      @Optional
+      Property<Integer> cookieExpirationHours();
    }
 
    interface Events
@@ -49,6 +55,7 @@ public interface AccessPointSettings
       void changedProject( @Optional DomainEvent event, Project project );
       void changedCaseType( @Optional DomainEvent event, CaseType caseType );
       void removedCaseType( @Optional DomainEvent event, CaseType caseType );
+      void changedCookieExpirationHours( @Optional DomainEvent event, @Optional Integer expirationHours );
    }
 
    abstract class Mixin
@@ -88,6 +95,16 @@ public interface AccessPointSettings
       public void removedCaseType( @Optional DomainEvent event, CaseType caseType )
       {
          data.caseType().set( null );
+      }
+
+      public void changeCookieExpirationHours( @Optional Integer hours )
+      {
+         changedCookieExpirationHours(null, hours);
+      }
+
+      public void changedCookieExpirationHours( @Optional DomainEvent event, @Optional Integer hours )
+      {
+         data.cookieExpirationHours().set(hours);
       }
    }
 }
