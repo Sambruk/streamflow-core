@@ -71,4 +71,7 @@ public interface AccessPointDTO
 
    @UseDefaults
     Property<Boolean> replacementValues();
+
+   @Optional
+   Property<Integer> cookieExpirationHours();
 }

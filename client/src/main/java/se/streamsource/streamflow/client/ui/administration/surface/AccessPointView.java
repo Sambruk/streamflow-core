@@ -45,6 +45,7 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -100,6 +101,8 @@ public class AccessPointView
    private JTextArea emailTemplateText = new JTextArea();
    private JTextField subject;
 
+    private JTextField cookieExpiration = new JTextField();
+
    private AccessPointModel model;
 
    private ActionBinder actionBinder;
@@ -125,8 +128,8 @@ public class AccessPointView
       LinkValueConverter linkValueConverter = new LinkValueConverter();
 
       FormLayout layout = new FormLayout( "90dlu, 5dlu, 150:grow",
-            "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 12dlu, " +
-            "pref, 12dlu, pref, 2dlu, default:grow" );
+            "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, " +
+            "pref, 12dlu, pref, 2dlu, pref, 12dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -228,6 +231,7 @@ public class AccessPointView
       builder.add( panelBuilder.getPanel()/*valueBinder.bind( "form", selectedForm, linkValueConverter )*/,
             new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 5, 0, 0, 0 ) ) );
 
+
       // Select template
       javax.swing.Action templateAction = am.get( "template" );
       templateButton = new StreamflowButton( templateAction );
@@ -243,12 +247,17 @@ public class AccessPointView
       builder.add( valueBinder.bind( "template", actionBinder.bind( "removeTemplate", selectedTemplate ) ),
             new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.CENTER, new Insets( 3, 0, 0, 0 ) ) );
 
-      mailSelectionLabel.setText( i18n.text( AdministrationResources.changeMailSelectionMessage ) );
-      mailSelectionLabel.setToolTipText( i18n.text( AdministrationResources.changeMailSelectionMessageHint ) );
-      builder.add( mailSelectionLabel, cc.xy( 1, 11, CellConstraints.RIGHT, CellConstraints.BOTTOM ) );
+       builder.add( new JLabel(text(AdministrationResources.cookieExpirationHours)), cc.xy(1,13, CellConstraints.LEFT, CellConstraints.BOTTOM ));
+       builder.add( valueBinder.bind("cookieExpirationHours",
+               actionBinder.bind("changeCookieExpirationHours", cookieExpiration = new JTextField() ) ),
+               new CellConstraints( 3, 13, 1,1 , CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
+
+       mailSelectionLabel.setText( text(AdministrationResources.changeMailSelectionMessage) );
+      mailSelectionLabel.setToolTipText( text(AdministrationResources.changeMailSelectionMessageHint) );
+      builder.add( mailSelectionLabel, cc.xy( 1, 15, CellConstraints.LEFT, CellConstraints.BOTTOM ) );
 
       builder.add( valueBinder.bind( "mailSelectionMessage", actionBinder.bind( "changeMailSelectionMessage", mailSelectionField ) ),
-            new CellConstraints( 3, 11, 1,1 , CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
+            new CellConstraints( 3, 15, 1,1 , CellConstraints.FILL, CellConstraints.BOTTOM, new Insets( 3,0,0,0 )));
 
       PanelBuilder signPanel = new PanelBuilder( new FormLayout( "180dlu, 15dlu, 180dlu", "default:grow" ) );
       CellConstraints signPanelCc = new CellConstraints( );
@@ -391,7 +400,7 @@ public class AccessPointView
       signPanel.add( secondarySignPanel.getPanel(), signPanelCc.xy( 3, 1, CellConstraints.LEFT, CellConstraints.TOP ));
 
       builder.add( signPanel.getPanel(),
-            new CellConstraints( 1, 13, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
+            new CellConstraints( 1, 17, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
 
       JPanel templatePanel = new JPanel( );
       templatePanel.setVisible( false );
@@ -399,9 +408,9 @@ public class AccessPointView
             = new FormLayout( "75dlu, 5dlu, fill:p:grow",
             "pref, pref, fill:p:grow, pref");
       DefaultFormBuilder templateFormBuilder = new DefaultFormBuilder( templateFormLayout, templatePanel );
-      templateFormBuilder.addSeparator(i18n.text(AdministrationResources.emailTemplates));
+      templateFormBuilder.addSeparator(text(AdministrationResources.emailTemplates));
       templateFormBuilder.nextLine();
-      templateFormBuilder.append( i18n.text(AdministrationResources.subject),  valueBinder.bind("subject", actionBinder.bind( "changeSubject", subject = new JTextField() ) ) );
+      templateFormBuilder.append( text(AdministrationResources.subject),  valueBinder.bind("subject", actionBinder.bind( "changeSubject", subject = new JTextField() ) ) );
       templateFormBuilder.nextLine();
       templateFormBuilder.append(new JScrollPane(emailTemplateList));
       templateFormBuilder.append(new JScrollPane( actionBinder.bind( "save", emailTemplateText ) ) );
@@ -423,7 +432,7 @@ public class AccessPointView
 
       refreshComponents.visibleOn( "updatesecondarysign", templatePanel );
 
-      builder.add( templatePanel, new CellConstraints( 1, 15, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
+      builder.add( templatePanel, new CellConstraints( 1, 19, 3,1 , CellConstraints.FILL, CellConstraints.FILL, new Insets( 0,0,0,0 )));
       add( new JScrollPane( panel ), BorderLayout.CENTER );
 
       new RefreshWhenShowing( this, this );
@@ -433,7 +442,7 @@ public class AccessPointView
    public Task project()
    {
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use( model.getPossibleProjects() ).newInstance();
-      dialogs.showOkCancelHelpDialog( projectButton, dialog, i18n.text( WorkspaceResources.choose_project ) );
+      dialogs.showOkCancelHelpDialog( projectButton, dialog, text(WorkspaceResources.choose_project) );
 
       return new CommandTask()
       {
@@ -453,7 +462,7 @@ public class AccessPointView
    public Task casetype()
    {
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
-            i18n.text( WorkspaceResources.choose_casetype ),
+            text(WorkspaceResources.choose_casetype),
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
 
@@ -483,7 +492,7 @@ public class AccessPointView
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleForms() ).newInstance();
       dialogs.showOkCancelHelpDialog( formButton, dialog,
-            i18n.text( WorkspaceResources.choose_form ) );
+            text(WorkspaceResources.choose_form) );
 
       return new CommandTask()
       {
@@ -506,7 +515,7 @@ public class AccessPointView
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleTemplates() ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.choose_template ));
+      dialogs.showOkCancelHelpDialog( templateButton, dialog, text(WorkspaceResources.choose_template));
 
       return new CommandTask()
       {
@@ -640,7 +649,7 @@ public class AccessPointView
       final SelectLinkDialog dialog = module.objectBuilderFactory().newObjectBuilder(SelectLinkDialog.class).use(
             model.getPossibleSecondForms() ).newInstance();
       dialogs.showOkCancelHelpDialog( form2Button, dialog,
-            i18n.text( WorkspaceResources.choose_form ) );
+            text(WorkspaceResources.choose_form) );
 
       return new CommandTask()
       {
@@ -691,6 +700,22 @@ public class AccessPointView
        adminView.show( view );
    }
 
+    @Action
+    public Task changeCookieExpirationHours()
+    {
+        return new CommandTask() {
+            @Override
+            protected void command() throws Exception {
+                if(Strings.empty(cookieExpiration.getText()))
+                {
+                    model.changeCookieExpirationHours( null );
+                } else {
+                    model.changeCookieExpirationHours( new Integer(cookieExpiration.getText()) );
+                }
+            }
+        };
+    }
+
    private void updateEnabled()
    {
       if (model.getAccessPointValue().project().get() == null)
@@ -717,7 +742,7 @@ public class AccessPointView
             "removedLabel", "addedCaseType", "addedProject",
             "addedSelectedForm", "changedProject", "changedCaseType",
             "formPdfTemplateSet", "changedMailSelectionMessage", "createdRequiredSignature",
-            "updatedRequiredSignature" ), transactions ))
+            "updatedRequiredSignature", "changedCookieExpirationHours" ), transactions ))
       {
          refresh();
       }
@@ -737,7 +762,7 @@ public class AccessPointView
       }
       emailTemplateList.setModel(emailTemplateListModel);
       emailTemplateList.setSelectedIndex( selectedIndex );
-      replaceSelectionFieldValueEditButton.setIcon( model.getAccessPointValue().replacementValues().get() ? i18n.icon( Icons.optionsok, ICON_16 ) : i18n.icon( Icons.options, ICON_16 ));
+      replaceSelectionFieldValueEditButton.setIcon( model.getAccessPointValue().replacementValues().get() ? icon(Icons.optionsok, ICON_16) : icon(Icons.options, ICON_16));
    }
 
    @org.jdesktop.application.Action
