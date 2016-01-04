@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.apache.commons.lang.StringUtils;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -26,6 +27,11 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.api.administration.form.VisibilityRuleDefinitionValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * This interface holds information about visibility rules regarding form fields
@@ -82,6 +88,14 @@ public interface VisibilityRule
       {
          boolean result = false;
 
+         String[] tmpValue = value != null ? value.split(",") : new String[]{};
+         for(int i=0; i < tmpValue.length; i++)
+         {
+            tmpValue[i] = tmpValue[i].trim();
+         }
+
+         List<String> validationValues = Arrays.asList(tmpValue);
+
          VisibilityRuleDefinitionValue rule = getRule();
 
          // rule not defined return true
@@ -91,11 +105,11 @@ public interface VisibilityRule
          switch( rule.condition().get() )
          {
             case anyof:
-               result = rule.values().get().contains( value );
+               result = !Collections.disjoint(rule.values().get(),validationValues);
                break;
 
             case noneof:
-               result = !rule.values().get().contains( value );
+               result = Collections.disjoint(rule.values().get(),validationValues);
                break;
 
             case lessthan:
