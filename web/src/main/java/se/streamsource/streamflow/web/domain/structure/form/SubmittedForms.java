@@ -143,6 +143,11 @@ public interface SubmittedForms
                // ignore comment fields when submitting
                if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
                {
+                  if(!visibilityValidator.visible(field))
+                  {
+                     continue;
+                  }
+
                   // Is mandatory field missing?
                   if (field.field().get().mandatory().get() )
                   {
@@ -157,9 +162,8 @@ public interface SubmittedForms
                   if ( field.value().get() == null )
                   {
                      fieldBuilder.prototype().value().set( "" );
-                  } else
-                  {
-                     fieldBuilder.prototype().value().set( field.value().get() );
+                  } else {
+                     fieldBuilder.prototype().value().set(field.value().get());
                   }
                    // SF-846 from now on we save original FieldValue layout with the submission to be able to
                    // provide the same replacement SelectionFieldValue elements that are possibly provided by
