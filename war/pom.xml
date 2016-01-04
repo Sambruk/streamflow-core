@@ -3,12 +3,12 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.27</version>
+        <version>1.28-SNAPSHOT</version>
     </parent>
 
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-war</artifactId>
-    <version>1.27</version>
+    <version>1.28-SNAPSHOT</version>
 
     <packaging>war</packaging>
     <name>Streamflow war</name>
