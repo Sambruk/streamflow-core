@@ -11,23 +11,6 @@ Installation
 		velocimacro.library =
 
 #. Modify root **pom.xml** file:
-	* Change
-	.. code-block:: maven
-
-		<version.qi4j-core>1.3-sf897</version.qi4j-core>
-		<version.qi4j-lib>1.3-sf897</version.qi4j-lib>
-		<version.qi4j-ext>1.3-sf897</version.qi4j-ext>
-		<version.qi4j-tools>1.3-sf897</version.qi4j-tools>
-
-	To:
-
-	.. code-block:: maven
-
-		<version.qi4j-core>1.3</version.qi4j-core>
-		<version.qi4j-lib>1.3</version.qi4j-lib>
-		<version.qi4j-ext>1.3</version.qi4j-ext>
-		<version.qi4j-tools>1.3</version.qi4j-tools>
-
 	* Add under line *22*
 	.. code-block:: maven
 
@@ -41,6 +24,11 @@ Installation
 		    <id>nexus</id>
 		    <url>http://79.125.6.136/nexus/content/groups/public</url>
 		</repository>
+		<repository>
+            	    <id>releases</id>
+            	    <name>Cloudbees Release Repo</name>
+            	    <url>http://repository-streamflow.forge.cloudbees.com/release/</url>
+        	</repository>
 		<!--Unchecked repo only for cardme -->
 		<repository>
 		    <id>basex</id>
