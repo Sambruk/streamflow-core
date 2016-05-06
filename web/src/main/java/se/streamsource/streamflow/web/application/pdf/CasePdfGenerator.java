@@ -146,7 +146,7 @@ public class CasePdfGenerator implements CaseOutput
       printedOn = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( new Date() );
 
       document.print( "", valueFont ).changeColor( headingColor )
-            .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font ).line().changeColor( Color.BLACK )
+            .println( bundle.getString( "caseSummary" ) + " - " + caseId, h1Font ).line(headingColor).changeColor( Color.BLACK )
             .print( "", valueFont );
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),

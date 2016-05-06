@@ -35,7 +35,7 @@ public class PdfDocument
    private PDPageContentStream contentStream = null;
 
    private float y = -1;
-   private ArrayList<Float> yLines = new ArrayList<>();
+   private ArrayList<LineObject> pageLines = new ArrayList<>();
    private float maxStringLength;
    private PDRectangle pageSize;
 
@@ -174,10 +174,11 @@ public class PdfDocument
          if (contentStream != null)
          {
             contentStream.endText();
-         //Drawing all lines here after complete filling page
-            if(this.yLines.size()>0) {
-               for (ListIterator<Float> itr = yLines.listIterator(); itr.hasNext();) {
-                  this.line(maxStringLength, itr.next());
+            //Drawing all lines here after complete filling page
+            if (this.pageLines.size() > 0) {
+               for (ListIterator<LineObject> itr = pageLines.listIterator(); itr.hasNext(); ) {
+                  LineObject lineObject = itr.next();
+                  this.line(lineObject.getEndX(), lineObject.getyPosition(), lineObject.getColor());
                   itr.remove();
                }
             }
@@ -264,16 +265,21 @@ public class PdfDocument
 
    public PdfDocument underLine( String string, PdfFont font ) throws IOException
    {
-//      TODO underline have different length, and not good idea to use method line() in same way
-      return line( (font.font.getStringWidth( string ) / 1000) * font.size,0 );
+      pageLines.add(new LineObject(y, (font.font.getStringWidth(string) / 1000) * font.size, Color.BLACK));
+      return this;
    }
 
    public PdfDocument line() throws IOException
    {
+      return line(Color.BLACK);
+   }
+
+   public PdfDocument line(Color color) throws IOException
+   {
       //Saving line y coordinate to draw before creating new page
-      yLines.add(y-4);
+      pageLines.add(new LineObject(y - 4, maxStringLength, color));
       //Leaving space for line
-      contentStream.moveTextPositionByAmount( 0, -8 );
+      contentStream.moveTextPositionByAmount(0, -8);
       y -= 8;
       return this;
    }
@@ -328,8 +334,10 @@ public class PdfDocument
       return closeAndReturn();
    }
 
-   private PdfDocument line(float endX, float yPos) throws IOException {
+   private PdfDocument line(float endX, float yPos, Color color) throws IOException {
+      changeColor(color);
       contentStream.drawLine(leftMargin, yPos, endX + leftMargin, yPos);
+      changeColor(Color.BLACK);
       return this;
    }
 
@@ -363,27 +371,22 @@ public class PdfDocument
 
    private void close()
    {
-      if (contentStream != null)
-      {
-         try
-         {
+      if (contentStream != null) {
+         try {
             contentStream.endText();
             //Draw lines if document only one page
-            if(pdf.getNumberOfPages()<2){
-               for (ListIterator<Float> itr = yLines.listIterator(); itr.hasNext();) {
-                  this.line(maxStringLength, itr.next());
+            if (pdf.getNumberOfPages() < 2) {
+               for (ListIterator<LineObject> itr = pageLines.listIterator(); itr.hasNext(); ) {
+                  LineObject lineObject = itr.next();
+                  this.line(lineObject.getEndX(), lineObject.getyPosition(), lineObject.getColor());
                   itr.remove();
                }
             }
-         } catch (IOException e)
-         {
-         } finally
-         {
-            try
-            {
+         } catch (IOException e) {
+         } finally {
+            try {
                contentStream.close();
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                contentStream = null;
             }
          }
