@@ -371,7 +371,7 @@
         </dependency> -->
 
         <dependency>
-            <groupId>cardme</groupId>
+            <groupId>org.deepfs.external</groupId>
             <artifactId>cardme</artifactId>
             <version>0.2.6</version>
         </dependency>

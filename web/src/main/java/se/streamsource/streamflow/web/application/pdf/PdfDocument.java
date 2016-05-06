@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -34,6 +35,7 @@ public class PdfDocument
    private PDPageContentStream contentStream = null;
 
    private float y = -1;
+   private ArrayList<Float> yLines = new ArrayList<>();
    private float maxStringLength;
    private PDRectangle pageSize;
 
@@ -169,12 +171,19 @@ public class PdfDocument
       {
          PDPage newPage = new PDPage();
          newPage.setMediaBox( pageSize );
-         pdf.addPage( newPage );
          if (contentStream != null)
          {
             contentStream.endText();
+         //Drawing all lines here after complete filling page
+            if(this.yLines.size()>0) {
+               for (ListIterator<Float> itr = yLines.listIterator(); itr.hasNext();) {
+                  this.line(maxStringLength, itr.next());
+                  itr.remove();
+               }
+            }
             contentStream.close();
          }
+         pdf.addPage( newPage );
          contentStream = new PDPageContentStream( pdf, newPage );
          y = newPage.getMediaBox().getHeight() - headerMargin - font.height;
          contentStream.beginText();
@@ -255,12 +264,18 @@ public class PdfDocument
 
    public PdfDocument underLine( String string, PdfFont font ) throws IOException
    {
-      return line( (font.font.getStringWidth( string ) / 1000) * font.size );
+//      TODO underline have different length, and not good idea to use method line() in same way
+      return line( (font.font.getStringWidth( string ) / 1000) * font.size,0 );
    }
 
    public PdfDocument line() throws IOException
    {
-      return line( maxStringLength );
+      //Saving line y coordinate to draw before creating new page
+      yLines.add(y-4);
+      //Leaving space for line
+      contentStream.moveTextPositionByAmount( 0, -8 );
+      y -= 8;
+      return this;
    }
 
    public PDDocument generateHeaderAndPageNumbers( PdfFont font, String... headers )
@@ -271,7 +286,7 @@ public class PdfDocument
          int pageCount = 1;
          float stringWidth = 0.0f;
          float positionX = 0.0f;
-         
+
          for (Object o : pdf.getDocumentCatalog().getAllPages())
          {
             String numbering = "" + pageCount + " (" + pageTotal + ")";
@@ -313,13 +328,8 @@ public class PdfDocument
       return closeAndReturn();
    }
 
-   private PdfDocument line( float endX ) throws IOException
-   {
-      contentStream.moveTextPositionByAmount( 0, -4 );
-      y -= 4;
-      contentStream.drawLine( leftMargin, y, endX + leftMargin, y );
-      contentStream.moveTextPositionByAmount( 0, -4 );
-      y -= 4;
+   private PdfDocument line(float endX, float yPos) throws IOException {
+      contentStream.drawLine(leftMargin, yPos, endX + leftMargin, yPos);
       return this;
    }
 
@@ -358,6 +368,13 @@ public class PdfDocument
          try
          {
             contentStream.endText();
+            //Draw lines if document only one page
+            if(pdf.getNumberOfPages()<2){
+               for (ListIterator<Float> itr = yLines.listIterator(); itr.hasNext();) {
+                  this.line(maxStringLength, itr.next());
+                  itr.remove();
+               }
+            }
          } catch (IOException e)
          {
          } finally

@@ -16,28 +16,20 @@
  */
 package se.streamsource.streamflow.web.application.pdf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.util.MapUtil;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Underlay one document with a template, mainly used to apply header/footer to an existing document
@@ -120,70 +112,57 @@ public class Underlay
     * repeatedly underlayed under the destination document for every page in the
     * destination.
     */
-   public PDDocument underlay( PDDocument destination, InputStream templateStream ) throws IOException
-   {
-      try
-      {
-         PDFParser parser = new PDFParser( templateStream );
+   public PDDocument underlay(PDDocument destination, InputStream templateStream) throws IOException {
+      pdfDocument = destination;
+      try {
+         PDFParser parser = new PDFParser(templateStream);
          parser.parse();
          pdfUnderlay = parser.getPDDocument();
-      }
-      finally
-      {
-         if (templateStream != null)
-         {
+         overlayWithDarkenBlendMode(pdfDocument, pdfUnderlay);
+      } finally {
+         if (templateStream != null) {
             templateStream.close();
          }
       }
-
-      try
-      {
-         pdfDocument = destination;
-
-         PDDocumentCatalog overlayCatalog = pdfUnderlay.getDocumentCatalog();
-         collectLayoutPages( overlayCatalog.getAllPages() );
-
-         PDDocumentCatalog pdfCatalog = pdfDocument.getDocumentCatalog();
-         processPages( pdfCatalog.getAllPages() );
-      } finally
-      {
-//         pdfUnderlay.close();
-      }
-
       return pdfDocument;
    }
 
-   private void collectLayoutPages( List pages ) throws IOException
-   {
-      Iterator pagesIter = pages.iterator();
-      while (pagesIter.hasNext())
-      {
-         PDPage page = (PDPage) pagesIter.next();
-         COSBase contents = page.getCOSDictionary().getDictionaryObject( COSName.CONTENTS );
-         PDResources resources = page.findResources();
-         if (resources == null)
-         {
-            resources = new PDResources();
-            page.setResources( resources );
-         }
-         COSDictionary res = resources.getCOSDictionary();
 
-         if (contents instanceof COSStream)
-         {
-            COSStream stream = (COSStream) contents;
-            Map objectNameMap = new TreeMap();
-            stream = makeUniqObjectNames( objectNameMap, stream );
+   private void overlayWithDarkenBlendMode(PDDocument document, PDDocument overlay) throws IOException {
+      PDXObjectForm xobject = importAsXObject(document, (PDPage) overlay.getDocumentCatalog().getAllPages().get(0));
+      PDExtendedGraphicsState darken = new PDExtendedGraphicsState();
+      darken.getCOSDictionary().setName("BM", "Darken");
 
-            layoutPages.add( new LayoutPage( stream, res, objectNameMap ) );
-         } else if (contents instanceof COSArray)
-         {
-            throw new UnsupportedOperationException( "Layout pages with COSArray currently not supported." );
-            // layoutPages.add(new LayoutPage(contents, res));
-         } else
-         {
-            throw new IOException( "Contents are unknown type:" + contents.getClass().getName() );
-         }
+      List<PDPage> pages = document.getDocumentCatalog().getAllPages();
+
+      for (PDPage page : pages) {
+         Map<String, PDExtendedGraphicsState> states = page.getResources().getGraphicsStates();
+         if (states == null)
+            states = new HashMap<>();
+         String darkenKey = MapUtil.getNextUniqueKey(states, "Dkn");
+         states.put(darkenKey, darken);
+         page.getResources().setGraphicsStates(states);
+
+         PDPageContentStream stream = new PDPageContentStream(document, page, true, false, true);
+         stream.appendRawCommands(String.format("/%s gs ", darkenKey));
+         stream.drawXObject(xobject, 0, 0, 1, 1);
+         stream.close();
       }
+   }
+
+   private PDXObjectForm importAsXObject(PDDocument target, PDPage page) throws IOException {
+      final PDStream xobjectStream = new PDStream(target, page.getContents().createInputStream(), false);
+      final PDXObjectForm xobject = new PDXObjectForm(xobjectStream);
+
+      xobject.setResources(page.findResources());
+      xobject.setBBox(page.findCropBox());
+
+      COSDictionary group = new COSDictionary();
+      group.setName("S", "Transparency");
+      group.setBoolean(COSName.getPDFName("K"), true);
+      xobject.getCOSStream().setItem(COSName.getPDFName("Group"), group);
+
+      return xobject;
    }
 
    private COSStream makeUniqObjectNames( Map objectNameMap, COSStream stream ) throws IOException
