@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.application.pdf;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.qi4j.api.common.Optional;
@@ -154,8 +155,10 @@ public class CasePdfGenerator implements CaseOutput
             bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
             bundle.getString( "resolution" ), bundle.getString( "dueOn" ), bundle.getString( "priority" ) );
 
-      document.printLabelAndTextWithTabStop( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription() == null ? "" : caze.getDescription(), valueFont,
-            tabStop );
+      if (StringUtils.isNotEmpty(caze.getDescription())) {
+         document.printLabelAndTextWithTabStop(bundle.getString("title") + ": ", valueFontBold, caze.getDescription(), valueFont,
+                 tabStop);
+      }
 
       if (((CasePriority.Data)caze).casepriority().get() != null)
       {
@@ -163,10 +166,12 @@ public class CasePdfGenerator implements CaseOutput
                ((CasePriority.Data)caze).casepriority().get().getDescription(),
                valueFont, tabStop );
       }
-      
-      document.printLabelAndTextWithTabStop( bundle.getString( "createdOn" ) + ": ", valueFontBold,
-            DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ),
-            valueFont, tabStop );
+
+      if (caze.createdOn().get() != null) {
+         document.printLabelAndTextWithTabStop(bundle.getString("createdOn") + ": ", valueFontBold,
+                 DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(caze.createdOn().get()),
+                 valueFont, tabStop);
+      }
 
       if (((DueOn.Data) caze).dueOn().get() != null)
       {
