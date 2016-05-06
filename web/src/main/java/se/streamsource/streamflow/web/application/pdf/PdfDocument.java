@@ -66,7 +66,7 @@ public class PdfDocument
    {
       this.pageSize = pageSize;
       this.headerMargin = headerMargin;
-      this.footerMargin = footerMargin;
+      this.footerMargin = footerMargin + 30;
       this.leftMargin = leftMargin;
       this.rightMargin = rightMargin;
    }
