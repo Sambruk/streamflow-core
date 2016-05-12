@@ -106,7 +106,7 @@ public interface KnowledgebaseService
             velocity.evaluate(context, writer, "knowledgebase", template);
 
             return writer.toString();
-         } catch (IOException e)
+         } catch (Exception e)
          {
             throw new IllegalArgumentException("Could not create URL", e);
          }

@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -34,6 +35,7 @@ public class PdfDocument
    private PDPageContentStream contentStream = null;
 
    private float y = -1;
+   private ArrayList<LineObject> pageLines = new ArrayList<>();
    private float maxStringLength;
    private PDRectangle pageSize;
 
@@ -64,7 +66,7 @@ public class PdfDocument
    {
       this.pageSize = pageSize;
       this.headerMargin = headerMargin;
-      this.footerMargin = footerMargin;
+      this.footerMargin = footerMargin + 30;
       this.leftMargin = leftMargin;
       this.rightMargin = rightMargin;
    }
@@ -169,12 +171,20 @@ public class PdfDocument
       {
          PDPage newPage = new PDPage();
          newPage.setMediaBox( pageSize );
-         pdf.addPage( newPage );
          if (contentStream != null)
          {
             contentStream.endText();
+            //Drawing all lines here after complete filling page
+            if (this.pageLines.size() > 0) {
+               for (ListIterator<LineObject> itr = pageLines.listIterator(); itr.hasNext(); ) {
+                  LineObject lineObject = itr.next();
+                  this.line(lineObject.getEndX(), lineObject.getyPosition(), lineObject.getColor());
+                  itr.remove();
+               }
+            }
             contentStream.close();
          }
+         pdf.addPage( newPage );
          contentStream = new PDPageContentStream( pdf, newPage );
          y = newPage.getMediaBox().getHeight() - headerMargin - font.height;
          contentStream.beginText();
@@ -255,12 +265,23 @@ public class PdfDocument
 
    public PdfDocument underLine( String string, PdfFont font ) throws IOException
    {
-      return line( (font.font.getStringWidth( string ) / 1000) * font.size );
+      pageLines.add(new LineObject(y, (font.font.getStringWidth(string) / 1000) * font.size, Color.BLACK));
+      return this;
    }
 
    public PdfDocument line() throws IOException
    {
-      return line( maxStringLength );
+      return line(Color.BLACK);
+   }
+
+   public PdfDocument line(Color color) throws IOException
+   {
+      //Saving line y coordinate to draw before creating new page
+      pageLines.add(new LineObject(y - 4, maxStringLength, color));
+      //Leaving space for line
+      contentStream.moveTextPositionByAmount(0, -8);
+      y -= 8;
+      return this;
    }
 
    public PDDocument generateHeaderAndPageNumbers( PdfFont font, String... headers )
@@ -271,7 +292,7 @@ public class PdfDocument
          int pageCount = 1;
          float stringWidth = 0.0f;
          float positionX = 0.0f;
-         
+
          for (Object o : pdf.getDocumentCatalog().getAllPages())
          {
             String numbering = "" + pageCount + " (" + pageTotal + ")";
@@ -313,13 +334,10 @@ public class PdfDocument
       return closeAndReturn();
    }
 
-   private PdfDocument line( float endX ) throws IOException
-   {
-      contentStream.moveTextPositionByAmount( 0, -4 );
-      y -= 4;
-      contentStream.drawLine( leftMargin, y, endX + leftMargin, y );
-      contentStream.moveTextPositionByAmount( 0, -4 );
-      y -= 4;
+   private PdfDocument line(float endX, float yPos, Color color) throws IOException {
+      changeColor(color);
+      contentStream.drawLine(leftMargin, yPos, endX + leftMargin, yPos);
+      changeColor(Color.BLACK);
       return this;
    }
 
@@ -353,20 +371,22 @@ public class PdfDocument
 
    private void close()
    {
-      if (contentStream != null)
-      {
-         try
-         {
+      if (contentStream != null) {
+         try {
             contentStream.endText();
-         } catch (IOException e)
-         {
-         } finally
-         {
-            try
-            {
+            //Draw lines if document only one page
+            if (pdf.getNumberOfPages() < 2) {
+               for (ListIterator<LineObject> itr = pageLines.listIterator(); itr.hasNext(); ) {
+                  LineObject lineObject = itr.next();
+                  this.line(lineObject.getEndX(), lineObject.getyPosition(), lineObject.getColor());
+                  itr.remove();
+               }
+            }
+         } catch (IOException e) {
+         } finally {
+            try {
                contentStream.close();
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                contentStream = null;
             }
          }

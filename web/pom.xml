@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.28-SNAPSHOT</version>
+        <version>1.28</version>
     </parent>
     <artifactId>streamflow-web</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.28-SNAPSHOT</version>
+    <version>1.28</version>
     <packaging>war</packaging>
     <name>Streamflow web application</name>
     <description>Streamflow web application</description>
@@ -371,7 +371,7 @@
         </dependency> -->
 
         <dependency>
-            <groupId>cardme</groupId>
+            <groupId>org.deepfs.external</groupId>
             <artifactId>cardme</artifactId>
             <version>0.2.6</version>
         </dependency>

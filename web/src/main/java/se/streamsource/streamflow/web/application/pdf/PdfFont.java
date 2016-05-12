@@ -32,11 +32,12 @@ public class PdfFont
    {
       this.font = font;
       this.size = fontSize;
-      this.font.setEncoding( new WinAnsiEncoding() );
+      //TODO Ensure that there isn't any problems without setting encoding in new version
+//      this.font.setEncoding( new WinAnsiEncoding() );
       try
       {
          this.height = (this.font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000) * this.size * 1.05f;
-      } catch (IOException e)
+      } catch (Exception e)
       {
          throw new InstantiationError( e.getMessage() );
       }
