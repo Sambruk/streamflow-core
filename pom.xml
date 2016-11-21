@@ -953,7 +953,7 @@
                                 <keystore>${keystore.path}</keystore>
                                 <keypass>${keystore.keypass}</keypass>
                                 <storepass>${keystore.keypass}</storepass>
-                                <alias>server</alias>
+                                <alias>codesigncert</alias>
                             </sign>
                         </configuration>
                     </plugin>
