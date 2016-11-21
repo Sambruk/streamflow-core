@@ -63,7 +63,7 @@ public class SeparatorTableUI extends BasicTableUI
       g.setClip( clipBounds );
 
       int firstIndex = table.rowAtPoint( new Point( 0, clipBounds.y ) );
-      int lastIndex = table.getModel().getRowCount() - 1;
+      int lastIndex = table.getRowCount() - 1;
 
       Rectangle rowRect = new Rectangle( 0, 0,
             tableWidth, table.getRowHeight() + table.getRowMargin() );
