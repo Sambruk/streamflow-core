@@ -231,12 +231,12 @@
         </contributor>
     </contributors>
 
-    <inceptionYear>2009-2014</inceptionYear>
-    <url>http://www.jayway.com/streamflow/</url>
+    <inceptionYear>2016-2017</inceptionYear>
+    <url>http://www.sambruk.se/streamflow/</url>
 
     <organization>
-        <name>Jayway Products AB</name>
-        <url>http://www.jayway.com/streamflow/</url>
+        <name>Föreningen Sambruk</name>
+        <url>http://www.sambruk.se/streamflow/</url>
     </organization>
 
     <build>

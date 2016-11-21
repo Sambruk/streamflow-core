@@ -2,13 +2,15 @@
 <!--
 
 
-    Copyright 2009-2014 Jayway Products AB
+    Copyright
+    2009-2015 Jayway Products AB
+    2016-2017 FÃ¶reningen Sambruk
 
-    Licensed under the Apache License, Version 2.0 (the "License");
+    Licensed under AGPL, Version 3.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        http://www.gnu.org/licenses/agpl.txt
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,15 +24,15 @@
 
 <toc version="2.0" categoryclosedimage="folder_closed" categoryopenimage="folder" topicimage="document">
 	<tocitem text="Introduktion" target="intro1" />
-	<tocitem text="Fönster" expand="true">
+	<tocitem text="Fï¿½nster" expand="true">
 		<tocitem text="Arbetsytan" target="workspace" />
-		<tocitem text="Översikt" target="overview" />
-		<tocitem text="Sök" target="search" />
+		<tocitem text="ï¿½versikt" target="overview" />
+		<tocitem text="Sï¿½k" target="search" />
 		<tocitem text="Administration" target="admin" />
 	</tocitem>
 	<tocitem text="Funktioner">
-		<tocitem text="Lägg till Arbetsuppgift" target="newcase" />
-		<tocitem text="Ange information i ärendet" target="caseinfo" />
+		<tocitem text="Lï¿½gg till Arbetsuppgift" target="newcase" />
+		<tocitem text="Ange information i ï¿½rendet" target="caseinfo" />
 		<tocitem text="Ange Kontaktuppgifter" target="contacts" />
 		<tocitem text="Delegera &amp; Skicka till" target="delegate" />
 		<tocitem text="Tilldela mig &amp; Avsluta" target="tilldela" />
