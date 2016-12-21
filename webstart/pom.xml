@@ -3,12 +3,12 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.28</version>
+        <version>1.28.1</version>
     </parent>
 
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-webstart</artifactId>
-    <version>1.28</version>
+    <version>1.28.1</version>
 
     <packaging>pom</packaging>
     <name>Streamflow JavaWebStart client</name>
@@ -29,7 +29,7 @@
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>keytool-api-1.7</artifactId>
-                        <version>1.4</version>
+                        <version>1.5</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -57,7 +57,7 @@
                             <gen>false</gen>
                         </keystoreConfig>
 
-                        <tsaLocation>https://timestamp.geotrust.com/tsa</tsaLocation>
+                        <tsaLocation>http://tsa.starfieldtech.com/</tsaLocation>
                     </sign>
 
                     <updateManifestEntries>

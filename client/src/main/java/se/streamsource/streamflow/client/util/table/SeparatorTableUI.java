@@ -1,12 +1,14 @@
 /**
  *
- * Copyright 2009-2014 Jayway Products AB
+ * Copyright
+ * 2009-2015 Jayway Products AB
+ * 2016-2017 Föreningen Sambruk
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.gnu.org/licenses/agpl.txt
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,7 +65,7 @@ public class SeparatorTableUI extends BasicTableUI
       g.setClip( clipBounds );
 
       int firstIndex = table.rowAtPoint( new Point( 0, clipBounds.y ) );
-      int lastIndex = table.getModel().getRowCount() - 1;
+      int lastIndex = table.getRowCount() - 1;
 
       Rectangle rowRect = new Rectangle( 0, 0,
             tableWidth, table.getRowHeight() + table.getRowMargin() );
