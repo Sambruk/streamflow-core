@@ -3,12 +3,12 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.28.2</version>
+        <version>1.28.3</version>
     </parent>
 
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-webstart</artifactId>
-    <version>1.28.2</version>
+    <version>1.28.3</version>
 
     <packaging>pom</packaging>
     <name>Streamflow JavaWebStart client</name>
