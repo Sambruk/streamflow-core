@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.28.3-SNAPSHOT</version>
+    <version>1.28.3</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
