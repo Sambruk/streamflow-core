@@ -167,59 +167,11 @@ public interface SurfaceSummaryContext
 
 
          SubmittedFormValue submittedForm = userCases.submitFormAndSendCase( aCase, formSubmission, user );
-         DoubleSignatureTask task = createDoubleSignatureTaskIfNeccessary( aCase, submittedForm );
-         if( task != null )
-         {
-            // set task reference back to subittedform - second signee info
-
-            try
-            {
-
-               Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
-               String organisation = organizations.organization().get().getDescription();
-               String id = ((CaseId.Data)aCase).caseId().get();
-               String link = defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get();
-
-               VelocityContext context = new VelocityContext();
-               context.put( "organisation", organisation );
-               context.put( "id", id );
-               context.put( "link", link );
-
-               String subjectText = MessageTemplate.text( accessPoint.subject().get() )
-                     .bind( "caseId", id ).bind("organisation", organisation).eval();
-
-               String velocityTemplate = accessPoint.emailTemplates().get().get( "secondsigneenotification" );
-               String htmlMail = module.objectBuilderFactory().newObject( HtmlMailGenerator.class ).createDoubleSignatureMail( velocityTemplate, context );
-
-               Conversations conversations = RoleMap.role( Conversations.class );
-               Conversation conversation = conversations.createConversation( subjectText, administrator );
-               EmailUserEntity emailUser = users.createEmailUser( submittedForm.secondsignee().get().email().get() );
-               conversation.addParticipant( emailUser );
-
-               conversation.createMessage( htmlMail, MessageType.HTML, administrator );
-
-               // TODO is there a way to collect the email value created by notification service to save into the task
-               // for resend
-               ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
-
-               builder.prototype().subject().set( subjectText );
-               builder.prototype().contentType().set( Translator.HTML );
-               builder.prototype().content().set( htmlMail );
-               builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
-
-               EmailValue email = builder.newInstance();
-               task.updateEmailValue( email );
-               task.updateSecondDraftUrl( link );
-               task.updateLastReminderSent(new DateTime( DateTimeZone.UTC ) );
-
-            } catch (Throwable throwable)
-            {
-               logger.error( "Could not create message", throwable );
-               throw new ResourceException( Status.SERVER_ERROR_INTERNAL, throwable );
-            }
-         }
 
          FormDraftDTO form = role( FormDraftDTO.class );
+
+         // find all form attachments and attach them to the email as well
+         List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
 
          if ( form.mailSelectionEnablement().get() != null && form.mailSelectionEnablement().get() )
          {
@@ -251,8 +203,6 @@ public interface SurfaceSummaryContext
                   formPdfAttachment.changeSize( attachmentStore.getAttachmentSize( attachmentStoreId ) );
                   formPdfAttachment.changeName( accessPoint.getDescription() + ".pdf" );
 
-                  // find all form attachments and attach them to the email as well
-                  List<AttachedFileValue> formAttachments = new ArrayList<AttachedFileValue>();
                   for (SubmittedFieldValue value : submittedFormValue.fields())
                   {
                      FieldValueDefinition.Data field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldValueDefinition.Data.class, value.field().get().identity() );
@@ -287,6 +237,59 @@ public interface SurfaceSummaryContext
                logger.error( "Could not create confirmation conversation message.", throwable );
             }
          }
+
+         DoubleSignatureTask task = createDoubleSignatureTaskIfNeccessary( aCase, submittedForm );
+         if( task != null )
+         {
+            // set task reference back to subittedform - second signee info
+            try
+            {
+               Organizations.Data organizations = module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.Data.class, OrganizationsEntity.ORGANIZATIONS_ID );
+               String organisation = organizations.organization().get().getDescription();
+               String id = ((CaseId.Data)aCase).caseId().get();
+               String link = defaults.config().configuration().webFormsProxyUrl().get() + "?tid=" + ((Identity)task ).identity().get();
+
+               VelocityContext context = new VelocityContext();
+               context.put( "organisation", organisation );
+               context.put( "id", id );
+               context.put( "link", link );
+
+               String subjectText = MessageTemplate.text( accessPoint.subject().get() )
+                     .bind( "caseId", id ).bind("organisation", organisation).eval();
+
+               String velocityTemplate = accessPoint.emailTemplates().get().get( "secondsigneenotification" );
+               String htmlMail = module.objectBuilderFactory().newObject( HtmlMailGenerator.class ).createDoubleSignatureMail( velocityTemplate, context );
+
+               Conversations conversations = RoleMap.role( Conversations.class );
+               Conversation conversation = conversations.createConversation( subjectText, administrator );
+               EmailUserEntity emailUser = users.createEmailUser( submittedForm.secondsignee().get().email().get() );
+               conversation.addParticipant( emailUser );
+
+               conversation.createMessage( htmlMail, MessageType.HTML, administrator );
+
+               // TODO is there a way to collect the email value created by notification service to save into the task
+               // for resend
+               ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder( EmailValue.class );
+
+               builder.prototype().subject().set( subjectText );
+               builder.prototype().contentType().set( Translator.HTML );
+               builder.prototype().content().set( htmlMail );
+               builder.prototype().to().set( submittedForm.secondsignee().get().email().get() );
+
+               EmailValue email = builder.newInstance();
+
+               email.attachments().set(formAttachments);
+               task.updateEmailValue( email );
+               task.updateSecondDraftUrl( link );
+               task.updateLastReminderSent(new DateTime( DateTimeZone.UTC ) );
+
+            } catch (Throwable throwable)
+            {
+               logger.error( "Could not create message", throwable );
+               throw new ResourceException( Status.SERVER_ERROR_INTERNAL, throwable );
+            }
+         }
+
       }
 
       private DoubleSignatureTask createDoubleSignatureTaskIfNeccessary( Case aCase, SubmittedFormValue submittedForm )
