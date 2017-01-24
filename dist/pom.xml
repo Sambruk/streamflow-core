@@ -3,11 +3,11 @@
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
         <artifactId>streamflow</artifactId>
-        <version>1.28.2</version>
+        <version>1.28.3-SNAPSHOT</version>
     </parent>
     <artifactId>dist</artifactId>
     <groupId>se.streamsource.streamflow</groupId>
-    <version>1.28.2</version>
+    <version>1.28.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Streamflow Distribution</name>
     <description>Streamflow Distribution</description>
