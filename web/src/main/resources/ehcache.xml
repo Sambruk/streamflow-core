@@ -46,5 +46,14 @@
            overflowToDisk="false"
            memoryStoreEvictionPolicy="LRU"
             />
+
+    <diskStore path="java.io.tmpdir/StreamflowServer/cache"/>
+    <cache name="ENTITYSTATES"
+           maxElementsInMemory="50000"
+           maxElementsOnDisk="2147483647"
+           eternal="true"
+           overflowToDisk="true"
+           memoryStoreEvictionPolicy="LRU"/>
+
 </ehcache>
         

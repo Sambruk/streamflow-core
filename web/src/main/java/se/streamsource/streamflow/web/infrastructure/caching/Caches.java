@@ -26,5 +26,6 @@ package se.streamsource.streamflow.web.infrastructure.caching;
 public enum Caches
 {
    CASECOUNTS,
-   VERIFIEDUSERS
+   VERIFIEDUSERS,
+   ENTITYSTATES
 }

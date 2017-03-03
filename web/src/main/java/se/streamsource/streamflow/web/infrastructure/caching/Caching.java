@@ -118,4 +118,12 @@ public class Caching
          return null;
       }
    }
+
+   public void removeAll()
+   {
+      if (caching != null)
+      {
+         caching.manager().getEhcache( cache.name() ).removeAll();
+      }
+   }
 }

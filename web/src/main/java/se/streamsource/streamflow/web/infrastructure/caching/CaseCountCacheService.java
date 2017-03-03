@@ -57,8 +57,6 @@ public interface CaseCountCacheService
       
       public void activate() throws Exception
       {
-         caching.manager().clearAll();
-         
          initCache();
       }
 
@@ -70,6 +68,8 @@ public interface CaseCountCacheService
       private void initCache() {
 
          Caching caching = new Caching( this.caching, Caches.CASECOUNTS );
+
+         caching.removeAll();
 
          UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "CaseCountCacheInit" ) );
          
