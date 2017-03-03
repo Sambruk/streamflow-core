@@ -1,11 +1,15 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.beanutils.MethodUtils;
 import org.json.JSONObject;
+import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.common.TypeName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
@@ -18,10 +22,11 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * JAVADOC
@@ -47,48 +52,60 @@ public interface EntityExportJob extends Job, TransientComposite
          try
          {
 
-            if ( entityExportService.isExported() && entityExportService.hasNextEntity() )
+            while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
             {
                final String nextEntity = entityExportService.getNextEntity();
 
-               if ( nextEntity.isEmpty() ) {
+               if ( nextEntity.isEmpty() )
+               {
                   logger.info( "Entity doesn't exist in cache." );
                }
 
-               final JSONObject jsonObject = new JSONObject( nextEntity );
+               final JSONObject entity = new JSONObject( nextEntity );
 
-               final String description = jsonObject.optString( "_description" );
+               final String description = entity.optString( "_description" );
 
-               if ( description.isEmpty() ) {
+               if ( description.isEmpty() )
+               {
                   throw new IllegalStateException( "JSON must include _description property." );
                }
 
-
                final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
-
                final EntityType entityType = entityDescriptor.entityType();
 
-               List<PropertyType> propertyTypeList = new LinkedList<>(  );
-               for ( PropertyType property : entityType.properties() )
-               {
-                  propertyTypeList.add( property );
-               }
+               final Iterable<PropertyType> existsProperties =
+                       getNotNullProperties( entity, entityType.properties() );
+               final Iterable<AssociationType> existsAssociations =
+                       getNotNullProperties( entity, entityType.associations() );
+               final Iterable<ManyAssociationType> existsManyAssociations =
+                       getNotNullProperties( entity, entityType.manyAssociations() );
 
-               List<AssociationType> associationTypeList = new LinkedList<>(  );
-               for ( AssociationType associationType : entityType.associations() )
-               {
-                  associationTypeList.add( associationType );
-               }
+//               testing!!!
 
-               List<ManyAssociationType> manyAssociationTypeList = new LinkedList<>(  );
-               for ( ManyAssociationType manyAssociationType : entityType.manyAssociations() )
-               {
-                  manyAssociationTypeList.add( manyAssociationType );
-               }
+//               List<PropertyType> existsPropertyTypes = new LinkedList<>();
+//               for ( PropertyType existsProperty : existsProperties )
+//               {
+//                  existsPropertyTypes.add( existsProperty );
+//               }
+//
+//               List<AssociationType> associationTypes = new LinkedList<>();
+//               for ( AssociationType existsAssociation : existsAssociations )
+//               {
+//                  associationTypes.add( existsAssociation );
+//               }
+//
+//               List<ManyAssociationType> manyAssociationTypes = new LinkedList<>();
+//               for ( ManyAssociationType existsManyAssociation : existsManyAssociations )
+//               {
+//                  manyAssociationTypes.add( existsManyAssociation );
+//               }
+//
+//               final TypeName type = entityType.type();
 
-               final TypeName type = entityType.type();
+               final List<PropertyDescription> allProperties = getAllProperties(entity, existsProperties);
 
-               entityType.toString();
+               entityExportService.savedSuccess();
+
             }
 
          } catch ( Exception e )
@@ -96,6 +113,63 @@ public interface EntityExportJob extends Job, TransientComposite
             throw new JobExecutionException( e );
          }
 
+      }
+
+      private List<PropertyDescription> getAllProperties( JSONObject entity, Iterable<PropertyType> existsProperties )
+      {
+
+         // TODO: 03.03.17  
+
+      }
+
+
+
+      private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
+      {
+         return Iterables.filter( new Specification<T>()
+         {
+            @Override
+            public boolean satisfiedBy( T item )
+            {
+               String name;
+               try
+               {
+                  name = getQualifiedName( item );
+               } catch ( Exception e )
+               {
+                  logger.error( "Error: ", e );
+                  return false;
+               }
+               final Object prop = entity.opt( name );
+               if ( prop == null || entity.isNull( name ) )
+               {
+                  return false;
+               }
+               final String json = prop.toString();
+               return !json.isEmpty() && !json.equals( "{}" ) && !json.equals( "[]" );
+            }
+
+            private String getQualifiedName( T item )
+                    throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+            {
+               return ( ( QualifiedName ) MethodUtils.invokeExactMethod( item, "qualifiedName", null ) ).name();
+            }
+
+         }, iterable );
+
+      }
+
+      private class PropertyDescription
+      {
+
+         private boolean isList;
+         private boolean defaultJavaType;
+         private Object value;
+         private List<String> parentFieldNames;
+
+         private PropertyDescription()
+         {
+         }
       }
 
 
