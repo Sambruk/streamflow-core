@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.qi4j.api.entity.Identity;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -45,50 +46,50 @@ import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
  */
 public enum EntityInfo
 {
-   AttachmentEntity( AttachmentEntity.class.getName() ),
-   CaseLogEntity( CaseLogEntity.class.getName() ),
-   CaseTypeEntity( CaseTypeEntity.class.getName() ),
-   ResolutionEntity( ResolutionEntity.class.getName() ),
-   CaseEntity( CaseEntity.class.getName() ),
-   ConversationEntity( ConversationEntity.class.getName() ),
-   MessageEntity( MessageEntity.class.getName() ),
-   CustomerEntity( CustomerEntity.class.getName() ),
-   CustomersEntity( CustomersEntity.class.getName() ),
-   ShadowCaseEntity( ShadowCaseEntity.class.getName() ),
-   DatatypeDefinitionEntity( DatatypeDefinitionEntity.class.getName() ),
-   FieldEntity( FieldEntity.class.getName() ),
-   FieldGroupEntity( FieldGroupEntity.class.getName() ),
-   FieldGroupFieldInstanceEntity( FieldGroupFieldInstanceEntity.class.getName() ),
-   FormDraftEntity( FormDraftEntity.class.getName() ),
-   FormEntity( FormEntity.class.getName() ),
-   PageEntity( PageEntity.class.getName() ),
-   LabelEntity( LabelEntity.class.getName() ),
-   NotesTimeLineEntity( NotesTimeLineEntity.class.getName() ),
-   AccessPointEntity( AccessPointEntity.class.getName() ),
-   EmailAccessPointEntity( EmailAccessPointEntity.class.getName() ),
-   GlobalCaseIdStateEntity( GlobalCaseIdStateEntity.class.getName() ),
-   GroupEntity( GroupEntity.class.getName() ),
-   IntegrationPointEntity( IntegrationPointEntity.class.getName() ),
-   MailRestrictionEntity( MailRestrictionEntity.class.getName() ),
-   OrganizationEntity( OrganizationEntity.class.getName() ),
-   OrganizationalUnitEntity( OrganizationalUnitEntity.class.getName() ),
-   OrganizationsEntity( OrganizationsEntity.class.getName() ),
-   PriorityEntity( PriorityEntity.class.getName() ),
-   RoleEntity( RoleEntity.class.getName() ),
-   ProjectEntity( ProjectEntity.class.getName() ),
-   ProjectRoleEntity( ProjectRoleEntity.class.getName() ),
-   DoubleSignatureTaskEntity( DoubleSignatureTaskEntity.class.getName() ),
-   EmailUserEntity( EmailUserEntity.class.getName() ),
-   EndUserEntity( EndUserEntity.class.getName() ),
-   PerspectiveEntity( PerspectiveEntity.class.getName() ),
-   ProxyUserEntity( ProxyUserEntity.class.getName() ),
-   UserEntity( UserEntity.class.getName() ),
-   UsersEntity( UsersEntity.class.getName() ),
-   UNKNOWN( "UNKNOWN" );
+   AttachmentEntity( AttachmentEntity.class ),
+   CaseLogEntity( CaseLogEntity.class ),
+   CaseTypeEntity( CaseTypeEntity.class ),
+   ResolutionEntity( ResolutionEntity.class ),
+   CaseEntity( CaseEntity.class ),
+   ConversationEntity( ConversationEntity.class ),
+   MessageEntity( MessageEntity.class ),
+   CustomerEntity( CustomerEntity.class ),
+   CustomersEntity( CustomersEntity.class ),
+   ShadowCaseEntity( ShadowCaseEntity.class ),
+   DatatypeDefinitionEntity( DatatypeDefinitionEntity.class ),
+   FieldEntity( FieldEntity.class ),
+   FieldGroupEntity( FieldGroupEntity.class ),
+   FieldGroupFieldInstanceEntity( FieldGroupFieldInstanceEntity.class ),
+   FormDraftEntity( FormDraftEntity.class ),
+   FormEntity( FormEntity.class ),
+   PageEntity( PageEntity.class ),
+   LabelEntity( LabelEntity.class ),
+   NotesTimeLineEntity( NotesTimeLineEntity.class ),
+   AccessPointEntity( AccessPointEntity.class ),
+   EmailAccessPointEntity( EmailAccessPointEntity.class ),
+   GlobalCaseIdStateEntity( GlobalCaseIdStateEntity.class ),
+   GroupEntity( GroupEntity.class ),
+   IntegrationPointEntity( IntegrationPointEntity.class ),
+   MailRestrictionEntity( MailRestrictionEntity.class ),
+   OrganizationEntity( OrganizationEntity.class ),
+   OrganizationalUnitEntity( OrganizationalUnitEntity.class ),
+   OrganizationsEntity( OrganizationsEntity.class ),
+   PriorityEntity( PriorityEntity.class ),
+   RoleEntity( RoleEntity.class ),
+   ProjectEntity( ProjectEntity.class ),
+   ProjectRoleEntity( ProjectRoleEntity.class ),
+   DoubleSignatureTaskEntity( DoubleSignatureTaskEntity.class ),
+   EmailUserEntity( EmailUserEntity.class ),
+   EndUserEntity( EndUserEntity.class ),
+   PerspectiveEntity( PerspectiveEntity.class ),
+   ProxyUserEntity( ProxyUserEntity.class ),
+   UserEntity( UserEntity.class ),
+   UsersEntity( UsersEntity.class ),
+   UNKNOWN( Identity.class );
 
-   private String entityClass;
+   private Class<? extends Identity> entityClass;
 
-   EntityInfo( String entityClass )
+   EntityInfo( Class<? extends Identity> entityClass )
    {
       this.entityClass = entityClass;
    }
@@ -96,7 +97,7 @@ public enum EntityInfo
    public static EntityInfo fromClass(String clazzName) {
       for ( EntityInfo entityInfo : values() )
       {
-         if ( clazzName.equals( entityInfo.entityClass ) ) {
+         if ( clazzName.equals( entityInfo.entityClass.getName() ) ) {
             return entityInfo;
          }
       }
