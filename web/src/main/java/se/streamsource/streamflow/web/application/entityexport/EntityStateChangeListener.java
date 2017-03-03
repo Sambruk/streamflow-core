@@ -63,9 +63,6 @@ public class EntityStateChangeListener
    @Service
    QuartzSchedulerService schedulerService;
 
-   @Structure
-   Module module;
-
    private JobDetail entityExportJob;
    private Trigger trigger;
 

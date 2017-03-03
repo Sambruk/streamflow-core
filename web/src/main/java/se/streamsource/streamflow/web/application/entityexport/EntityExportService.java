@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -45,6 +47,8 @@ public interface EntityExportService
         Activatable,
         Configuration<EntityExportConfiguration>
 {
+
+   boolean isExported();
 
    void saveToCache( String transaction );
 
@@ -69,6 +73,7 @@ public interface EntityExportService
 
       private AtomicLong cacheIdGenerator = new AtomicLong( 1 );
       private AtomicLong currentId = new AtomicLong( 1 );
+      private AtomicBoolean isExported = new AtomicBoolean( false );
 
       @Service
       FileConfiguration config;
@@ -97,6 +102,12 @@ public interface EntityExportService
       public synchronized void saveToCache( String transaction )
       {
          caching.put( new Element( cacheIdGenerator.getAndIncrement(), transaction ) );
+      }
+
+      @Override
+      public boolean isExported()
+      {
+         return isExported.get();
       }
 
       @Override
@@ -130,7 +141,7 @@ public interface EntityExportService
 
       }
 
-      private void export() throws IOException
+      private void export() throws IOException, InterruptedException
       {
          logger.info( "Started entities export from ES index." );
 
@@ -198,6 +209,8 @@ public interface EntityExportService
 
             searchContinue = entities.length == numberOfEntitiesForRequest;
          }
+
+         isExported.set( true );
 
          logger.info( "Finished entities export from ES index." );
       }

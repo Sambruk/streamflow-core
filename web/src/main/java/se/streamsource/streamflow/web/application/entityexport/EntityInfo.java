@@ -94,15 +94,22 @@ public enum EntityInfo
       this.entityClass = entityClass;
    }
 
-   public static EntityInfo fromClass(String clazzName) {
+   public static EntityInfo fromClass( String clazzName )
+   {
       for ( EntityInfo entityInfo : values() )
       {
-         if ( clazzName.equals( entityInfo.entityClass.getName() ) ) {
+         if ( clazzName.equals( entityInfo.entityClass.getName() ) )
+         {
             return entityInfo;
          }
       }
 
       return UNKNOWN;
+   }
+
+   public static Class<? extends Identity> getEntityClass( EntityInfo entityInfo )
+   {
+      return entityInfo.entityClass;
    }
 }
 
