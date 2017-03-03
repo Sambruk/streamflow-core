@@ -19,7 +19,7 @@ public interface EntityExportJob extends Job, TransientComposite
    abstract class Mixin
            implements EntityExportJob
    {
-      private final Logger logger = LoggerFactory.getLogger( EntityStateChangeListener.class );
+      private final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
 
       @Service
       private EntityExportService entityExportService;
