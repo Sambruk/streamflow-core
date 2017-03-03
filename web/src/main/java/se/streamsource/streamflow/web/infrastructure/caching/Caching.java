@@ -1,15 +1,14 @@
 /**
- *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- *
+ * <p>
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.gnu.org/licenses/agpl.txt
- *
+ * <p>
+ * http://www.gnu.org/licenses/agpl.txt
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +20,8 @@ package se.streamsource.streamflow.web.infrastructure.caching;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+
+import java.util.Collection;
 
 /**
  * Utility methods for working with caches. Handles the case where no caching is available.
@@ -43,23 +44,23 @@ public class Caching
     * @param id id of the element
     * @param increment how much to increment the value. May be negative for subtraction.
     */
-   public void addToCaseCountCache( String id, int increment)
+   public void addToCaseCountCache( String id, int increment )
    {
-      if (caching != null)
+      if ( caching != null )
       {
          Ehcache ehcache = caching.manager().getEhcache( cache.name() );
          Element element = ehcache.get( id );
 
          CaseCountItem caseCountItem;
-         if (element == null)
+         if ( element == null )
          {
             caseCountItem = new CaseCountItem();
          } else
          {
-            caseCountItem = (CaseCountItem) element.getObjectValue();
+            caseCountItem = ( CaseCountItem ) element.getObjectValue();
          }
          caseCountItem.addToCount( increment );
-         ehcache.put( new Element(id, caseCountItem) );
+         ehcache.put( new Element( id, caseCountItem ) );
       }
    }
 
@@ -70,45 +71,53 @@ public class Caching
     * @param id id of the element
     * @param increment how much to increment the value. May be negative for subtraction.
     */
-   public void addToUnreadCache( String id, int increment)
+   public void addToUnreadCache( String id, int increment )
    {
-      if (caching != null)
+      if ( caching != null )
       {
          Ehcache ehcache = caching.manager().getEhcache( cache.name() );
          Element element = ehcache.get( id );
 
          CaseCountItem caseCountItem;
-         if (element == null)
+         if ( element == null )
          {
             caseCountItem = new CaseCountItem();
          } else
          {
-            caseCountItem = (CaseCountItem) element.getObjectValue();
+            caseCountItem = ( CaseCountItem ) element.getObjectValue();
          }
          caseCountItem.addToUnread( increment );
-         ehcache.put( new Element(id, caseCountItem) );
+         ehcache.put( new Element( id, caseCountItem ) );
       }
    }
 
    public void invalidateCache( String id )
    {
-      if (caching != null)
+      if ( caching != null )
       {
          caching.manager().getEhcache( cache.name() ).remove( id );
       }
    }
 
-   public void put(Element element)
+   public void put( Element element )
    {
-      if (caching != null)
+      if ( caching != null )
       {
          caching.manager().getEhcache( cache.name() ).put( element );
       }
    }
 
-   public Element get(Object key)
+   public void putAll( Collection<Element> elements )
    {
-      if (caching != null)
+      if ( caching != null )
+      {
+         caching.manager().getEhcache( cache.name() ).putAll( elements );
+      }
+   }
+
+   public Element get( Object key )
+   {
+      if ( caching != null )
       {
          CacheManager cacheManager = caching.manager();
          Ehcache ehcache = cacheManager.getEhcache( cache.name() );
@@ -119,11 +128,21 @@ public class Caching
       }
    }
 
+
+   public void remove( Object key )
+   {
+      if ( caching != null )
+      {
+         caching.manager().getEhcache( cache.name() ).remove( key );
+      }
+   }
+
    public void removeAll()
    {
-      if (caching != null)
+      if ( caching != null )
       {
          caching.manager().getEhcache( cache.name() ).removeAll();
       }
    }
+
 }
