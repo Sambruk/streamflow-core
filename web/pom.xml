@@ -182,6 +182,10 @@
             <groupId>info.aduna.commons</groupId>
             <artifactId>aduna-commons-collections</artifactId>
         </dependency>
+        <dependency>
+            <groupId>info.aduna</groupId>
+            <artifactId>aduna-iteration</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
