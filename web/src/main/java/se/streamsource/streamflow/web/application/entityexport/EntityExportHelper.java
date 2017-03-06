@@ -190,50 +190,53 @@ public class EntityExportHelper
    {
       StringBuilder select = new StringBuilder( "SELECT (" );
 
-
+      boolean allow = false;
       for ( PropertyType property : allProperties )
       {
          if ( property.qualifiedName().type().endsWith( "Value" ) )
          {
+            allow = true;
             select.append( property.qualifiedName().name() )
                     .append( "," );
          }
 
       }
 
-      select.deleteCharAt( select.length() - 1 ).append( ") FROM " ).append( tableName() );
+      if ( allow ) {
+         select.deleteCharAt( select.length() - 1 ).append( ") FROM " ).append( tableName() );
 
-      final ResultSet resultSet = connection.prepareStatement( select.toString() ).executeQuery();
+         final ResultSet resultSet = connection.prepareStatement( select.toString() ).executeQuery();
 
-      for ( int i = 1; resultSet.next(); i++ )
-      {
-         final String name = allProperties.get( i ).qualifiedName().name();
-         String id = resultSet.getString( name );
-
-         String[] splitted;
-         if ( id.contains( SEPARATOR ) )
+         for ( int i = 1; resultSet.next(); i++ )
          {
-            splitted = id.split( SEPARATOR );
-         } else
-         {
-            splitted = new String[]{id};
-         }
+            final String name = allProperties.get( i ).qualifiedName().name();
+            String id = resultSet.getString( name );
 
-         for ( String s : splitted )
-         {
-            final String[] split = s.split( ";" );
-            final String delete = "DELETE FROM " + split[0] + " WHERE id = " + split[1];
-            final PreparedStatement preparedStatement = connection.prepareStatement( delete );
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
+            String[] splitted;
+            if ( id.contains( SEPARATOR ) )
+            {
+               splitted = id.split( SEPARATOR );
+            } else
+            {
+               splitted = new String[]{id};
+            }
+
+            for ( String s : splitted )
+            {
+               final String[] split = s.split( ";" );
+               final String delete = "DELETE FROM " + split[0] + " WHERE id = " + split[1];
+               final PreparedStatement preparedStatement = connection.prepareStatement( delete );
+               preparedStatement.executeUpdate();
+               preparedStatement.close();
+            }
          }
       }
-
 
       final String delete = "DELETE FROM " + tableName() + " WHERE identity = ?";
       final PreparedStatement preparedStatement = connection.prepareStatement( delete );
       preparedStatement.setString( 1, identity );
-      preparedStatement.executeQuery();
+      preparedStatement.executeUpdate();
+      preparedStatement.close();
    }
 
 
