@@ -1,13 +1,15 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.collections.map.HashedMap;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.common.TypeName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.spi.entity.EntityDescriptor;
@@ -22,10 +24,10 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -46,9 +48,17 @@ public interface EntityExportJob extends Job, TransientComposite
       @Structure
       ModuleSPI moduleSPI;
 
+      @Service
+      ServiceReference<DataSource> dataSource;
+
+
+      private int currentLevel;
       @Override
       public void execute( JobExecutionContext context ) throws JobExecutionException
       {
+
+         Connection connection = null;
+
          try
          {
 
@@ -80,29 +90,30 @@ public interface EntityExportJob extends Job, TransientComposite
                final Iterable<ManyAssociationType> existsManyAssociations =
                        getNotNullProperties( entity, entityType.manyAssociations() );
 
-//               testing!!!
+               Map<String, Object> subProps = new HashedMap();
 
-//               List<PropertyType> existsPropertyTypes = new LinkedList<>();
-//               for ( PropertyType existsProperty : existsProperties )
-//               {
-//                  existsPropertyTypes.add( existsProperty );
-//               }
-//
-//               List<AssociationType> associationTypes = new LinkedList<>();
-//               for ( AssociationType existsAssociation : existsAssociations )
-//               {
-//                  associationTypes.add( existsAssociation );
-//               }
-//
-//               List<ManyAssociationType> manyAssociationTypes = new LinkedList<>();
-//               for ( ManyAssociationType existsManyAssociation : existsManyAssociations )
-//               {
-//                  manyAssociationTypes.add( existsManyAssociation );
-//               }
-//
-//               final TypeName type = entityType.type();
+               for ( PropertyType existsProperty : existsProperties )
+               {
+                  final QualifiedName qualifiedName = existsProperty.qualifiedName();
+                  final Object jsonStructure = entity.get( qualifiedName.name() );
 
-               final List<PropertyDescription> allProperties = getAllProperties(entity, existsProperties);
+                  if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray) {
+                     subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
+                  }
+               }
+
+               final EntityExportHelper entityExportHelper = new EntityExportHelper();
+               entityExportHelper.setExistsProperties( existsProperties );
+               entityExportHelper.setExistsAssociations( existsAssociations );
+               entityExportHelper.setExistsManyAssociations( existsManyAssociations );;
+               entityExportHelper.setSubProps( subProps );
+               connection = dataSource.get().getConnection();
+               entityExportHelper.setConnection( connection );
+               entityExportHelper.setEntity( entity );
+               entityExportHelper.setAllProperties( entityType.properties() );
+               entityExportHelper.setClassName( description );
+
+               entityExportHelper.help();
 
                entityExportService.savedSuccess();
 
@@ -111,18 +122,21 @@ public interface EntityExportJob extends Job, TransientComposite
          } catch ( Exception e )
          {
             throw new JobExecutionException( e );
+         } finally
+         {
+            try
+            {
+               if ( connection != null && !connection.isClosed() )
+               {
+                  connection.close();
+               }
+            } catch ( SQLException e ) {
+               logger.error( "Error:", e );
+            }
+
          }
 
       }
-
-      private List<PropertyDescription> getAllProperties( JSONObject entity, Iterable<PropertyType> existsProperties )
-      {
-
-         // TODO: 03.03.17  
-
-      }
-
-
 
       private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
       {
@@ -146,7 +160,7 @@ public interface EntityExportJob extends Job, TransientComposite
                   return false;
                }
                final String json = prop.toString();
-               return !json.isEmpty() && !json.equals( "{}" ) && !json.equals( "[]" );
+               return !jsonEmpty( json );
             }
 
             private String getQualifiedName( T item )
@@ -159,18 +173,11 @@ public interface EntityExportJob extends Job, TransientComposite
 
       }
 
-      private class PropertyDescription
+      private boolean jsonEmpty( String json )
       {
-
-         private boolean isList;
-         private boolean defaultJavaType;
-         private Object value;
-         private List<String> parentFieldNames;
-
-         private PropertyDescription()
-         {
-         }
+         return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
       }
+
 
 
    }
