@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -101,7 +102,7 @@ public interface EntityExportJob extends Job, TransientComposite
                   final Iterable<ManyAssociationType> existsManyAssociations =
                           getNotNullProperties( entity, entityType.manyAssociations() );
 
-                  Map<String, Object> subProps = new HashedMap();
+                  Map<String, Object> subProps = new HashMap<>();
 
                   for ( PropertyType existsProperty : existsProperties )
                   {
