@@ -80,11 +80,11 @@ public interface EntityExportJob extends Job, TransientComposite
                final String description = entity.optString( "_description" );
 
                //for tests.
-               if ( description.equals( AttachmentEntity.class.getName() )
-                       || description.equals( CaseLogEntity.class.getName() )
-                       || description.equals( CaseTypeEntity.class.getName() )
-                       || description.equals( CaseEntity.class.getName() )
-                       ) {
+//               if ( description.equals( AttachmentEntity.class.getName() )
+//                       || description.equals( CaseLogEntity.class.getName() )
+//                       || description.equals( CaseTypeEntity.class.getName() )
+//                       || description.equals( CaseEntity.class.getName() )
+//                       ) {
 
 
                   if ( description.isEmpty() )
@@ -129,9 +129,9 @@ public interface EntityExportJob extends Job, TransientComposite
 
                   entityExportService.savedSuccess();
 
-               } else {
-                  break;
-               }
+//               } else {
+//                  break;
+//               }
 
 
             }

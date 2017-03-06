@@ -51,7 +51,7 @@ public class EntityExportHelper
 
       if ( isExistRS.next() )
       {
-            deleteEntityWithRelation(isExistRS.getString( "identity" ));
+         deleteEntityWithRelation( isExistRS.getString( "identity" ) );
       }
 
       isExistRS.close();
@@ -60,9 +60,9 @@ public class EntityExportHelper
       String mainInsert = "INSERT INTO " +
               tableName() +
               " " +
-              argumentsForEntityInsert( false ) +
+              argumentsForEntityInsert( true ) +
               " VALUES " +
-              argumentsForEntityInsert( true );
+              argumentsForEntityInsert( false );
 
       final PreparedStatement statement = connection.prepareStatement( mainInsert );
       addArguments( statement );
@@ -77,18 +77,26 @@ public class EntityExportHelper
 
    private String tableName()
    {
-      return toSnackCaseFromCamelCase(className.substring( className.lastIndexOf( "." ) ) );
+      return toSnackCaseFromCamelCase( className.substring( className.lastIndexOf( "." ) + 1 ) );
    }
 
-   private String toSnackCaseFromCamelCase(String str) {
+   private String toSnackCaseFromCamelCase( String str )
+   {
       StringBuilder stringBuilder = new StringBuilder();
-      for (int i = 0; i < str.length(); i++) {
-         char ch = str.charAt(i);
-         if (Character.isUpperCase(ch)) {
-            stringBuilder.append('_');
-            stringBuilder.append(Character.toLowerCase(ch));
-         } else {
-            stringBuilder.append(ch);
+      for ( int i = 0; i < str.length(); i++ )
+      {
+         char ch = str.charAt( i );
+         if ( i == 0 )
+         {
+            ch = Character.toLowerCase( ch );
+         }
+         if ( Character.isUpperCase( ch ) )
+         {
+            stringBuilder.append( '_' );
+            stringBuilder.append( Character.toLowerCase( ch ) );
+         } else
+         {
+            stringBuilder.append( ch );
          }
       }
       return stringBuilder.toString();
@@ -139,38 +147,43 @@ public class EntityExportHelper
 
       }
 
-      final Set<String> keys = associations.keySet();
-
-      StringBuilder query = new StringBuilder( "INSERT INTO " )
-              .append( tableName() )
-              .append( " (" );
-
-      for ( String key : keys )
+      if ( associations.size() > 0 )
       {
-         query.append( key ).append( "," );
+         final Set<String> keys = associations.keySet();
 
+         StringBuilder query = new StringBuilder( "INSERT INTO " )
+                 .append( tableName() )
+                 .append( " (" );
+
+         for ( String key : keys )
+         {
+            query.append( key ).append( "," );
+
+         }
+         query.deleteCharAt( query.length() - 1 );
+
+         query.append( ") VALUES (" );
+
+         for ( int i = 0; i < keys.size(); i++ )
+         {
+            query.append( "?," );
+         }
+         query.deleteCharAt( query.length() - 1 );
+         query.append( ")" );
+
+         final PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
+
+         int i = 1;
+         for ( String key : keys )
+         {
+            preparedStatement.setString( i++, associations.get( key ) );
+         }
+
+         preparedStatement.executeUpdate();
+         preparedStatement.close();
       }
-      query.deleteCharAt( query.length() - 1 );
 
-      query.append( ") VALUES (" );
 
-      for ( int i = 0; i < keys.size(); i++ )
-      {
-         query.append( "?," );
-      }
-      query.deleteCharAt( query.length() - 1 );
-      query.append( ")" );
-
-      final PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
-
-      int i = 1;
-      for ( String key : keys )
-      {
-         preparedStatement.setString( i++, associations.get( key ) );
-      }
-
-      preparedStatement.executeUpdate();
-      preparedStatement.close();
    }
 
    private void deleteEntityWithRelation( String identity ) throws SQLException
@@ -197,10 +210,12 @@ public class EntityExportHelper
          final String name = allProperties.get( i ).qualifiedName().name();
          String id = resultSet.getString( name );
 
-         String [] splitted;
-         if ( id.contains( SEPARATOR ) ) {
+         String[] splitted;
+         if ( id.contains( SEPARATOR ) )
+         {
             splitted = id.split( SEPARATOR );
-         } else {
+         } else
+         {
             splitted = new String[]{id};
          }
 
@@ -224,32 +239,39 @@ public class EntityExportHelper
 
    private void addArguments( PreparedStatement statement ) throws JSONException, SQLException, ClassNotFoundException
    {
-      int i = 0;
+      int i = 1;
       for ( PropertyType existsProperty : existsProperties )
       {
          final Class type = Class.forName( existsProperty.type().type().name() );
 
+         final String name = existsProperty.qualifiedName().name();
+
+         if ( subProps.get( name ) != null )
+         {
+            continue;
+         }
+
          if ( Boolean.class.equals( type ) )
          {
-            statement.setBoolean( i++, entity.getBoolean( existsProperty.qualifiedName().name() ) );
+            statement.setBoolean( i++, entity.getBoolean( name ) );
          } else if ( Integer.class.equals( type ) )
          {
-            statement.setInt( i++, entity.getInt( existsProperty.qualifiedName().name() ) );
+            statement.setInt( i++, entity.getInt( name ) );
          } else if ( Long.class.equals( type ) )
          {
-            statement.setLong( i++, entity.getLong( existsProperty.qualifiedName().name() ) );
+            statement.setLong( i++, entity.getLong( name ) );
          } else if ( Float.class.equals( type ) )
          {
-            statement.setFloat( i++, ( float ) entity.getDouble( existsProperty.qualifiedName().name() ) );
+            statement.setFloat( i++, ( float ) entity.getDouble( name ) );
          } else if ( Double.class.equals( type ) )
          {
-            statement.setDouble( i++, entity.getDouble( existsProperty.qualifiedName().name() ) );
+            statement.setDouble( i++, entity.getDouble( name ) );
          } else if ( String.class.equals( type ) || type.isEnum() )
          {
             statement.setString( i++, entity.getString( existsProperty.qualifiedName().name() ) );
          } else if ( Date.class.equals( type ) || DateTime.class.equals( type ) )
          {
-            statement.setString( i++, entity.getString( existsProperty.qualifiedName().name() ) );
+            statement.setString( i++, entity.getString( name ) );
          } else
          {
             throw new IllegalArgumentException();
@@ -269,7 +291,7 @@ public class EntityExportHelper
          {
             if ( names )
             {
-               temp.append( name )
+               temp.append( toSnackCaseFromCamelCase( name ) )
                        .append( "," );
             } else
             {
