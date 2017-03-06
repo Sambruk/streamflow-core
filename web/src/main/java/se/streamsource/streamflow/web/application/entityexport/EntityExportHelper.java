@@ -54,15 +54,17 @@ public class EntityExportHelper
             deleteEntityWithRelation(isExistRS.getString( "identity" ));
       }
 
+      isExistRS.close();
 
-      StringBuilder mainInsert = new StringBuilder( "INSERT INTO " )
-              .append( tableName() )
-              .append( " " )
-              .append( argumentsForEntityInsert( false ) )
-              .append( " VALUES " )
-              .append( argumentsForEntityInsert( true ) );
 
-      final PreparedStatement statement = connection.prepareStatement( mainInsert.toString() );
+      String mainInsert = "INSERT INTO " +
+              tableName() +
+              " " +
+              argumentsForEntityInsert( false ) +
+              " VALUES " +
+              argumentsForEntityInsert( true );
+
+      final PreparedStatement statement = connection.prepareStatement( mainInsert );
       addArguments( statement );
       statement.executeUpdate();
       statement.close();
@@ -105,6 +107,7 @@ public class EntityExportHelper
          final String query = "INSERT INTO " + tableName() + " (" + toSnackCaseFromCamelCase( key ) + ") VALUES ('" + id + "')";
          PreparedStatement preparedStatement = connection.prepareStatement( query );
          preparedStatement.executeUpdate();
+         preparedStatement.close();
       }
    }
 
@@ -167,6 +170,7 @@ public class EntityExportHelper
       }
 
       preparedStatement.executeUpdate();
+      preparedStatement.close();
    }
 
    private void deleteEntityWithRelation( String identity ) throws SQLException

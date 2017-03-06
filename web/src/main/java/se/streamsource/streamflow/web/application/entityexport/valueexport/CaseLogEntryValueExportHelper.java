@@ -7,4 +7,10 @@ import se.streamsource.streamflow.web.application.entityexport.ValueExportHelper
  */
 public class CaseLogEntryValueExportHelper extends ValueExportHelper
 {
+
+   @Override
+   public String help() {
+      return null;
+   }
+
 }

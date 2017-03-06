@@ -1,7 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import se.streamsource.streamflow.web.application.entityexport.valueexport.CaseLogEntryValueExportHelper;
-import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.caselog.CaseLogEntryValue;
 
 import java.sql.Connection;
@@ -16,7 +15,7 @@ public abstract class ValueExportHelper
    protected Object value;
    protected Connection connection;
 
-   abstract String help();
+   public abstract String help();
 
    public static ValueExportHelper fromClass( Class<?> clazz )
    {
