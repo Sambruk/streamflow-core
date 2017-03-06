@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class EntityExportHelper
    private Map<String, Object> subProps;
    private Connection connection;
    private JSONObject entity;
-   private Set<PropertyType> allProperties;
+   private ArrayList<PropertyType> allProperties;
    private String className;
 
    public void help() throws Exception
@@ -50,8 +51,7 @@ public class EntityExportHelper
 
       if ( isExistRS.next() )
       {
-         // TODO: 06.03.17
-//            deleteEntityWithRelation(isExistRS.getString( "identity" ));
+            deleteEntityWithRelation(isExistRS.getString( "identity" ));
       }
 
 
@@ -65,6 +65,7 @@ public class EntityExportHelper
       final PreparedStatement statement = connection.prepareStatement( mainInsert.toString() );
       addArguments( statement );
       statement.executeUpdate();
+      statement.close();
 
       saveAssociations();
 
@@ -101,7 +102,7 @@ public class EntityExportHelper
          valueExportHelper.setValue( subProps.get( key ) );
          valueExportHelper.setConnection( connection );
          final String id = valueExportHelper.help();
-         final String query = "INSERT INTO " + tableName() + " (" + toSnackCaseFromCamelCase( key ) + ") VALUES (" + id + ")";
+         final String query = "INSERT INTO " + tableName() + " (" + toSnackCaseFromCamelCase( key ) + ") VALUES ('" + id + "')";
          PreparedStatement preparedStatement = connection.prepareStatement( query );
          preparedStatement.executeUpdate();
       }
@@ -189,7 +190,24 @@ public class EntityExportHelper
 
       for ( int i = 1; resultSet.next(); i++ )
       {
-         String property = resultSet.getString( i );
+         final String name = allProperties.get( i ).qualifiedName().name();
+         String id = resultSet.getString( name );
+
+         String [] splitted;
+         if ( id.contains( SEPARATOR ) ) {
+            splitted = id.split( SEPARATOR );
+         } else {
+            splitted = new String[]{id};
+         }
+
+         for ( String s : splitted )
+         {
+            final String[] split = s.split( ";" );
+            final String delete = "DELETE FROM " + split[0] + " WHERE id = " + split[1];
+            final PreparedStatement preparedStatement = connection.prepareStatement( delete );
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+         }
       }
 
 
@@ -301,7 +319,7 @@ public class EntityExportHelper
 
    public void setAllProperties( Set<PropertyType> allProperties )
    {
-      this.allProperties = allProperties;
+      this.allProperties = new ArrayList<>( allProperties );
    }
 
    public void setClassName( String className )

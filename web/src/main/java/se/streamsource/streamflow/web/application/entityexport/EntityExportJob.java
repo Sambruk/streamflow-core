@@ -51,8 +51,6 @@ public interface EntityExportJob extends Job, TransientComposite
       @Service
       ServiceReference<DataSource> dataSource;
 
-
-      private int currentLevel;
       @Override
       public void execute( JobExecutionContext context ) throws JobExecutionException
       {
