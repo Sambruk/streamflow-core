@@ -108,6 +108,10 @@ public class EntityExportHelper
       for ( String key : keys )
       {
          final ValueExportHelper valueExportHelper = ValueExportHelper.fromClass( Class.forName( className ) );
+         if ( valueExportHelper == null )
+         {
+            continue;
+         }
          valueExportHelper.setName( key );
          valueExportHelper.setValue( subProps.get( key ) );
          valueExportHelper.setConnection( connection );
@@ -202,7 +206,8 @@ public class EntityExportHelper
 
       }
 
-      if ( allow ) {
+      if ( allow )
+      {
          select.deleteCharAt( select.length() - 1 ).append( ") FROM " ).append( tableName() );
 
          final ResultSet resultSet = connection.prepareStatement( select.toString() ).executeQuery();
