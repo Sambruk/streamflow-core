@@ -131,7 +131,7 @@ public class EntityExportHelper
       {
          final String name = existsAssociation.qualifiedName().name();
          final String identity = entity.getJSONObject( name ).getString( "identity" );
-         associations.put( name, identity );
+         associations.put( toSnackCaseFromCamelCase( name ), identity );
       }
 
       for ( ManyAssociationType existsManyAssociation : existsManyAssociations )
@@ -146,7 +146,7 @@ public class EntityExportHelper
                break;
             }
             final String inMap = associations.get( name );
-            associations.put( name, ( inMap == null ? "" : inMap + SEPARATOR ) + arrEl.getString( "identity" ) );
+            associations.put( toSnackCaseFromCamelCase( name ), ( inMap == null ? "" : inMap + SEPARATOR ) + arrEl.getString( "identity" ) );
          }
 
       }
@@ -197,7 +197,7 @@ public class EntityExportHelper
       boolean allow = false;
       for ( PropertyType property : allProperties )
       {
-         if ( property.qualifiedName().type().endsWith( "Value" ) )
+         if ( property.type().isValue())
          {
             allow = true;
             select.append( property.qualifiedName().name() )
