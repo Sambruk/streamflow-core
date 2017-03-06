@@ -23,6 +23,11 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -73,47 +78,60 @@ public interface EntityExportJob extends Job, TransientComposite
 
                final String description = entity.optString( "_description" );
 
-               if ( description.isEmpty() )
-               {
-                  throw new IllegalStateException( "JSON must include _description property." );
-               }
+               //for tests.
+               if ( description.equals( AttachmentEntity.class.getName() )
+                       || description.equals( CaseLogEntity.class.getName() )
+                       || description.equals( CaseTypeEntity.class.getName() )
+                       || description.equals( CaseEntity.class.getName() )
+                       ) {
 
-               final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
-               final EntityType entityType = entityDescriptor.entityType();
 
-               final Iterable<PropertyType> existsProperties =
-                       getNotNullProperties( entity, entityType.properties() );
-               final Iterable<AssociationType> existsAssociations =
-                       getNotNullProperties( entity, entityType.associations() );
-               final Iterable<ManyAssociationType> existsManyAssociations =
-                       getNotNullProperties( entity, entityType.manyAssociations() );
-
-               Map<String, Object> subProps = new HashedMap();
-
-               for ( PropertyType existsProperty : existsProperties )
-               {
-                  final QualifiedName qualifiedName = existsProperty.qualifiedName();
-                  final Object jsonStructure = entity.get( qualifiedName.name() );
-
-                  if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray) {
-                     subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
+                  if ( description.isEmpty() )
+                  {
+                     throw new IllegalStateException( "JSON must include _description property." );
                   }
+
+                  final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
+                  final EntityType entityType = entityDescriptor.entityType();
+
+                  final Iterable<PropertyType> existsProperties =
+                          getNotNullProperties( entity, entityType.properties() );
+                  final Iterable<AssociationType> existsAssociations =
+                          getNotNullProperties( entity, entityType.associations() );
+                  final Iterable<ManyAssociationType> existsManyAssociations =
+                          getNotNullProperties( entity, entityType.manyAssociations() );
+
+                  Map<String, Object> subProps = new HashedMap();
+
+                  for ( PropertyType existsProperty : existsProperties )
+                  {
+                     final QualifiedName qualifiedName = existsProperty.qualifiedName();
+                     final Object jsonStructure = entity.get( qualifiedName.name() );
+
+                     if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray) {
+                        subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
+                     }
+                  }
+
+                  final EntityExportHelper entityExportHelper = new EntityExportHelper();
+                  entityExportHelper.setExistsProperties( existsProperties );
+                  entityExportHelper.setExistsAssociations( existsAssociations );
+                  entityExportHelper.setExistsManyAssociations( existsManyAssociations );;
+                  entityExportHelper.setSubProps( subProps );
+                  connection = dataSource.get().getConnection();
+                  entityExportHelper.setConnection( connection );
+                  entityExportHelper.setEntity( entity );
+                  entityExportHelper.setAllProperties( entityType.properties() );
+                  entityExportHelper.setClassName( description );
+
+                  entityExportHelper.help();
+
+                  entityExportService.savedSuccess();
+
+               } else {
+                  break;
                }
 
-               final EntityExportHelper entityExportHelper = new EntityExportHelper();
-               entityExportHelper.setExistsProperties( existsProperties );
-               entityExportHelper.setExistsAssociations( existsAssociations );
-               entityExportHelper.setExistsManyAssociations( existsManyAssociations );;
-               entityExportHelper.setSubProps( subProps );
-               connection = dataSource.get().getConnection();
-               entityExportHelper.setConnection( connection );
-               entityExportHelper.setEntity( entity );
-               entityExportHelper.setAllProperties( entityType.properties() );
-               entityExportHelper.setClassName( description );
-
-               entityExportHelper.help();
-
-               entityExportService.savedSuccess();
 
             }
 
