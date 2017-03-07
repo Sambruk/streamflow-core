@@ -10,6 +10,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
@@ -27,7 +28,10 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PipedWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,10 +60,7 @@ public interface EntityExportService
 
    boolean hasNextEntity();
 
-   void savedSuccess();
-
-   Long skip();
-
+   void savedSuccess( JSONObject entity );
 
    abstract class Mixin
            implements EntityExportService
@@ -81,6 +82,8 @@ public interface EntityExportService
       ElasticSearchSupport support;
       @Service
       CachingService cachingService;
+      @Service
+      FileConfiguration fileConfiguration;
 
       private Caching caching;
 
@@ -124,15 +127,37 @@ public interface EntityExportService
       }
 
       @Override
-      public void savedSuccess()
+      public void savedSuccess( JSONObject entity )
       {
-         caching.remove( currentId.getAndIncrement() );
-      }
+         try
+         {
+            List<String> info = IOUtils.readLines( new FileInputStream( infoFileAbsPath ), "UTF-8" );
 
-      @Override
-      public Long skip()
-      {
-         return currentId.getAndIncrement();
+            final String modified = entity.getLong( "_modified" ) + "";
+            final String identity = entity.getString( "identity" );
+
+            if ( info.size() < 2 || !( info.get( 0 ).equals( modified ) ) )
+            {
+               info = new ArrayList<>( 2 );
+               info.add( modified );
+               info.add( identity );
+            } else
+            {
+               info.add( identity );
+            }
+
+            PrintWriter pw = new PrintWriter( infoFileAbsPath );
+            for ( String line : info )
+            {
+               pw.println( line );
+            }
+            pw.flush();
+            pw.close();
+         } catch ( Exception e )
+         {
+            logger.error( "Error: ", e );
+         }
+         caching.remove( currentId.getAndIncrement() );
       }
 
       @Override

@@ -82,15 +82,15 @@ public interface EntityExportJob extends Job, TransientComposite
 
                //for tests.
                if (
-//                       description.equals( AttachmentEntity.class.getName() )
-//                       ||
-//                       description.equals( CaseLogEntity.class.getName() )
-//                       ||
-//                         description.equals( CaseTypeEntity.class.getName() )
-//                        ||
+                       description.equals( AttachmentEntity.class.getName() )
+                       ||
+                       description.equals( CaseLogEntity.class.getName() )
+                       ||
+                         description.equals( CaseTypeEntity.class.getName() )
+                        ||
                          description.equals( CaseEntity.class.getName() )
-//                               ||
-//                               description.equals( FieldEntity.class.getName() )
+                               ||
+                               description.equals( FieldEntity.class.getName() )
 
                        ) {
 
@@ -134,10 +134,9 @@ public interface EntityExportJob extends Job, TransientComposite
 
                   entityExportHelper.help();
 
-
                }
 
-               entityExportService.savedSuccess();
+               entityExportService.savedSuccess( entity );
 
             }
 

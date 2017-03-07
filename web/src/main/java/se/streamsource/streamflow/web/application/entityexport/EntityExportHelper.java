@@ -97,7 +97,6 @@ public class EntityExportHelper
          connection.close();
       }
 
-
    }
 
    private String tableName()
