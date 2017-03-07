@@ -31,6 +31,7 @@ public class EntityExportHelper
 {
 
    private static final String SEPARATOR = ":separator:";
+   private static final String IDENTITY_TABLE_NAME = "identity_type";
 
    private List<PropertyType> existsProperties;
    private Iterable<AssociationType> existsAssociations;
@@ -77,6 +78,18 @@ public class EntityExportHelper
 
       saveSubProperties();
 
+      final String query = "INSERT INTO " +
+              IDENTITY_TABLE_NAME +
+              " (identity,type)" +
+              argumentsForEntityInsert( true ) +
+              " VALUES (?,?)";
+
+      final PreparedStatement ps = connection.prepareStatement( query );
+      ps.setString( 1, entity.getString( "identity" ) );
+      ps.setString( 2, className );
+      ps.executeUpdate();
+      ps.close();
+
       if ( connection != null && !connection.isClosed() )
       {
          connection.close();
@@ -106,27 +119,32 @@ public class EntityExportHelper
          if ( value instanceof Collection || value instanceof Map )
          {
 
-            if ( !(value instanceof Map) ) {
+            if ( !( value instanceof Map ) )
+            {
                final Object first = Iterables.first( ( Iterable<?> ) value );
-               if ( first instanceof ValueComposite ) {
+               if ( first instanceof ValueComposite )
+               {
                   for ( Object o : ( Collection<?> ) value )
                   {
                      if ( temp.length() == 0 )
                      {
                         temp.append( processValueComposite( ( ValueComposite ) o, key ) );
-                     }
-                     else {
+                     } else
+                     {
                         temp.append( SEPARATOR ).append( processValueComposite( ( ValueComposite ) o, key ) );
                      }
                   }
-               } else {
+               } else
+               {
                   temp.append( processCollection( value, key ) );
                }
-            } else {
+            } else
+            {
                temp.append( processCollection( value, key ) );
             }
 
-         } else if ( value instanceof ValueComposite ) {
+         } else if ( value instanceof ValueComposite )
+         {
             temp.append( processValueComposite( ( ValueComposite ) value, key ) );
          }
 
@@ -163,7 +181,8 @@ public class EntityExportHelper
             final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
             generatedKey.next();
             int id = generatedKey.getInt( 1 );
-            if ( result.length() > 0 ) {
+            if ( result.length() > 0 )
+            {
                result.append( SEPARATOR );
             }
             result.append( tableName )
@@ -171,11 +190,12 @@ public class EntityExportHelper
                     .append( id );
             preparedStatement.close();
          }
-      } else {
+      } else
+      {
          final JSONArray array = new JSONArray( value.toString() );
          for ( int i = 0; ; i++ )
          {
-            final JSONObject jsonObject = array.optJSONObject(i);
+            final JSONObject jsonObject = array.optJSONObject( i );
             if ( jsonObject == null )
             {
                break;
@@ -195,7 +215,8 @@ public class EntityExportHelper
             final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
             generatedKey.next();
             int id = generatedKey.getInt( 1 );
-            if ( result.length() > 0 ) {
+            if ( result.length() > 0 )
+            {
                result.append( SEPARATOR );
             }
             result.append( tableName )
@@ -211,9 +232,6 @@ public class EntityExportHelper
 
    private String processValueComposite( ValueComposite value, String name ) throws SQLException
    {
-      final ValueComposite composite = ( ValueComposite ) value;
-      final ValueInstance valueInstance = ValueInstance.getValueInstance( composite );
-      final ArrayList<String> strings = new ArrayList<>();
       final ValueExportHelper valueExportHelper = new ValueExportHelper();
       valueExportHelper.setName( name );
       valueExportHelper.setValue( value );
@@ -338,7 +356,10 @@ public class EntityExportHelper
       final String delete = "DELETE FROM " + tableName() + " WHERE identity = ?";
       final PreparedStatement preparedStatement = connection.prepareStatement( delete );
       preparedStatement.setString( 1, identity );
-      preparedStatement.executeUpdate();
+      final String deleteFromIdentity = "DELETE FROM " + IDENTITY_TABLE_NAME + " WHERE identity = ?";
+      preparedStatement.addBatch( deleteFromIdentity );
+      preparedStatement.setString( 1, identity );
+      preparedStatement.executeBatch();
       preparedStatement.close();
    }
 
