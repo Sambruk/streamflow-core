@@ -14,7 +14,7 @@ public class ValueExportHelper
 
    public String help() {
 
-      return null;
+      return "not_implemented;1234:separator:not_implemented;4321";
    }
 
    // setters

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.value.ValueInstance;
 import org.qi4j.spi.entity.association.AssociationType;
@@ -15,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -93,21 +95,133 @@ public class EntityExportHelper
       final Set<String> keys = subProps.keySet();
       for ( String key : keys )
       {
+
          final Object value = subProps.get( key );
-         final ValueComposite composite = ( ValueComposite ) value;
-         final ValueInstance valueInstance = ValueInstance.getValueInstance( composite );
-         final ArrayList<String> strings = new ArrayList<>();
-//         final ValueExportHelper valueExportHelper = new ValueExportHelper();
-//         valueExportHelper.setName( key );
-//         valueExportHelper.setValue( value );
-//         valueExportHelper.setConnection( connection );
-//         final String id = valueExportHelper.help();
-//         final String query = "INSERT INTO " + tableName() + " (" + toSnackCaseFromCamelCase( key ) + ") VALUES ('" + id + "')";
-//         PreparedStatement preparedStatement = connection.prepareStatement( query );
-//         preparedStatement.executeUpdate();
-//         preparedStatement.close();
+
+         StringBuilder query = new StringBuilder( "UPDATE  " )
+                 .append( tableName() )
+                 .append( " SET " );
+         StringBuilder temp = new StringBuilder();
+
+         if ( value instanceof Collection || value instanceof Map )
+         {
+
+            if ( !(value instanceof Map) ) {
+               final Object first = Iterables.first( ( Iterable<?> ) value );
+               if ( first instanceof ValueComposite ) {
+                  for ( Object o : ( Collection<?> ) value )
+                  {
+                     if ( temp.length() == 0 )
+                     {
+                        temp.append( processValueComposite( ( ValueComposite ) o, key ) );
+                     }
+                     else {
+                        temp.append( SEPARATOR ).append( processValueComposite( ( ValueComposite ) o, key ) );
+                     }
+                  }
+               } else {
+                  temp.append( processCollection( value, key ) );
+               }
+            } else {
+               temp.append( processCollection( value, key ) );
+            }
+
+         } else if ( value instanceof ValueComposite ) {
+            temp.append( processValueComposite( ( ValueComposite ) value, key ) );
+         }
+
+         query
+                 .deleteCharAt( query.length() - 1 )
+                 .append( toSnackCaseFromCamelCase( key ) )
+                 .append( "= ?" )
+                 .append( " WHERE identity = ?" );
+         PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
+         preparedStatement.setString( 1, temp.toString() );
+         preparedStatement.setString( 2, entity.getString( "identity" ) );
+         preparedStatement.executeUpdate();
+         preparedStatement.close();
+
       }
    }
+
+   private String processCollection( Object value, String key ) throws SQLException, JSONException
+   {
+      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( key );
+      StringBuilder result = new StringBuilder();
+      if ( value instanceof Collection )
+      {
+         for ( Object o : ( Collection<?> ) value )
+         {
+
+            String query = "INSERT INTO " +
+                    tableName +
+                    " (value) VALUES (?)";
+
+            PreparedStatement preparedStatement = connection.prepareStatement( query );
+            preparedStatement.setString( 1, o.toString() );
+            preparedStatement.executeUpdate();
+            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
+            generatedKey.next();
+            int id = generatedKey.getInt( 1 );
+            if ( result.length() > 0 ) {
+               result.append( SEPARATOR );
+            }
+            result.append( tableName )
+                    .append( ";" )
+                    .append( id );
+            preparedStatement.close();
+         }
+      } else {
+         final JSONArray array = new JSONArray( value.toString() );
+         for ( int i = 0; ; i++ )
+         {
+            final JSONObject jsonObject = array.optJSONObject(i);
+            if ( jsonObject == null )
+            {
+               break;
+            }
+
+            final String objKey = jsonObject.getString( "key" );
+            final String objValue = jsonObject.getString( "value" );
+
+            String query = "INSERT INTO " +
+                    tableName +
+                    " (key,value) VALUES (?,?)";
+
+            PreparedStatement preparedStatement = connection.prepareStatement( query );
+            preparedStatement.setString( 1, objKey );
+            preparedStatement.setString( 2, objValue );
+            preparedStatement.executeUpdate();
+            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
+            generatedKey.next();
+            int id = generatedKey.getInt( 1 );
+            if ( result.length() > 0 ) {
+               result.append( SEPARATOR );
+            }
+            result.append( tableName )
+                    .append( ";" )
+                    .append( id );
+            preparedStatement.close();
+
+         }
+      }
+
+      return result.toString();
+   }
+
+   private String processValueComposite( ValueComposite value, String name ) throws SQLException
+   {
+      final ValueComposite composite = ( ValueComposite ) value;
+      final ValueInstance valueInstance = ValueInstance.getValueInstance( composite );
+      final ArrayList<String> strings = new ArrayList<>();
+      final ValueExportHelper valueExportHelper = new ValueExportHelper();
+      valueExportHelper.setName( name );
+      valueExportHelper.setValue( value );
+      valueExportHelper.setConnection( connection );
+      return valueExportHelper.help();
+
+   }
+
 
    private void saveAssociations() throws Exception
    {
@@ -258,10 +372,10 @@ public class EntityExportHelper
          } else if ( Double.class.equals( type ) )
          {
             statement.setDouble( i++, entity.getDouble( name ) );
-         } else if ( String.class.equals( type ) || type.isEnum() )
-         {
-            statement.setString( i++, entity.getString( existsProperty.qualifiedName().name() ) );
-         } else if ( Date.class.equals( type ) || DateTime.class.equals( type ) )
+         } else if ( String.class.equals( type )
+                 || type.isEnum()
+                 || Date.class.equals( type )
+                 || DateTime.class.equals( type ) )
          {
             statement.setString( i++, entity.getString( name ) );
          } else
