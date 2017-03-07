@@ -101,6 +101,8 @@ public interface EntityExportService
          {
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
 
+            caching.removeAll();
+
             export();
 
          }
