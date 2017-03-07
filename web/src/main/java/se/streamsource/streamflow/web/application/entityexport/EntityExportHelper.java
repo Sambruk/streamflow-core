@@ -353,12 +353,10 @@ public class EntityExportHelper
          }
       }
 
-      final String delete = "DELETE FROM " + tableName() + " WHERE identity = ?";
+      final String delete = "DELETE FROM " + tableName() + " WHERE identity = '" + identity + "'";
       final PreparedStatement preparedStatement = connection.prepareStatement( delete );
-      preparedStatement.setString( 1, identity );
-      final String deleteFromIdentity = "DELETE FROM " + IDENTITY_TABLE_NAME + " WHERE identity = ?";
+      final String deleteFromIdentity = "DELETE FROM " + IDENTITY_TABLE_NAME + " WHERE identity = '" + identity + "'";
       preparedStatement.addBatch( deleteFromIdentity );
-      preparedStatement.setString( 1, identity );
       preparedStatement.executeBatch();
       preparedStatement.close();
    }
