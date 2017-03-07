@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -85,9 +86,12 @@ public interface EntityExportJob extends Job, TransientComposite
 //                       ||
 //                       description.equals( CaseLogEntity.class.getName() )
 //                       ||
-//                               description.equals( CaseTypeEntity.class.getName() )
-//                       ||
-                               description.equals( CaseEntity.class.getName() )
+//                         description.equals( CaseTypeEntity.class.getName() )
+//                        ||
+                         description.equals( CaseEntity.class.getName() )
+//                               ||
+//                               description.equals( FieldEntity.class.getName() )
+
                        ) {
 
 
@@ -123,8 +127,7 @@ public interface EntityExportJob extends Job, TransientComposite
                   entityExportHelper.setExistsAssociations( existsAssociations );
                   entityExportHelper.setExistsManyAssociations( existsManyAssociations );;
                   entityExportHelper.setSubProps( subProps );
-                  connection = dataSource.get().getConnection();
-                  entityExportHelper.setConnection( connection );
+                  entityExportHelper.setConnection( dataSource.get().getConnection() );
                   entityExportHelper.setEntity( entity );
                   entityExportHelper.setAllProperties( entityType.properties() );
                   entityExportHelper.setClassName( description );
