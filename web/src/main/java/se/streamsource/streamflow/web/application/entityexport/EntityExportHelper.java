@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.runtime.value.ValueInstance;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
@@ -73,6 +75,12 @@ public class EntityExportHelper
 
       saveSubProperties();
 
+      if ( connection != null && !connection.isClosed() )
+      {
+         connection.close();
+      }
+
+
    }
 
    private String tableName()
@@ -80,46 +88,24 @@ public class EntityExportHelper
       return toSnackCaseFromCamelCase( className.substring( className.lastIndexOf( "." ) + 1 ) );
    }
 
-   private String toSnackCaseFromCamelCase( String str )
-   {
-      StringBuilder stringBuilder = new StringBuilder();
-      for ( int i = 0; i < str.length(); i++ )
-      {
-         char ch = str.charAt( i );
-         if ( i == 0 )
-         {
-            ch = Character.toLowerCase( ch );
-         }
-         if ( Character.isUpperCase( ch ) )
-         {
-            stringBuilder.append( '_' );
-            stringBuilder.append( Character.toLowerCase( ch ) );
-         } else
-         {
-            stringBuilder.append( ch );
-         }
-      }
-      return stringBuilder.toString();
-   }
-
    private void saveSubProperties() throws Exception
    {
       final Set<String> keys = subProps.keySet();
       for ( String key : keys )
       {
-         final ValueExportHelper valueExportHelper = ValueExportHelper.fromClass( Class.forName( className ) );
-         if ( valueExportHelper == null )
-         {
-            continue;
-         }
-         valueExportHelper.setName( key );
-         valueExportHelper.setValue( subProps.get( key ) );
-         valueExportHelper.setConnection( connection );
-         final String id = valueExportHelper.help();
-         final String query = "INSERT INTO " + tableName() + " (" + toSnackCaseFromCamelCase( key ) + ") VALUES ('" + id + "')";
-         PreparedStatement preparedStatement = connection.prepareStatement( query );
-         preparedStatement.executeUpdate();
-         preparedStatement.close();
+         final Object value = subProps.get( key );
+         final ValueComposite composite = ( ValueComposite ) value;
+         final ValueInstance valueInstance = ValueInstance.getValueInstance( composite );
+         final ArrayList<String> strings = new ArrayList<>();
+//         final ValueExportHelper valueExportHelper = new ValueExportHelper();
+//         valueExportHelper.setName( key );
+//         valueExportHelper.setValue( value );
+//         valueExportHelper.setConnection( connection );
+//         final String id = valueExportHelper.help();
+//         final String query = "INSERT INTO " + tableName() + " (" + toSnackCaseFromCamelCase( key ) + ") VALUES ('" + id + "')";
+//         PreparedStatement preparedStatement = connection.prepareStatement( query );
+//         preparedStatement.executeUpdate();
+//         preparedStatement.close();
       }
    }
 
@@ -155,25 +141,19 @@ public class EntityExportHelper
       {
          final Set<String> keys = associations.keySet();
 
-         StringBuilder query = new StringBuilder( "INSERT INTO " )
+         StringBuilder query = new StringBuilder( "UPDATE  " )
                  .append( tableName() )
-                 .append( " (" );
+                 .append( " SET " );
 
          for ( String key : keys )
          {
-            query.append( key ).append( "," );
-
+            query
+                    .append( key )
+                    .append( " = ?," );
          }
-         query.deleteCharAt( query.length() - 1 );
-
-         query.append( ") VALUES (" );
-
-         for ( int i = 0; i < keys.size(); i++ )
-         {
-            query.append( "?," );
-         }
-         query.deleteCharAt( query.length() - 1 );
-         query.append( ")" );
+         query
+                 .deleteCharAt( query.length() - 1 )
+                 .append( " WHERE identity = ?" );
 
          final PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
 
@@ -182,7 +162,7 @@ public class EntityExportHelper
          {
             preparedStatement.setString( i++, associations.get( key ) );
          }
-
+         preparedStatement.setString( i, entity.getString( "identity" ) );
          preparedStatement.executeUpdate();
          preparedStatement.close();
       }
@@ -192,15 +172,15 @@ public class EntityExportHelper
 
    private void deleteEntityWithRelation( String identity ) throws SQLException
    {
-      StringBuilder select = new StringBuilder( "SELECT (" );
+      StringBuilder select = new StringBuilder( "SELECT " );
 
       boolean allow = false;
       for ( PropertyType property : allProperties )
       {
-         if ( property.type().isValue())
+         if ( property.type().isValue() )
          {
             allow = true;
-            select.append( property.qualifiedName().name() )
+            select.append( toSnackCaseFromCamelCase( property.qualifiedName().name() ) )
                     .append( "," );
          }
 
@@ -208,14 +188,18 @@ public class EntityExportHelper
 
       if ( allow )
       {
-         select.deleteCharAt( select.length() - 1 ).append( ") FROM " ).append( tableName() );
+         select.deleteCharAt( select.length() - 1 ).append( " FROM " ).append( tableName() );
 
          final ResultSet resultSet = connection.prepareStatement( select.toString() ).executeQuery();
 
          for ( int i = 1; resultSet.next(); i++ )
          {
-            final String name = allProperties.get( i ).qualifiedName().name();
-            String id = resultSet.getString( name );
+            String id = resultSet.getString( i );
+
+            if ( id == null )
+            {
+               continue;
+            }
 
             String[] splitted;
             if ( id.contains( SEPARATOR ) )
@@ -313,6 +297,27 @@ public class EntityExportHelper
               .toString();
    }
 
+   private String toSnackCaseFromCamelCase( String str )
+   {
+      StringBuilder stringBuilder = new StringBuilder();
+      for ( int i = 0; i < str.length(); i++ )
+      {
+         char ch = str.charAt( i );
+         if ( i == 0 )
+         {
+            ch = Character.toLowerCase( ch );
+         }
+         if ( Character.isUpperCase( ch ) )
+         {
+            stringBuilder.append( '_' );
+            stringBuilder.append( Character.toLowerCase( ch ) );
+         } else
+         {
+            stringBuilder.append( ch );
+         }
+      }
+      return stringBuilder.toString();
+   }
 
    //setters
 
