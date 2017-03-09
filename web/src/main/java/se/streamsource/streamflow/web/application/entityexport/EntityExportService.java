@@ -5,7 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -34,15 +35,12 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -88,8 +86,6 @@ public interface EntityExportService
       ElasticSearchSupport support;
       @Service
       CachingService cachingService;
-      @Service
-      FileConfiguration fileConfiguration;
 
       private Caching caching;
 
@@ -281,14 +277,16 @@ public interface EntityExportService
 
          final SearchRequestBuilder request = client.prepareSearch( support.index() );
 
-         final BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
-                 .must( QueryBuilders.rangeQuery( modified ).gte( info.lastProcessedTimestamp ) );
+         QueryBuilder query = QueryBuilders.rangeQuery( modified ).gte( info.lastProcessedTimestamp );
+
          if ( info.ids.size() > 0 )
          {
-            boolQueryBuilder.mustNot( QueryBuilders.termsQuery( "_identity", info.ids ) );
+            query = QueryBuilders
+                    .filteredQuery( query,
+                    FilterBuilders.boolFilter().mustNot( FilterBuilders.termsFilter( "_identity", info.ids ) ) );
          }
 
-         request.setQuery( boolQueryBuilder );
+         request.setQuery( query );
          request.setSize( maxEntitiesPerRequest );
          final FieldSortBuilder sortBuilder = new FieldSortBuilder( modified );
          sortBuilder.order( SortOrder.ASC );
