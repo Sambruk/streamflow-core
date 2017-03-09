@@ -1,7 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.apache.commons.collections.map.HashedMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.qi4j.api.common.QualifiedName;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 
@@ -130,6 +128,8 @@ public interface EntityExportJob extends Job, TransientComposite
                   entityExportHelper.setConnection( dataSource.get().getConnection() );
                   entityExportHelper.setEntity( entity );
                   entityExportHelper.setAllProperties( entityType.properties() );
+                  entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
+                  entityExportHelper.setAllAssociations( entityType.associations() );
                   entityExportHelper.setClassName( description );
 
                   entityExportHelper.help();
