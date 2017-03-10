@@ -129,6 +129,8 @@ public class EntityExportHelper
               .append( escapeSqlColumnOrTable( tableName() ) )
               .append( " SET " );
 
+
+      boolean hasProps = false;
       for ( PropertyType existsProperty : existsProperties )
       {
          final String name = existsProperty.qualifiedName().name();
@@ -138,19 +140,26 @@ public class EntityExportHelper
             query
                     .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
                     .append( " = ?," );
+
+            hasProps = true;
          }
       }
-      query
-              .deleteCharAt( query.length() - 1 )
-              .append( " WHERE " )
-              .append( escapeSqlColumnOrTable( "identity" ) )
-              .append( " = ?" );
 
-      final PreparedStatement statement = connection.prepareStatement( query.toString() );
-      final int index = addArguments( statement );
-      statement.setString( index, identity );
-      statement.executeUpdate();
-      statement.close();
+      if ( hasProps )
+      {
+         query
+                 .deleteCharAt( query.length() - 1 )
+                 .append( " WHERE " )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( " = ?" );
+
+
+         final PreparedStatement statement = connection.prepareStatement( query.toString() );
+         final int index = addArguments( statement );
+         statement.setString( index, identity );
+         statement.executeUpdate();
+         statement.close();
+      }
    }
 
    private String tableName()

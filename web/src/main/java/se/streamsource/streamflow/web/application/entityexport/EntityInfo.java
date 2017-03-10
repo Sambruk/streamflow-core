@@ -94,6 +94,11 @@ public enum EntityInfo
       this.entityClass = entityClass;
    }
 
+   public Class<? extends Identity> getEntityClass()
+   {
+      return entityClass;
+   }
+
    public static EntityInfo fromClass( String clazzName )
    {
       for ( EntityInfo entityInfo : values() )
@@ -107,9 +112,5 @@ public enum EntityInfo
       return UNKNOWN;
    }
 
-   public static Class<? extends Identity> getEntityClass( EntityInfo entityInfo )
-   {
-      return entityInfo.entityClass;
-   }
 }
 
