@@ -91,7 +91,23 @@ public class EntityExportHelper
             {
                break;
             }
-            checkEntityExists( existsManyAssociation.type(), arrEl.getString( "identity" ) );
+
+            final Class<?> assocClassName = Class.forName( existsManyAssociation.type() );
+            int j = 0;
+            String associationClass = null;
+            for ( EntityInfo entityInfo : EntityInfo.values() )
+            {
+               if ( entityInfo.getEntityClass().isAssignableFrom( assocClassName ) )
+               {
+                  associationClass = entityInfo.getEntityClass().getName();
+                  j++;
+               }
+            }
+            if ( j == 1)
+            {
+               checkEntityExists( associationClass, arrEl.getString( "identity" ) );
+            }
+
             final PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO " + tableName + " (owner_id,link_id) VALUES (?,?)" );
             preparedStatement.setString( 1, entity.getString( "identity" ) );
             preparedStatement.setString( 2, entity.getString( arrEl.getString( "identity" ) ) );
@@ -115,9 +131,8 @@ public class EntityExportHelper
       {
          final String name = existsProperty.qualifiedName().name();
 
-         if ( subProps.get( name ) == null )
+         if ( !name.equals( "identity" ) && subProps.get( name ) == null )
          {
-
             query
                     .append( toSnackCaseFromCamelCase( name ) )
                     .append( " = ?," );
@@ -281,7 +296,18 @@ public class EntityExportHelper
          final String name = existsAssociation.qualifiedName().name();
          final JSONObject jsonObject = entity.getJSONObject( name );
          final String identity = jsonObject.getString( "identity" );
-         checkEntityExists( jsonObject.optString( "_type", existsAssociation.type().name() ), identity );
+
+         final Class<?> assocClassName = Class.forName( existsAssociation.type().name() );
+         String associationClass = null;
+         for ( EntityInfo entityInfo : EntityInfo.values() )
+         {
+            if ( entityInfo.getEntityClass().isAssignableFrom( assocClassName ) )
+            {
+               associationClass = entityInfo.getEntityClass().getName();
+            }
+         }
+
+         checkEntityExists( jsonObject.optString( "_type", associationClass ), identity );
          associations.put( toSnackCaseFromCamelCase( name ), identity );
       }
 
@@ -343,9 +369,9 @@ public class EntityExportHelper
       int count = 0;
       for ( PropertyType property : allProperties )
       {
-         if ( property.type().isValue() 
-                 || property.type().type().name().equals( List.class.getName() ) 
-                 || property.type().type().name().equals( Set.class.getName() ) 
+         if ( property.type().isValue()
+                 || property.type().type().name().equals( List.class.getName() )
+                 || property.type().type().name().equals( Set.class.getName() )
                  || property.type().type().name().equals( Map.class.getName() ) )
          {
             allow = true;
@@ -419,7 +445,7 @@ public class EntityExportHelper
          final String name = association.qualifiedName().name();
          if ( !name.equals( "identity" ) )
          {
-            queryNullUpdate.append( toSnackCaseFromCamelCase( name ))
+            queryNullUpdate.append( toSnackCaseFromCamelCase( name ) )
                     .append( "=NULL," );
          }
       }
@@ -446,7 +472,7 @@ public class EntityExportHelper
 
          final String name = existsProperty.qualifiedName().name();
 
-         if ( subProps.get( name ) != null )
+         if ( name.equals( "identity" ) || subProps.get( name ) != null )
          {
             continue;
          }
