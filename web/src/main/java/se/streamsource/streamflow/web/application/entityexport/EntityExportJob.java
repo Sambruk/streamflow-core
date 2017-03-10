@@ -78,63 +78,49 @@ public interface EntityExportJob extends Job, TransientComposite
 
                final String description = entity.optString( "_description" );
 
-               //for tests.
-               if (
-                       description.equals( AttachmentEntity.class.getName() )
-                       ||
-                       description.equals( CaseLogEntity.class.getName() )
-                       ||
-                         description.equals( CaseTypeEntity.class.getName() )
-                        ||
-                         description.equals( CaseEntity.class.getName() )
-                               ||
-                               description.equals( FieldEntity.class.getName() )
 
-                       ) {
-
-
-                  if ( description.isEmpty() )
-                  {
-                     throw new IllegalStateException( "JSON must include _description property." );
-                  }
-
-                  final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
-                  final EntityType entityType = entityDescriptor.entityType();
-
-                  final Iterable<PropertyType> existsProperties =
-                          getNotNullProperties( entity, entityType.properties() );
-                  final Iterable<AssociationType> existsAssociations =
-                          getNotNullProperties( entity, entityType.associations() );
-                  final Iterable<ManyAssociationType> existsManyAssociations =
-                          getNotNullProperties( entity, entityType.manyAssociations() );
-
-                  Map<String, Object> subProps = new HashMap<>();
-
-                  for ( PropertyType existsProperty : existsProperties )
-                  {
-                     final QualifiedName qualifiedName = existsProperty.qualifiedName();
-                     final Object jsonStructure = entity.get( qualifiedName.name() );
-
-                     if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray) {
-                        subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
-                     }
-                  }
-
-                  final EntityExportHelper entityExportHelper = new EntityExportHelper();
-                  entityExportHelper.setExistsProperties( existsProperties );
-                  entityExportHelper.setExistsAssociations( existsAssociations );
-                  entityExportHelper.setExistsManyAssociations( existsManyAssociations );;
-                  entityExportHelper.setSubProps( subProps );
-                  entityExportHelper.setConnection( dataSource.get().getConnection() );
-                  entityExportHelper.setEntity( entity );
-                  entityExportHelper.setAllProperties( entityType.properties() );
-                  entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
-                  entityExportHelper.setAllAssociations( entityType.associations() );
-                  entityExportHelper.setClassName( description );
-
-                  entityExportHelper.help();
-
+               if ( description.isEmpty() )
+               {
+                  throw new IllegalStateException( "JSON must include _description property." );
                }
+
+               final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
+               final EntityType entityType = entityDescriptor.entityType();
+
+               final Iterable<PropertyType> existsProperties =
+                       getNotNullProperties( entity, entityType.properties() );
+               final Iterable<AssociationType> existsAssociations =
+                       getNotNullProperties( entity, entityType.associations() );
+               final Iterable<ManyAssociationType> existsManyAssociations =
+                       getNotNullProperties( entity, entityType.manyAssociations() );
+
+               Map<String, Object> subProps = new HashMap<>();
+
+               for ( PropertyType existsProperty : existsProperties )
+               {
+                  final QualifiedName qualifiedName = existsProperty.qualifiedName();
+                  final Object jsonStructure = entity.get( qualifiedName.name() );
+
+                  if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
+                  {
+                     subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
+                  }
+               }
+
+               final EntityExportHelper entityExportHelper = new EntityExportHelper();
+               entityExportHelper.setExistsProperties( existsProperties );
+               entityExportHelper.setExistsAssociations( existsAssociations );
+               entityExportHelper.setExistsManyAssociations( existsManyAssociations );
+               ;
+               entityExportHelper.setSubProps( subProps );
+               entityExportHelper.setConnection( dataSource.get().getConnection() );
+               entityExportHelper.setEntity( entity );
+               entityExportHelper.setAllProperties( entityType.properties() );
+               entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
+               entityExportHelper.setAllAssociations( entityType.associations() );
+               entityExportHelper.setClassName( description );
+
+               entityExportHelper.help();
 
                entityExportService.savedSuccess( entity );
 
@@ -151,7 +137,8 @@ public interface EntityExportJob extends Job, TransientComposite
                {
                   connection.close();
                }
-            } catch ( SQLException e ) {
+            } catch ( SQLException e )
+            {
                logger.error( "Error:", e );
             }
 
@@ -198,7 +185,6 @@ public interface EntityExportJob extends Job, TransientComposite
       {
          return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
       }
-
 
 
    }

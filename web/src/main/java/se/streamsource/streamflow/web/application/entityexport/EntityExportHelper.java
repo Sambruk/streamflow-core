@@ -334,7 +334,7 @@ public class EntityExportHelper
 
    }
 
-   private void deleteEntityAndRelations( String identity ) throws SQLException
+   private void deleteEntityAndRelations( String identity ) throws SQLException, ClassNotFoundException, JSONException
    {
       StringBuilder select = new StringBuilder( "SELECT " );
 
@@ -343,7 +343,10 @@ public class EntityExportHelper
       int count = 0;
       for ( PropertyType property : allProperties )
       {
-         if ( property.type().isValue() || property.type().type().name().equals( List.class.getName() ) || property.type().type().name().equals( Map.class.getName() ) )
+         if ( property.type().isValue() 
+                 || property.type().type().name().equals( List.class.getName() ) 
+                 || property.type().type().name().equals( Set.class.getName() ) 
+                 || property.type().type().name().equals( Map.class.getName() ) )
          {
             allow = true;
             select.append( toSnackCaseFromCamelCase( property.qualifiedName().name() ) )
@@ -389,10 +392,11 @@ public class EntityExportHelper
       //Delete many associations
       for ( ManyAssociationType manyAssociation : allManyAssociations )
       {
+
          String tableName = tableName() + "_" + toSnackCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
          deleteFromWhereId( tableName, identity );
-      }
 
+      }
 
       //Set main entity all columns to NULL except identity
 
@@ -432,7 +436,6 @@ public class EntityExportHelper
 //      deleteFromWhereId( IDENTITY_TABLE_NAME, identity );
 
    }
-
 
    private int addArguments( PreparedStatement statement ) throws JSONException, SQLException, ClassNotFoundException
    {

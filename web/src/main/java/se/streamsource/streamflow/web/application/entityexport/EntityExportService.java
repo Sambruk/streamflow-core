@@ -142,49 +142,36 @@ public interface EntityExportService
          {
             logger.error( "Error: ", e );
          }
-         //for tests.
-         if (
-                 description.equals( AttachmentEntity.class.getName() )
-                         ||
-                         description.equals( CaseLogEntity.class.getName() )
-                         ||
-                         description.equals( CaseTypeEntity.class.getName() )
-                         ||
-                         description.equals( CaseEntity.class.getName() )
-                         ||
-                         description.equals( FieldEntity.class.getName() )
 
-                 ) {
-            try
+         try
+         {
+            List<String> info = IOUtils.readLines( new FileInputStream( infoFileAbsPath ), "UTF-8" );
+
+            final String modified = entity.getLong( "_modified" ) + "";
+            final String identity = entity.getString( "identity" );
+
+            if ( info.size() < 2 || !( info.get( 0 ).equals( modified ) ) )
             {
-               List<String> info = IOUtils.readLines( new FileInputStream( infoFileAbsPath ), "UTF-8" );
-
-               final String modified = entity.getLong( "_modified" ) + "";
-               final String identity = entity.getString( "identity" );
-
-               if ( info.size() < 2 || !( info.get( 0 ).equals( modified ) ) )
-               {
-                  info = new ArrayList<>( 2 );
-                  info.add( modified );
-                  info.add( identity );
-               } else
-               {
-                  info.add( identity );
-               }
-
-               PrintWriter pw = new PrintWriter( infoFileAbsPath );
-               for ( String line : info )
-               {
-                  pw.println( line );
-               }
-               pw.flush();
-               pw.close();
-
-               logger.info( "Entity #" + currentId.get() + " exported to sql with id=" + identity );
-            } catch ( Exception e )
+               info = new ArrayList<>( 2 );
+               info.add( modified );
+               info.add( identity );
+            } else
             {
-               logger.error( "Error: ", e );
+               info.add( identity );
             }
+
+            PrintWriter pw = new PrintWriter( infoFileAbsPath );
+            for ( String line : info )
+            {
+               pw.println( line );
+            }
+            pw.flush();
+            pw.close();
+
+            logger.info( "Entity #" + currentId.get() + " exported to sql with id=" + identity );
+         } catch ( Exception e )
+         {
+            logger.error( "Error: ", e );
          }
 
          caching.remove( currentId.getAndIncrement() );
@@ -283,7 +270,7 @@ public interface EntityExportService
          {
             query = QueryBuilders
                     .filteredQuery( query,
-                    FilterBuilders.boolFilter().mustNot( FilterBuilders.termsFilter( "_identity", info.ids ) ) );
+                            FilterBuilders.boolFilter().mustNot( FilterBuilders.termsFilter( "_identity", info.ids ) ) );
          }
 
          request.setQuery( query );
