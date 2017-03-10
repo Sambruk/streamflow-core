@@ -31,6 +31,7 @@ public class EntityExportHelper
 {
 
    private static final String SEPARATOR = ":separator:";
+   private static final String ESCAPE_SQL = "`";
 
    private List<PropertyType> existsProperties;
    private Iterable<AssociationType> existsAssociations;
@@ -97,20 +98,21 @@ public class EntityExportHelper
             String associationClass = null;
             for ( EntityInfo entityInfo : EntityInfo.values() )
             {
-               if ( entityInfo.getEntityClass().isAssignableFrom( assocClassName ) )
+               if ( assocClassName.isAssignableFrom( entityInfo.getEntityClass() ) )
                {
                   associationClass = entityInfo.getEntityClass().getName();
                   j++;
                }
             }
-            if ( j == 1)
+            if ( j == 1 )
             {
                checkEntityExists( associationClass, arrEl.getString( "identity" ) );
             }
 
-            final PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO " + tableName + " (owner_id,link_id) VALUES (?,?)" );
+            final PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
+                    " (owner_id,link_id) VALUES (?,?)" );
             preparedStatement.setString( 1, entity.getString( "identity" ) );
-            preparedStatement.setString( 2, entity.getString( arrEl.getString( "identity" ) ) );
+            preparedStatement.setString( 2, arrEl.getString( "identity" ) );
             preparedStatement.executeUpdate();
             preparedStatement.close();
          }
@@ -124,7 +126,7 @@ public class EntityExportHelper
    {
 
       StringBuilder query = new StringBuilder( "UPDATE  " )
-              .append( tableName() )
+              .append( escapeSqlColumnOrTable( tableName() ) )
               .append( " SET " );
 
       for ( PropertyType existsProperty : existsProperties )
@@ -134,13 +136,15 @@ public class EntityExportHelper
          if ( !name.equals( "identity" ) && subProps.get( name ) == null )
          {
             query
-                    .append( toSnackCaseFromCamelCase( name ) )
+                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
                     .append( " = ?," );
          }
       }
       query
               .deleteCharAt( query.length() - 1 )
-              .append( " WHERE identity = ?" );
+              .append( " WHERE " )
+              .append( escapeSqlColumnOrTable( "identity" ) )
+              .append( " = ?" );
 
       final PreparedStatement statement = connection.prepareStatement( query.toString() );
       final int index = addArguments( statement );
@@ -163,7 +167,7 @@ public class EntityExportHelper
          final Object value = subProps.get( key );
 
          StringBuilder query = new StringBuilder( "UPDATE  " )
-                 .append( tableName() )
+                 .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " SET " );
          StringBuilder temp = new StringBuilder();
 
@@ -200,9 +204,12 @@ public class EntityExportHelper
          }
 
          query
-                 .append( toSnackCaseFromCamelCase( key ) )
+                 .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
                  .append( "= ?" )
-                 .append( " WHERE identity = ?" );
+                 .append( " WHERE " )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( " = ?" );
+
          PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
          preparedStatement.setString( 1, temp.toString() );
          preparedStatement.setString( 2, entity.getString( "identity" ) );
@@ -222,8 +229,8 @@ public class EntityExportHelper
          {
 
             String query = "INSERT INTO " +
-                    tableName +
-                    " (property_value) VALUES (?)";
+                    escapeSqlColumnOrTable( tableName )+
+                    " (" + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?)";
 
             PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
             preparedStatement.setString( 1, o.toString() );
@@ -252,7 +259,7 @@ public class EntityExportHelper
 
             String query = "INSERT INTO " +
                     tableName +
-                    " (property_key,property_value) VALUES (?,?)";
+                    " (" + escapeSqlColumnOrTable( "property_key"  )+ "," + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?,?)";
 
             PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
             preparedStatement.setString( 1, objKey );
@@ -301,7 +308,7 @@ public class EntityExportHelper
          String associationClass = null;
          for ( EntityInfo entityInfo : EntityInfo.values() )
          {
-            if ( entityInfo.getEntityClass().isAssignableFrom( assocClassName ) )
+            if ( assocClassName.isAssignableFrom( entityInfo.getEntityClass() ) )
             {
                associationClass = entityInfo.getEntityClass().getName();
             }
@@ -316,18 +323,20 @@ public class EntityExportHelper
          final Set<String> keys = associations.keySet();
 
          StringBuilder query = new StringBuilder( "UPDATE  " )
-                 .append( tableName() )
+                 .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " SET " );
 
          for ( String key : keys )
          {
             query
-                    .append( key )
+                    .append( escapeSqlColumnOrTable( key ) )
                     .append( " = ?," );
          }
          query
                  .deleteCharAt( query.length() - 1 )
-                 .append( " WHERE identity = ?" );
+                 .append( " WHERE " )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( " = ?" );
 
          final PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
 
@@ -351,7 +360,8 @@ public class EntityExportHelper
 
       if ( !resultSet.next() )
       {
-         final String qeury = "INSERT INTO " + tableName + " (identity) VALUES (?)";
+         final String qeury = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
+                 " (" + escapeSqlColumnOrTable( "identity" ) + ")" + " VALUES (?)";
          final PreparedStatement preparedStatement = connection.prepareStatement( qeury );
          preparedStatement.setString( 1, identity );
          preparedStatement.executeUpdate();
@@ -375,7 +385,8 @@ public class EntityExportHelper
                  || property.type().type().name().equals( Map.class.getName() ) )
          {
             allow = true;
-            select.append( toSnackCaseFromCamelCase( property.qualifiedName().name() ) )
+            select
+                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
                     .append( "," );
             count++;
          }
@@ -384,7 +395,10 @@ public class EntityExportHelper
 
       if ( allow )
       {
-         select.deleteCharAt( select.length() - 1 ).append( " FROM " ).append( tableName() );
+         select
+                 .deleteCharAt( select.length() - 1 )
+                 .append( " FROM " )
+                 .append( escapeSqlColumnOrTable( tableName() ) );
 
          final ResultSet resultSet = connection.prepareStatement( select.toString() ).executeQuery();
 
@@ -410,7 +424,11 @@ public class EntityExportHelper
             for ( String s : splitted )
             {
                final String[] split = s.split( ";" );
-               deleteFromWhereId( split[0], split[1] );
+               final String delete = "DELETE FROM " + escapeSqlColumnOrTable( split[0] ) + " WHERE id = ?";
+               final PreparedStatement preparedStatement = connection.prepareStatement( delete );
+               preparedStatement.setString( 1, split[1] );
+               preparedStatement.executeUpdate();
+               preparedStatement.close();
             }
          }
       }
@@ -420,7 +438,11 @@ public class EntityExportHelper
       {
 
          String tableName = tableName() + "_" + toSnackCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
-         deleteFromWhereId( tableName, identity );
+         final String delete = "DELETE FROM " + tableName + " WHERE owner_id = ?";
+         final PreparedStatement preparedStatement = connection.prepareStatement( delete );
+         preparedStatement.setString( 1, identity );
+         preparedStatement.executeUpdate();
+         preparedStatement.close();
 
       }
 
@@ -510,9 +532,9 @@ public class EntityExportHelper
 
    private ResultSet selectFromWhereId( String tableName, String id ) throws SQLException, JSONException
    {
-      String isExistQuery = "SELECT identity FROM " +
-              tableName +
-              " WHERE identity = ?";
+      String isExistQuery = "SELECT " + escapeSqlColumnOrTable( "identity" ) +
+              " FROM " + escapeSqlColumnOrTable( tableName ) +
+              " WHERE " + escapeSqlColumnOrTable( "identity" ) + " = ?";
 
       final PreparedStatement isExistPS = connection
               .prepareStatement( isExistQuery );
@@ -520,13 +542,9 @@ public class EntityExportHelper
       return isExistPS.executeQuery();
    }
 
-   private void deleteFromWhereId( String tableName, String id ) throws SQLException
+   private String escapeSqlColumnOrTable( String name )
    {
-      final String delete = "DELETE FROM " + tableName + " WHERE identity = ?";
-      final PreparedStatement preparedStatement = connection.prepareStatement( delete );
-      preparedStatement.setString( 1, id );
-      preparedStatement.executeUpdate();
-      preparedStatement.close();
+      return ESCAPE_SQL + name + ESCAPE_SQL;
    }
 
    private String classSimpleName( String className )
