@@ -413,7 +413,10 @@ public class EntityExportHelper
 
          for ( int i = 1; i <= count; i++ )
          {
-            resultSet.next();
+            if ( !resultSet.next() )
+            {
+               break;
+            }
             String id = resultSet.getString( i );
 
             if ( id == null )
