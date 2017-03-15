@@ -9,6 +9,7 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,17 +28,13 @@ import java.util.Set;
 /**
  * Created by ruslan on 03.03.17.
  */
-public class EntityExportHelper
+public class EntityExportHelper extends AbstractExportHelper
 {
-
-   private static final String SEPARATOR = ":separator:";
-   private static final String ESCAPE_SQL = "`";
 
    private List<PropertyType> existsProperties;
    private Iterable<AssociationType> existsAssociations;
    private Iterable<ManyAssociationType> existsManyAssociations;
    private Map<String, Object> subProps;
-   private Connection connection;
    private JSONObject entity;
    private ArrayList<PropertyType> allProperties;
    private ArrayList<ManyAssociationType> allManyAssociations;
@@ -162,11 +159,6 @@ public class EntityExportHelper
       }
    }
 
-   private String tableName()
-   {
-      return toSnackCaseFromCamelCase( classSimpleName( className ) );
-   }
-
    private void saveSubProperties() throws Exception
    {
       final Set<String> keys = subProps.keySet();
@@ -192,10 +184,10 @@ public class EntityExportHelper
                   {
                      if ( temp.length() == 0 )
                      {
-                        temp.append( processValueComposite( ( ValueComposite ) o, key ) );
+                        temp.append( processValueComposite( ( ValueComposite ) o ) );
                      } else
                      {
-                        temp.append( SEPARATOR ).append( processValueComposite( ( ValueComposite ) o, key ) );
+                        temp.append( SEPARATOR ).append( processValueComposite( ( ValueComposite ) o ) );
                      }
                   }
                } else
@@ -209,7 +201,7 @@ public class EntityExportHelper
 
          } else if ( value instanceof ValueComposite )
          {
-            temp.append( processValueComposite( ( ValueComposite ) value, key ) );
+            temp.append( processValueComposite( ( ValueComposite ) value ) );
          }
 
          query
@@ -291,17 +283,6 @@ public class EntityExportHelper
 
       return result.toString();
    }
-
-   private String processValueComposite( ValueComposite value, String name ) throws SQLException
-   {
-      final ValueExportHelper valueExportHelper = new ValueExportHelper();
-      valueExportHelper.setName( name );
-      valueExportHelper.setValue( value );
-      valueExportHelper.setConnection( connection );
-      return valueExportHelper.help();
-
-   }
-
 
    private void saveAssociations() throws Exception
    {
@@ -450,7 +431,7 @@ public class EntityExportHelper
       {
 
          String tableName = tableName() + "_" + toSnackCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
-         final String delete = "DELETE FROM " + tableName + " WHERE owner_id = ?";
+         final String delete = "DELETE FROM " + escapeSqlColumnOrTable( tableName ) + " WHERE owner_id = ?";
          final PreparedStatement preparedStatement = connection.prepareStatement( delete );
          preparedStatement.setString( 1, identity );
          preparedStatement.executeUpdate();
@@ -469,7 +450,7 @@ public class EntityExportHelper
          final String name = property.qualifiedName().name();
          if ( !name.equals( "identity" ) )
          {
-            queryNullUpdate.append( toSnackCaseFromCamelCase( name ) )
+            queryNullUpdate.append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
                     .append( "=NULL," );
          }
       }
@@ -479,7 +460,7 @@ public class EntityExportHelper
          final String name = association.qualifiedName().name();
          if ( !name.equals( "identity" ) )
          {
-            queryNullUpdate.append( toSnackCaseFromCamelCase( name ) )
+            queryNullUpdate.append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
                     .append( "=NULL," );
          }
       }
@@ -492,9 +473,6 @@ public class EntityExportHelper
 
       preparedStatement.executeUpdate();
       preparedStatement.close();
-
-//      deleteFromWhereId( IDENTITY_TABLE_NAME, identity );
-
    }
 
    private int addArguments( PreparedStatement statement ) throws JSONException, SQLException, ClassNotFoundException
@@ -542,52 +520,11 @@ public class EntityExportHelper
       return i;
    }
 
-   private ResultSet selectFromWhereId( String tableName, String id ) throws SQLException, JSONException
+
+   @Override
+   protected String tableName()
    {
-      String isExistQuery = "SELECT " + escapeSqlColumnOrTable( "identity" ) +
-              " FROM " + escapeSqlColumnOrTable( tableName ) +
-              " WHERE " + escapeSqlColumnOrTable( "identity" ) + " = ?";
-
-      final PreparedStatement isExistPS = connection
-              .prepareStatement( isExistQuery );
-      isExistPS.setString( 1, id );
-      return isExistPS.executeQuery();
-   }
-
-   private String escapeSqlColumnOrTable( String name )
-   {
-      return ESCAPE_SQL + name + ESCAPE_SQL;
-   }
-
-   private String classSimpleName( String className )
-   {
-      return className.substring( className.lastIndexOf( "." ) + 1 );
-   }
-
-   private String toSnackCaseFromCamelCase( String str )
-   {
-      StringBuilder stringBuilder = new StringBuilder();
-
-      //out of naming rules
-      String x = str.replace( "DTO", "Dto" );
-
-      for ( int i = 0; i < x.length(); i++ )
-      {
-         char ch = x.charAt( i );
-         if ( i == 0 )
-         {
-            ch = Character.toLowerCase( ch );
-         }
-         if ( Character.isUpperCase( ch ) )
-         {
-            stringBuilder.append( '_' );
-            stringBuilder.append( Character.toLowerCase( ch ) );
-         } else
-         {
-            stringBuilder.append( ch );
-         }
-      }
-      return stringBuilder.toString();
+      return toSnackCaseFromCamelCase( classSimpleName( className ) );
    }
 
    //setters
@@ -645,5 +582,10 @@ public class EntityExportHelper
    public void setClassName( String className )
    {
       this.className = className;
+   }
+
+   public void setModule ( ModuleSPI module )
+   {
+      this.module = module;
    }
 }

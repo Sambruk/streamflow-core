@@ -108,10 +108,10 @@ public interface EntityExportJob extends Job, TransientComposite
                }
 
                final EntityExportHelper entityExportHelper = new EntityExportHelper();
+
                entityExportHelper.setExistsProperties( existsProperties );
                entityExportHelper.setExistsAssociations( existsAssociations );
                entityExportHelper.setExistsManyAssociations( existsManyAssociations );
-               ;
                entityExportHelper.setSubProps( subProps );
                entityExportHelper.setConnection( dataSource.get().getConnection() );
                entityExportHelper.setEntity( entity );
@@ -119,6 +119,7 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
                entityExportHelper.setAllAssociations( entityType.associations() );
                entityExportHelper.setClassName( description );
+               entityExportHelper.setModule ( moduleSPI );
 
                entityExportHelper.help();
 
