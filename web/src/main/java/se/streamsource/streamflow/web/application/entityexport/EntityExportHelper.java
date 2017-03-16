@@ -220,70 +220,6 @@ public class EntityExportHelper extends AbstractExportHelper
       }
    }
 
-   private String processCollection( Object value, String key ) throws SQLException, JSONException
-   {
-      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( key );
-      StringBuilder result = new StringBuilder();
-      if ( value instanceof Collection )
-      {
-         for ( Object o : ( Collection<?> ) value )
-         {
-
-            String query = "INSERT INTO " +
-                    escapeSqlColumnOrTable( tableName )+
-                    " (" + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?)";
-
-            PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
-            preparedStatement.setString( 1, o.toString() );
-            preparedStatement.executeUpdate();
-            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
-            generatedKey.next();
-            int id = generatedKey.getInt( 1 );
-            if ( result.length() > 0 )
-            {
-               result.append( SEPARATOR );
-            }
-            result.append( tableName )
-                    .append( ";" )
-                    .append( id );
-            preparedStatement.close();
-         }
-      } else
-      {
-         final Map<?, ?> map = ( Map<?, ?> ) value;
-         final Set<?> keySet = map.keySet();
-
-         for ( Object o : keySet )
-         {
-            final String objKey = o.toString();
-            final String objValue = map.get( o ).toString();
-
-            String query = "INSERT INTO " +
-                    tableName +
-                    " (" + escapeSqlColumnOrTable( "property_key"  )+ "," + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?,?)";
-
-            PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
-            preparedStatement.setString( 1, objKey );
-            preparedStatement.setString( 2, objValue );
-            preparedStatement.executeUpdate();
-            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
-            generatedKey.next();
-            int id = generatedKey.getInt( 1 );
-            if ( result.length() > 0 )
-            {
-               result.append( SEPARATOR );
-            }
-            result.append( tableName )
-                    .append( ";" )
-                    .append( id );
-            preparedStatement.close();
-         }
-
-      }
-
-      return result.toString();
-   }
-
    private void saveAssociations() throws Exception
    {
       Map<String, String> associations = new LinkedHashMap<>();
@@ -489,37 +425,11 @@ public class EntityExportHelper extends AbstractExportHelper
             continue;
          }
 
-         if ( Boolean.class.equals( type ) )
-         {
-            statement.setBoolean( i++, entity.getBoolean( name ) );
-         } else if ( Integer.class.equals( type ) )
-         {
-            statement.setInt( i++, entity.getInt( name ) );
-         } else if ( Long.class.equals( type ) )
-         {
-            statement.setLong( i++, entity.getLong( name ) );
-         } else if ( Float.class.equals( type ) )
-         {
-            statement.setFloat( i++, ( float ) entity.getDouble( name ) );
-         } else if ( Double.class.equals( type ) )
-         {
-            statement.setDouble( i++, entity.getDouble( name ) );
-         } else if ( String.class.equals( type )
-                 || type.isEnum()
-                 || Date.class.equals( type )
-                 || DateTime.class.equals( type ) )
-         {
-            statement.setString( i++, entity.getString( name ) );
-         } else
-         {
-            throw new IllegalArgumentException();
-         }
-
+         setSimpleType(statement, type, entity, name, i++);
 
       }
       return i;
    }
-
 
    @Override
    protected String tableName()

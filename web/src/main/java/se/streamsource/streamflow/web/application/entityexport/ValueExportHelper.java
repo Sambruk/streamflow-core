@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.types.CollectionType;
@@ -115,6 +116,41 @@ public class ValueExportHelper extends AbstractExportHelper
       for( int i = 1; i <= count; i++ )
       {
          final String key = propertiesKeys.get( i );
+         final PropertyDescriptor property = state.getPropertyByName( key );
+         final ValueType type = ( ( ValuePropertyModel ) property ).propertyType().type();
+         final Class<?> clazz = Class.forName( type.type().name() );
+
+         if( type.isValue() )
+         {
+            final ValueComposite value = ( ValueComposite ) type.fromJSON( jsonObject.getJSONObject( key ), module );
+            preparedStatement.setString( i, processValueComposite( value ) );
+         } else if( type instanceof CollectionType || type instanceof MapType )
+         {
+            if( type instanceof CollectionType && ( ( CollectionType ) type ).collectedType().isValue() )
+            {
+               final JSONArray jsonArray = jsonObject.getJSONArray( key );
+               StringBuilder result = new StringBuilder();
+               for( int j = 0; ; j++ )
+               {
+                  final Object obj = jsonArray.optJSONObject( j );
+                  if( obj == null )
+                  {
+                     break;
+                  }
+
+                  final ValueComposite value = ( ValueComposite ) type.fromJSON( obj, module );
+                  result.append( processValueComposite( value ) );
+               }
+               preparedStatement.setString( i, result.toString() );
+            } else
+            {
+               final ValueComposite value = ( ValueComposite ) type.fromJSON( jsonObject.getJSONObject( key ), module );
+               preparedStatement.setString( i, processCollection( value, key ) );
+            }
+         } else
+         {
+            setSimpleType(preparedStatement, clazz, jsonObject, key, i);
+         }
       }
 
       preparedStatement.executeUpdate();
