@@ -112,5 +112,14 @@ public enum EntityInfo
       return UNKNOWN;
    }
 
+   public String getClassName()
+   {
+      return entityClass.getName();
+   }
+
+   public String getClassSimpleName()
+   {
+      return entityClass.getSimpleName();
+   }
 }
 

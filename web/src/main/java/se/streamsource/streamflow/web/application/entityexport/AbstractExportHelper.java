@@ -23,10 +23,10 @@ public abstract class AbstractExportHelper
 {
 
    protected static final String SEPARATOR = ":separator:";
-   protected static final String ESCAPE_SQL = "`";
 
    protected Connection connection;
    protected ModuleSPI module;
+   protected DbVendor dbVendor;
 
    protected abstract String tableName();
 
@@ -133,6 +133,7 @@ public abstract class AbstractExportHelper
       valueExportHelper.setValue( value );
       valueExportHelper.setConnection( connection );
       valueExportHelper.setModule( module );
+      valueExportHelper.setDbVendor( dbVendor );
       return valueExportHelper.help();
 
    }
@@ -151,7 +152,17 @@ public abstract class AbstractExportHelper
 
    protected String escapeSqlColumnOrTable( String name )
    {
-      return ESCAPE_SQL + name + ESCAPE_SQL;
+      switch ( dbVendor )
+      {
+         case mssql:
+            return "[" + name + "]";
+
+         case oracle:
+            return "\"" + name + "\"";
+
+         default:
+            return "`" + name + "`";
+      }
    }
 
    protected String classSimpleName( String className )
@@ -197,4 +208,8 @@ public abstract class AbstractExportHelper
       this.module = module;
    }
 
+   public void setDbVendor( DbVendor dbVendor )
+   {
+      this.dbVendor = dbVendor;
+   }
 }

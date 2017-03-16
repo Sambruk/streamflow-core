@@ -15,24 +15,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.spi.entitystore.StateChangeListener;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
-import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -86,6 +89,13 @@ public interface EntityExportService
       ElasticSearchSupport support;
       @Service
       CachingService cachingService;
+      @Service
+      ServiceReference<DataSource> dataSource;
+
+      @Structure
+      ModuleSPI moduleSPI;
+      @Structure
+      Module module;
 
       private Caching caching;
 
@@ -93,8 +103,16 @@ public interface EntityExportService
       public void activate() throws Exception
       {
 
-         if ( thisConfig.configuration().enabled().get() )
+         if ( dataSource.isAvailable()
+                 && dataSource.isActive()
+                 && thisConfig.configuration().enabled().get() )
          {
+
+            if( thisConfig.configuration().createSchema().get() )
+            {
+               createSchema();
+            }
+
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
 
             caching.removeAll();
@@ -181,6 +199,19 @@ public interface EntityExportService
       public void passivate() throws Exception
       {
 
+      }
+
+      private void createSchema() throws Exception
+      {
+         final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
+         final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
+         final DbVendor dbVendor = DbVendor.from( dataSourceConfiguration.dbVendor().get() );
+
+         final SchemaCreatorHelper schemaUpdater = new SchemaCreatorHelper();
+         schemaUpdater.setModule( moduleSPI );
+         schemaUpdater.setConnection( dataSource.get().getConnection() );
+         schemaUpdater.setDbVendor( dbVendor );
+         schemaUpdater.create();
       }
 
       private void export() throws IOException, InterruptedException

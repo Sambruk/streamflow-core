@@ -10,6 +10,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
@@ -22,6 +25,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -52,6 +56,9 @@ public interface EntityExportJob extends Job, TransientComposite
 
       @Structure
       ModuleSPI moduleSPI;
+
+      @Structure
+      Module module;
 
       @Service
       ServiceReference<DataSource> dataSource;
@@ -120,6 +127,7 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportHelper.setAllAssociations( entityType.associations() );
                entityExportHelper.setClassName( description );
                entityExportHelper.setModule ( moduleSPI );
+               entityExportHelper.setDbVendor( getDbVendor() );
 
                entityExportHelper.help();
 
@@ -145,6 +153,13 @@ public interface EntityExportJob extends Job, TransientComposite
 
          }
 
+      }
+
+      private DbVendor getDbVendor()
+      {
+         final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
+         final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
+         return DbVendor.from( dataSourceConfiguration.dbVendor().get() );
       }
 
       private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
