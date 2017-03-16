@@ -6,7 +6,11 @@ import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,93 +22,112 @@ import java.util.Set;
 public class SchemaCreatorHelper extends AbstractExportHelper
 {
 
+   private final static Logger logger = LoggerFactory.getLogger( SchemaCreatorHelper.class.getName() );
+
+
    private EntityType entityType;
    private EntityInfo entityInfo;
 
+   private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+
    public void create() throws Exception
    {
+
       //main tables
       for ( EntityInfo entityInfo : EntityInfo.values() )
       {
-
-         if ( entityInfo.equals( EntityInfo.UNKNOWN ) )
+         if ( !entityInfo.equals( EntityInfo.UNKNOWN ) )
          {
-            continue;
+            this.entityInfo = entityInfo;
+            final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
+            entityType = entityDescriptor.entityType();
+
+            createMainTable();
          }
-
-         this.entityInfo = entityInfo;
-         final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
-         entityType = entityDescriptor.entityType();
-
-         createMainTable();
-
       }
 
       //foreign keys
       for ( EntityInfo entityInfo : EntityInfo.values() )
       {
-
-         if ( entityInfo.equals( EntityInfo.UNKNOWN ) )
+         if ( !entityInfo.equals( EntityInfo.UNKNOWN ) )
          {
-            continue;
+            this.entityInfo = entityInfo;
+            final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
+            entityType = entityDescriptor.entityType();
+
+            createForeignKeys();
+
+            createManyAssociationsTables();
+
+            createSubPropsTables();
          }
-
-         this.entityInfo = entityInfo;
-         final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
-         entityType = entityDescriptor.entityType();
-
-         createForeignKeys();
-
-         createManyAssociationsTables();
-
-         createSubPropsTables();
-
       }
 
    }
 
-   private void createSubPropsTables()
+   private void createSubPropsTables() throws SQLException
    {
       for ( PropertyType property : entityType.properties() )
       {
+         final boolean isList = property.type().type().name().equals( List.class.getName() );
+         final boolean isSet = property.type().type().name().equals( Set.class.getName() );
+         final boolean isMap = property.type().type().name().equals( Map.class.getName() );
+
+         if ( isList || isSet || isMap )
+         {
+
+            final StringBuilder collectionTable = new StringBuilder();
+            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() );
+
+            collectionTable
+                    .append( "CREATE TABLE " )
+                    .append( escapeSqlColumnOrTable( tableName ) )
+                    .append( " (" )
+                    .append( LINE_SEPARATOR )
+                    .append( escapeSqlColumnOrTable( "id" ) )
+                    .append( " INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," )
+                    .append( LINE_SEPARATOR );
+
+            if ( isMap )
+            {
+               collectionTable
+                       .append( " " )
+                       .append( escapeSqlColumnOrTable( "property_key" ) )
+                       .append( stringLimitedSqlType( Integer.MAX_VALUE ) )
+                       .append( " NULL," )
+                       .append( LINE_SEPARATOR );
+            }
+
+            collectionTable
+                    .append( " " )
+                    .append( escapeSqlColumnOrTable( "property_value" ) )
+                    .append( stringLimitedSqlType( Integer.MAX_VALUE ) )
+                    .append( " NULL," )
+                    .append( LINE_SEPARATOR )
+                    .append( " PRIMARY KEY (" )
+                    .append( escapeSqlColumnOrTable( "id" ) )
+                    .append( ") " )
+                    .append( LINE_SEPARATOR )
+                    .append( tableEnd() )
+                    .append( LINE_SEPARATOR );
+
+            final Statement statement = connection.createStatement();
+
+            statement.executeUpdate( collectionTable.toString() );
+            statement.close();
+
+            logger.info( collectionTable.toString() );
 
 
-         if ( property.type().type().name().equals( List.class.getName() )
-                 || property.type().type().name().equals( Set.class.getName() ) )
+         } else
          {
-            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() );
-            pw.print( "CREATE TABLE " );
-            pw.print( "`" );
-            pw.print( tableName );
-            pw.print( "`" );
-            pw.println( " (" );
-            pw.println( " `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," );
-            pw.println( " `property_value` TEXT NULL," );
-            pw.println( " PRIMARY KEY (`id`)" );
-            pw.println( ") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_swedish_ci';" );
-            pw.println();
-            pw.println();
-         } else if ( property.type().type().name().equals( Map.class.getName() ) )
-         {
-            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() );
-            pw.print( "CREATE TABLE " );
-            pw.print( "`" );
-            pw.print( tableName );
-            pw.print( "`" );
-            pw.println( " (" );
-            pw.println( " `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," );
-            pw.println( " `property_key` TEXT NULL," );
-            pw.println( " `property_value` TEXT NULL," );
-            pw.println( " PRIMARY KEY (`id`)" );
-            pw.println( ") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_swedish_ci';" );
-            pw.println();
-            pw.println();
+
          }
       }
 
    }
 
-   private void createManyAssociationsTables() throws ClassNotFoundException
+   private void createManyAssociationsTables() throws ClassNotFoundException, SQLException
    {
       for ( ManyAssociationType manyAssociation : entityType.manyAssociations() )
       {
@@ -124,54 +147,75 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             }
          }
 
-         pw.print( "CREATE TABLE " );
-         pw.print( "`" );
-         pw.print( tableName );
-         pw.print( "`" );
-         pw.print( " (" );
-         pw.println();
-         pw.println( " `owner_id` VARCHAR(255) NOT NULL," );
-         pw.println( " `link_id` VARCHAR(255) NOT NULL," );
+         final StringBuilder manyAssoc = new StringBuilder();
+
+         manyAssoc
+                 .append( "CREATE TABLE " )
+                 .append( escapeSqlColumnOrTable( tableName ) )
+                 .append( " (" )
+                 .append( LINE_SEPARATOR )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( " " )
+                 .append( stringLimitedSqlType( 255 ) )
+                 .append( " NOT NULL," )
+                 .append( LINE_SEPARATOR )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( " " )
+                 .append( stringLimitedSqlType( 255 ) )
+                 .append( " NOT NULL," )
+                 .append( LINE_SEPARATOR );
+
 
          if ( i == 1 )
          {
-
-            pw.print( " CONSTRAINT " );
-            pw.print( "`" );
-            pw.print( "FK_owner_" );
             final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
-            pw.print( hashCodeOwner > 0 ? hashCodeOwner : -1 * hashCodeOwner );
-            pw.print( "`" );
-            pw.print( " FOREIGN KEY (`owner_id`) REFERENCES " );
-            pw.print( "`" );
-            pw.print( tableName() );
-            pw.print( "`" );
-            pw.println( " (`identity`)," );
+            manyAssoc
+                    .append( " CONSTRAINT FK_owner_" )
+                    .append( hashCodeOwner > 0 ? hashCodeOwner : -1 * hashCodeOwner )
+                    .append( " FOREIGN KEY (" )
+                    .append( escapeSqlColumnOrTable( "owner_id" ) )
+                    .append( ") REFERENCES " )
+                    .append( escapeSqlColumnOrTable( tableName() ))
+                    .append( " (" )
+                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( ")," )
+                    .append( LINE_SEPARATOR );
 
-            pw.print( " CONSTRAINT " );
-            pw.print( "`" );
-            pw.print( "FK_link_" );
             final int hashCodeLink = ( tableName() + tableName + "link" ).hashCode();
-            pw.print( hashCodeLink > 0 ? hashCodeLink : -1 * hashCodeLink );
-            pw.print( "`" );
-            pw.print( " FOREIGN KEY (`link_id`) REFERENCES " );
-            pw.print( "`" );
-            pw.print( associationTable );
-            pw.print( "`" );
-            pw.println( " (`identity`)," );
+            manyAssoc
+                    .append( " CONSTRAINT FK_link_" )
+                    .append( hashCodeOwner > 0 ? hashCodeLink : -1 * hashCodeLink )
+                    .append( " FOREIGN KEY (" )
+                    .append( escapeSqlColumnOrTable( "link_id" ) )
+                    .append( ") REFERENCES " )
+                    .append( escapeSqlColumnOrTable( associationTable ))
+                    .append( " (" )
+                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( ")," )
+                    .append( LINE_SEPARATOR );
 
          }
 
-         pw.println( " PRIMARY KEY (`owner_id`, `link_id`)" );
+         manyAssoc
+                 .append( " PRIMARY KEY (")
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( "," )
+                 .append( escapeSqlColumnOrTable("link_id" ))
+                 .append( ")" )
+                 .append( LINE_SEPARATOR )
+                 .append( tableEnd() );
 
-         pw.println( ") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_swedish_ci';" );
+         final Statement statement = connection.createStatement();
 
-         pw.println();
-         pw.println();
+         statement.executeUpdate( manyAssoc.toString() );
+         statement.close();
+
+         logger.info( manyAssoc.toString() );
+
       }
    }
 
-   private void createForeignKeys() throws ClassNotFoundException
+   private void createForeignKeys() throws ClassNotFoundException, SQLException
    {
       for ( AssociationType association : entityType.associations() )
       {
@@ -190,62 +234,68 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             }
          }
 
+
          if ( i == 1 )
          {
-            pw.print( "ALTER TABLE " );
-            pw.print( "`" );
-            pw.print( tableName() );
-            pw.print( "`" );
-            pw.print( " ADD CONSTRAINT " );
-            pw.print( "`" );
-            pw.print( "FK_" );
-            pw.print( associationName );
-            pw.print( "_" );
             final int hashCode = ( tableName() + associationName ).hashCode();
-            pw.print( hashCode > 0 ? hashCode : -1 * hashCode );
-            pw.print( "`" );
-            pw.print( " FOREIGN KEY (" );
-            pw.print( "`" );
-            pw.print( associationName );
-            pw.print( "`" );
-            pw.print( ") REFERENCES " );
-            pw.print( "`" );
-            pw.print( associationTable );
-            pw.print( "`" );
-            pw.print( " (`identity`);" );
-            pw.println();
-            pw.println();
+
+            final StringBuilder foreignKey = new StringBuilder();
+            foreignKey.append( "ALTER TABLE " )
+                    .append( escapeSqlColumnOrTable( tableName() ) )
+                    .append( " ADD CONSTRAINT " )
+                    .append( "FK_" )
+                    .append( associationName )
+                    .append( "_" )
+                    .append( hashCode > 0 ? hashCode : -1 * hashCode )
+                    .append( " FOREIGN KEY (" )
+                    .append( associationName )
+                    .append( ") REFERENCES " )
+                    .append( escapeSqlColumnOrTable( associationTable ) )
+                    .append( " (" )
+                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( ");" );
+
+            final Statement statement = connection.createStatement();
+
+            statement.executeUpdate( foreignKey.toString() );
+            statement.close();
+
+            logger.info( foreignKey.toString() );
+
          }
 
       }
 
    }
 
-   private void createMainTable() throws ClassNotFoundException
+   private void createMainTable() throws ClassNotFoundException, SQLException
    {
-      final StringBuilder mainTable = new StringBuilder();
-      mainTable.append( "CREATE TABLE " )
+      final StringBuilder mainTableCreate = new StringBuilder();
+      mainTableCreate.append( "CREATE TABLE " )
               .append( escapeSqlColumnOrTable( tableName() ) )
-              .
-      pw.print( " (" );
-      pw.println();
+              .append( " (" )
+              .append( LINE_SEPARATOR );
 
       for ( PropertyType property : entityType.properties() )
       {
 
          if ( property.qualifiedName().name().equals( "identity" ) )
          {
-            pw.println( " `identity` VARCHAR(255) NOT NULL," );
+            mainTableCreate
+                    .append( " " )
+                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( " " )
+                    .append( stringLimitedSqlType( 255 ) )
+                    .append( " NOT NULL," );
          } else
          {
-            pw.print( " " );
-            pw.print( "`" );
-            pw.print( toSnackCaseFromCamelCase( property.qualifiedName().name() ) );
-            pw.print( "`" );
-            pw.print( " " );
-            pw.print( detectType( property ) );
-            pw.print( " NULL," );
-            pw.println();
+            mainTableCreate
+                    .append( " " )
+                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
+                    .append( " " )
+                    .append( detectType( property ) )
+                    .append( " NULL," )
+                    .append( LINE_SEPARATOR );
          }
 
       }
@@ -255,23 +305,58 @@ public class SchemaCreatorHelper extends AbstractExportHelper
       {
          final String associationName = toSnackCaseFromCamelCase( association.qualifiedName().name() );
 
-         pw.print( " " );
-         pw.print( "`" );
-         pw.print( associationName );
-         pw.print( "`" );
-         pw.print( " VARCHAR(255) NULL," );
-         pw.println();
+         mainTableCreate
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( associationName ) )
+                 .append( " " )
+                 .append( stringLimitedSqlType( 255 ) )
+                 .append( " NULL," )
+                 .append( LINE_SEPARATOR );
 
       }
 
-      pw.println( " PRIMARY KEY (`identity`) " );
+      mainTableCreate
+              .append( " PRIMARY KEY (" )
+              .append( escapeSqlColumnOrTable( "identity" ) )
+              .append( ") " )
+              .append( tableEnd() )
+              .append( LINE_SEPARATOR );
 
-      pw.println( ") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_swedish_ci';" );
+      final Statement statement = connection.createStatement();
 
-      pw.println();
-      pw.println();
+      statement.executeUpdate( mainTableCreate.toString() );
+      statement.close();
 
+      logger.info( mainTableCreate.toString() );
 
+   }
+
+   private String tableEnd()
+   {
+      switch ( dbVendor )
+      {
+         case mssql:
+            return ");";
+         case oracle:
+            return ") CHARACTER SET utf8 COLLATE utf8_unicode_ci;";
+         default:
+            return ") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_unicode_ci';";
+      }
+   }
+
+   private String stringLimitedSqlType( int length )
+   {
+
+      final boolean isMax = length == Integer.MAX_VALUE;
+
+      switch ( dbVendor )
+      {
+         case mssql:
+            return isMax ? "NTEXT" : "NVARCHAR(" + length + ")";
+
+         default:
+            return isMax ? "TEXT" : "VARCHAR(" + length + ")";
+      }
    }
 
    private boolean isCollectionOrValue( PropertyType property )
