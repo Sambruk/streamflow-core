@@ -1,16 +1,21 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,39 +38,49 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    public void create() throws Exception
    {
 
-      //main tables
-      for ( EntityInfo entityInfo : EntityInfo.values() )
+      try
       {
-         if ( !entityInfo.equals( EntityInfo.UNKNOWN ) )
+         //main tables
+         for ( EntityInfo entityInfo : EntityInfo.values() )
          {
-            this.entityInfo = entityInfo;
-            final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
-            entityType = entityDescriptor.entityType();
+            if ( !entityInfo.equals( EntityInfo.UNKNOWN ) )
+            {
+               this.entityInfo = entityInfo;
+               final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
+               entityType = entityDescriptor.entityType();
 
-            createMainTable();
+               createMainTable();
+            }
          }
-      }
 
-      //foreign keys
-      for ( EntityInfo entityInfo : EntityInfo.values() )
-      {
-         if ( !entityInfo.equals( EntityInfo.UNKNOWN ) )
+         //foreign keys
+         for ( EntityInfo entityInfo : EntityInfo.values() )
          {
-            this.entityInfo = entityInfo;
-            final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
-            entityType = entityDescriptor.entityType();
+            if ( !entityInfo.equals( EntityInfo.UNKNOWN ) )
+            {
+               this.entityInfo = entityInfo;
+               final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
+               entityType = entityDescriptor.entityType();
 
-            createForeignKeys();
+               createForeignKeys();
 
-            createManyAssociationsTables();
+               createManyAssociationsTables();
 
-            createSubPropsTables();
+               createSubPropsTables();
+            }
+         }
+
+      } finally
+      {
+         if ( connection != null && !connection.isClosed() )
+         {
+            connection.close();
          }
       }
 
    }
 
-   private void createSubPropsTables() throws SQLException
+   private void createSubPropsTables() throws SQLException, ClassNotFoundException
    {
       for ( PropertyType property : entityType.properties() )
       {
@@ -84,6 +99,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( escapeSqlColumnOrTable( tableName ) )
                     .append( " (" )
                     .append( LINE_SEPARATOR )
+                    .append( " " )
                     .append( escapeSqlColumnOrTable( "id" ) )
                     .append( " INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," )
                     .append( LINE_SEPARATOR );
@@ -93,6 +109,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                collectionTable
                        .append( " " )
                        .append( escapeSqlColumnOrTable( "property_key" ) )
+                       .append( " " )
                        .append( stringLimitedSqlType( Integer.MAX_VALUE ) )
                        .append( " NULL," )
                        .append( LINE_SEPARATOR );
@@ -101,6 +118,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             collectionTable
                     .append( " " )
                     .append( escapeSqlColumnOrTable( "property_value" ) )
+                    .append( " " )
                     .append( stringLimitedSqlType( Integer.MAX_VALUE ) )
                     .append( " NULL," )
                     .append( LINE_SEPARATOR )
@@ -119,11 +137,43 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             logger.info( collectionTable.toString() );
 
 
-         } else
+         } else if ( property.type().isValue() )
          {
-
+            createSubPropertyTable( property );
          }
       }
+
+   }
+
+   private void createSubPropertyTable( PropertyType property ) throws ClassNotFoundException
+   {
+
+      final Reflections reflections =
+              new Reflections( ClassUtils.getPackageName( property.type().type().name() ) );
+
+      final Class clazz = Class.forName( property.type().type().name() );
+
+      final Iterable<Class> filtered = Iterables.filter( new Specification<Class>()
+      {
+         @Override
+         public boolean satisfiedBy( Class item )
+         {
+            return item.isInterface();
+         }
+      }, reflections.getSubTypesOf( clazz ) );
+
+
+      final ArrayList<Class> test = new ArrayList<>();
+      for ( Class aClass : filtered )
+      {
+         test.add(aClass);
+      }
+
+      if ( test.size() > 1 )
+      {
+         logger.debug( "test" );
+      }
+
 
    }
 
@@ -154,12 +204,14 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                  .append( escapeSqlColumnOrTable( tableName ) )
                  .append( " (" )
                  .append( LINE_SEPARATOR )
+                 .append( " " )
                  .append( escapeSqlColumnOrTable( "owner_id" ) )
                  .append( " " )
                  .append( stringLimitedSqlType( 255 ) )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR )
-                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "link_id" ) )
                  .append( " " )
                  .append( stringLimitedSqlType( 255 ) )
                  .append( " NOT NULL," )
@@ -171,11 +223,11 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
             manyAssoc
                     .append( " CONSTRAINT FK_owner_" )
-                    .append( hashCodeOwner > 0 ? hashCodeOwner : -1 * hashCodeOwner )
+                    .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
                     .append( " FOREIGN KEY (" )
                     .append( escapeSqlColumnOrTable( "owner_id" ) )
                     .append( ") REFERENCES " )
-                    .append( escapeSqlColumnOrTable( tableName() ))
+                    .append( escapeSqlColumnOrTable( tableName() ) )
                     .append( " (" )
                     .append( escapeSqlColumnOrTable( "identity" ) )
                     .append( ")," )
@@ -184,11 +236,11 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             final int hashCodeLink = ( tableName() + tableName + "link" ).hashCode();
             manyAssoc
                     .append( " CONSTRAINT FK_link_" )
-                    .append( hashCodeOwner > 0 ? hashCodeLink : -1 * hashCodeLink )
+                    .append( hashCodeLink >= 0 ? hashCodeLink : ( -1 * hashCodeLink ) )
                     .append( " FOREIGN KEY (" )
                     .append( escapeSqlColumnOrTable( "link_id" ) )
                     .append( ") REFERENCES " )
-                    .append( escapeSqlColumnOrTable( associationTable ))
+                    .append( escapeSqlColumnOrTable( associationTable ) )
                     .append( " (" )
                     .append( escapeSqlColumnOrTable( "identity" ) )
                     .append( ")," )
@@ -197,10 +249,10 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          }
 
          manyAssoc
-                 .append( " PRIMARY KEY (")
+                 .append( " PRIMARY KEY (" )
                  .append( escapeSqlColumnOrTable( "owner_id" ) )
                  .append( "," )
-                 .append( escapeSqlColumnOrTable("link_id" ))
+                 .append( escapeSqlColumnOrTable( "link_id" ) )
                  .append( ")" )
                  .append( LINE_SEPARATOR )
                  .append( tableEnd() );
@@ -286,7 +338,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( escapeSqlColumnOrTable( "identity" ) )
                     .append( " " )
                     .append( stringLimitedSqlType( 255 ) )
-                    .append( " NOT NULL," );
+                    .append( " NOT NULL," )
+                    .append( LINE_SEPARATOR );
          } else
          {
             mainTableCreate
@@ -319,6 +372,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( " PRIMARY KEY (" )
               .append( escapeSqlColumnOrTable( "identity" ) )
               .append( ") " )
+              .append( LINE_SEPARATOR )
               .append( tableEnd() )
               .append( LINE_SEPARATOR );
 
@@ -338,9 +392,9 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          case mssql:
             return ");";
          case oracle:
-            return ") CHARACTER SET utf8 COLLATE utf8_unicode_ci;";
+            return ");";//") CHARACTER SET utf8 COLLATE utf8_unicode_ci;";
          default:
-            return ") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_unicode_ci';";
+            return ");";//") ENGINE='InnoDB'  DEFAULT CHARSET='utf8' COLLATE='utf8_unicode_ci';";
       }
    }
 

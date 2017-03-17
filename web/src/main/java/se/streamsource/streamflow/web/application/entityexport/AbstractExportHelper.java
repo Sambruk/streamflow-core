@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -167,7 +168,7 @@ public abstract class AbstractExportHelper
 
    protected String classSimpleName( String className )
    {
-      return className.substring( className.lastIndexOf( "." ) + 1 );
+      return ClassUtils.getShortClassName( className );
    }
 
    protected String toSnackCaseFromCamelCase( String str )
