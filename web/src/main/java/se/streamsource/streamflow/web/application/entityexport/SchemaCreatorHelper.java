@@ -1,22 +1,26 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
-import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.util.Iterables;
+import org.qi4j.runtime.types.CollectionType;
+import org.qi4j.runtime.types.MapType;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
+import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.value.ValueDescriptor;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +37,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    private EntityType entityType;
    private EntityInfo entityInfo;
 
+   private Set<String> knownValueClassNames;
+
    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 
    public void create() throws Exception
@@ -40,6 +46,9 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
       try
       {
+
+         knownValueClassNames = new HashSet<>();
+
          //main tables
          for ( EntityInfo entityInfo : EntityInfo.values() )
          {
@@ -84,96 +93,173 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    {
       for ( PropertyType property : entityType.properties() )
       {
-         final boolean isList = property.type().type().name().equals( List.class.getName() );
-         final boolean isSet = property.type().type().name().equals( Set.class.getName() );
-         final boolean isMap = property.type().type().name().equals( Map.class.getName() );
+         final boolean isCollection = property.type() instanceof CollectionType;
+         final boolean isMap = property.type() instanceof MapType;
 
-         if ( isList || isSet || isMap )
+         if ( isCollection || isMap )
          {
 
-            final StringBuilder collectionTable = new StringBuilder();
-            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() );
+            boolean isCollectionOfValues = isCollection
+                    && (( CollectionType ) property.type()).collectedType().isValue();
 
-            collectionTable
-                    .append( "CREATE TABLE " )
-                    .append( escapeSqlColumnOrTable( tableName ) )
-                    .append( " (" )
-                    .append( LINE_SEPARATOR )
-                    .append( " " )
-                    .append( escapeSqlColumnOrTable( "id" ) )
-                    .append( " INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," )
-                    .append( LINE_SEPARATOR );
-
-            if ( isMap )
+            if ( isCollectionOfValues )
             {
+               createSubPropertyTable( (( CollectionType ) property.type()).collectedType().type().name(),
+                       property.qualifiedName().name(),
+                       entityType.type().name() );
+            } else
+            {
+               final StringBuilder collectionTable = new StringBuilder();
+               final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() );
+
+               collectionTable
+                       .append( "CREATE TABLE " )
+                       .append( escapeSqlColumnOrTable( tableName ) )
+                       .append( " (" )
+                       .append( LINE_SEPARATOR )
+                       .append( " " )
+                       .append( escapeSqlColumnOrTable( "id" ) )
+                       .append( " INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," )
+                       .append( LINE_SEPARATOR );
+
+               if ( isMap )
+               {
+                  collectionTable
+                          .append( " " )
+                          .append( escapeSqlColumnOrTable( "property_key" ) )
+                          .append( " " )
+                          .append( stringSqlType( Integer.MAX_VALUE ) )
+                          .append( " NULL," )
+                          .append( LINE_SEPARATOR );
+               }
+
                collectionTable
                        .append( " " )
-                       .append( escapeSqlColumnOrTable( "property_key" ) )
+                       .append( escapeSqlColumnOrTable( "property_value" ) )
                        .append( " " )
-                       .append( stringLimitedSqlType( Integer.MAX_VALUE ) )
+                       .append( stringSqlType( Integer.MAX_VALUE ) )
                        .append( " NULL," )
+                       .append( LINE_SEPARATOR )
+                       .append( " PRIMARY KEY (" )
+                       .append( escapeSqlColumnOrTable( "id" ) )
+                       .append( ") " )
+                       .append( LINE_SEPARATOR )
+                       .append( tableEnd() )
                        .append( LINE_SEPARATOR );
+
+               final Statement statement = connection.createStatement();
+
+               statement.executeUpdate( collectionTable.toString() );
+               statement.close();
+
+               logger.info( collectionTable.toString() );
             }
-
-            collectionTable
-                    .append( " " )
-                    .append( escapeSqlColumnOrTable( "property_value" ) )
-                    .append( " " )
-                    .append( stringLimitedSqlType( Integer.MAX_VALUE ) )
-                    .append( " NULL," )
-                    .append( LINE_SEPARATOR )
-                    .append( " PRIMARY KEY (" )
-                    .append( escapeSqlColumnOrTable( "id" ) )
-                    .append( ") " )
-                    .append( LINE_SEPARATOR )
-                    .append( tableEnd() )
-                    .append( LINE_SEPARATOR );
-
-            final Statement statement = connection.createStatement();
-
-            statement.executeUpdate( collectionTable.toString() );
-            statement.close();
-
-            logger.info( collectionTable.toString() );
-
 
          } else if ( property.type().isValue() )
          {
-            createSubPropertyTable( property );
+            createSubPropertyTable( property.type().type().name(),
+                    property.qualifiedName().name(),
+                    entityType.type().name() );
          }
       }
 
    }
 
-   private void createSubPropertyTable( PropertyType property ) throws ClassNotFoundException
+   private void createSubPropertyTable( String propertyClassName, String name, String declaredClassName ) throws ClassNotFoundException, SQLException
    {
 
+      final Class clazz = Class.forName( propertyClassName );
+
       final Reflections reflections =
-              new Reflections( ClassUtils.getPackageName( property.type().type().name() ) );
+              new Reflections( clazz.getPackage().getName() );
 
-      final Class clazz = Class.forName( property.type().type().name() );
+      final Set<Class> subTypesOfClazz = reflections.getSubTypesOf( clazz );
 
-      final Iterable<Class> filtered = Iterables.filter( new Specification<Class>()
+      final ArrayList<Class> valuesSubType = new ArrayList<>();
+      for ( Class subType : subTypesOfClazz )
       {
-         @Override
-         public boolean satisfiedBy( Class item )
+         if ( subType.isInterface() )
          {
-            return item.isInterface();
+            valuesSubType.add( subType );
          }
-      }, reflections.getSubTypesOf( clazz ) );
-
-
-      final ArrayList<Class> test = new ArrayList<>();
-      for ( Class aClass : filtered )
-      {
-         test.add(aClass);
       }
 
-      if ( test.size() > 1 )
+      final String tableName;
+
+      final boolean hasManyImplementations = valuesSubType.size() > 0;
+      if ( hasManyImplementations )
       {
-         logger.debug( "test" );
+         tableName = toSnackCaseFromCamelCase( classSimpleName( declaredClassName )
+                 + "_"
+                 + name
+                 + "_"
+                 + classSimpleName( propertyClassName ) );
+      } else
+      {
+         tableName = toSnackCaseFromCamelCase( classSimpleName( declaredClassName )
+                 + "_"
+                 + name );
       }
 
+      final ValueDescriptor valueDescriptor = module.valueDescriptor( propertyClassName );
+      final Set<PropertyDescriptor> properties = valueDescriptor.state().properties();
+
+      final StringBuilder valueTable = new StringBuilder();
+      valueTable.append( "CREATE TABLE " )
+              .append( escapeSqlColumnOrTable( tableName ) )
+              .append( " (" )
+              .append( LINE_SEPARATOR );
+
+      valueTable
+              .append( " " )
+              .append( escapeSqlColumnOrTable( "id" ) )
+              .append( " " )
+              .append( detectSqlType( Integer.class ) )
+              .append( " NOT NULL," )
+              .append( LINE_SEPARATOR );
+
+      for ( PropertyDescriptor property : properties )
+      {
+         final Class type;
+         if ( property.type() instanceof Class )
+         {
+            type = ( Class ) property.type();
+         } else
+         {
+            type = ( Class ) ( ( ParameterizedType ) property.type() ).getRawType();
+         }
+
+         valueTable
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
+                 .append( " " )
+                 .append( detectSqlType( type ) )
+                 .append( " NULL," )
+                 .append( LINE_SEPARATOR );
+      }
+
+      valueTable
+              .append( " PRIMARY KEY (" )
+              .append( escapeSqlColumnOrTable( "id" ) )
+              .append( ") " )
+              .append( LINE_SEPARATOR )
+              .append( tableEnd() )
+              .append( LINE_SEPARATOR );
+
+      final Statement statement = connection.createStatement();
+
+      statement.executeUpdate( valueTable.toString() );
+      statement.close();
+
+      logger.info( valueTable.toString() );
+
+      if ( hasManyImplementations )
+      {
+         for ( Class subType : valuesSubType )
+         {
+            createSubPropertyTable( subType.getName(), name, declaredClassName );
+         }
+      }
 
    }
 
@@ -207,13 +293,13 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                  .append( " " )
                  .append( escapeSqlColumnOrTable( "owner_id" ) )
                  .append( " " )
-                 .append( stringLimitedSqlType( 255 ) )
+                 .append( stringSqlType( 255 ) )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR )
                  .append( " " )
                  .append( escapeSqlColumnOrTable( "link_id" ) )
                  .append( " " )
-                 .append( stringLimitedSqlType( 255 ) )
+                 .append( stringSqlType( 255 ) )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR );
 
@@ -337,7 +423,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( " " )
                     .append( escapeSqlColumnOrTable( "identity" ) )
                     .append( " " )
-                    .append( stringLimitedSqlType( 255 ) )
+                    .append( stringSqlType( 255 ) )
                     .append( " NOT NULL," )
                     .append( LINE_SEPARATOR );
          } else
@@ -346,7 +432,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( " " )
                     .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
                     .append( " " )
-                    .append( detectType( property ) )
+                    .append( detectSqlType( property ) )
                     .append( " NULL," )
                     .append( LINE_SEPARATOR );
          }
@@ -362,7 +448,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                  .append( " " )
                  .append( escapeSqlColumnOrTable( associationName ) )
                  .append( " " )
-                 .append( stringLimitedSqlType( 255 ) )
+                 .append( stringSqlType( 255 ) )
                  .append( " NULL," )
                  .append( LINE_SEPARATOR );
 
@@ -398,7 +484,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
       }
    }
 
-   private String stringLimitedSqlType( int length )
+   private String stringSqlType( int length )
    {
 
       final boolean isMax = length == Integer.MAX_VALUE;
@@ -415,14 +501,44 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
    private boolean isCollectionOrValue( PropertyType property )
    {
+
       return property.type().isValue()
               || property.type().type().name().equals( List.class.getName() )
               || property.type().type().name().equals( Set.class.getName() )
               || property.type().type().name().equals( Map.class.getName() );
    }
 
-   private String detectType( PropertyType property ) throws ClassNotFoundException
+   private String detectSqlType( Class type ) throws ClassNotFoundException
    {
+
+      if ( Boolean.class.equals( type ) )
+      {
+         return "BIT(1)";
+      } else if ( Integer.class.equals( type ) )
+      {
+         return "INT(11)";
+      } else if ( Long.class.equals( type ) )
+      {
+         return "BIGINT(20)";
+      } else if ( Float.class.equals( type ) )
+      {
+         return "FLOAT";
+      } else if ( Double.class.equals( type ) )
+      {
+         return "DOUBLE";
+      } else if ( type.isEnum() )
+      {
+         return stringSqlType( 255 );
+      } else
+      {
+         return stringSqlType( Integer.MAX_VALUE );
+      }
+
+   }
+
+   private String detectSqlType( PropertyType property ) throws ClassNotFoundException
+   {
+
       final Class type = Class.forName( property.type().type().name() );
 
       if ( Boolean.class.equals( type ) )
@@ -451,7 +567,6 @@ public class SchemaCreatorHelper extends AbstractExportHelper
       {
          throw new IllegalArgumentException();
       }
-
    }
 
    @Override
