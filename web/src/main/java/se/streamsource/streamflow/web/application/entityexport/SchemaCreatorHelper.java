@@ -18,7 +18,7 @@ import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -33,11 +33,11 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
    private final static Logger logger = LoggerFactory.getLogger( SchemaCreatorHelper.class.getName() );
 
-
    private EntityType entityType;
    private EntityInfo entityInfo;
 
-   private Set<String> knownValueClassNames;
+   private Set<PropertyInfo> manyImplFields;
+   private Set<String> subPropertyClasses;
 
    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 
@@ -47,7 +47,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
       try
       {
 
-         knownValueClassNames = new HashSet<>();
+         manyImplFields = new HashSet<>();
+         subPropertyClasses = new HashSet<>();
 
          //main tables
          for ( EntityInfo entityInfo : EntityInfo.values() )
@@ -79,6 +80,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             }
          }
 
+         manyImplFields = Collections.unmodifiableSet( manyImplFields );
+
       } finally
       {
          if ( connection != null && !connection.isClosed() )
@@ -89,7 +92,12 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
    }
 
-   private void createSubPropsTables() throws SQLException, ClassNotFoundException
+   public Set<PropertyInfo> getManyImplFields()
+   {
+      return manyImplFields;
+   }
+
+   private void createSubPropsTables() throws SQLException, ClassNotFoundException, NoSuchFieldException
    {
       for ( PropertyType property : entityType.properties() )
       {
@@ -100,13 +108,13 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          {
 
             boolean isCollectionOfValues = isCollection
-                    && (( CollectionType ) property.type()).collectedType().isValue();
+                    && ( ( CollectionType ) property.type() ).collectedType().isValue();
 
             if ( isCollectionOfValues )
             {
-               createSubPropertyTable( (( CollectionType ) property.type()).collectedType().type().name(),
+               createSubPropertyTable( ( ( CollectionType ) property.type() ).collectedType().type().name(),
                        property.qualifiedName().name(),
-                       entityType.type().name() );
+                       entityType.type().name(), false );
             } else
             {
                final StringBuilder collectionTable = new StringBuilder();
@@ -159,44 +167,46 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          {
             createSubPropertyTable( property.type().type().name(),
                     property.qualifiedName().name(),
-                    entityType.type().name() );
+                    entityType.type().name(), false );
          }
       }
 
    }
 
-   private void createSubPropertyTable( String propertyClassName, String name, String declaredClassName ) throws ClassNotFoundException, SQLException
+   private void createSubPropertyTable( String propertyClassName, String name, String declaringClassName, boolean subCall ) throws ClassNotFoundException, SQLException, NoSuchFieldException
    {
 
       final Class clazz = Class.forName( propertyClassName );
 
-      final Reflections reflections =
-              new Reflections( clazz.getPackage().getName() );
-
-      final Set<Class> subTypesOfClazz = reflections.getSubTypesOf( clazz );
-
       final ArrayList<Class> valuesSubType = new ArrayList<>();
-      for ( Class subType : subTypesOfClazz )
+
+      if ( !subCall )
       {
-         if ( subType.isInterface() )
+         final Reflections reflections =
+                 new Reflections( clazz.getPackage().getName() );
+
+         final Set<Class> subTypesOfClazz = reflections.getSubTypesOf( clazz );
+
+         for ( Class subType : subTypesOfClazz )
          {
-            valuesSubType.add( subType );
+            if ( subType.isInterface() )
+            {
+               valuesSubType.add( subType );
+            }
          }
       }
 
       final String tableName;
 
-      final boolean hasManyImplementations = valuesSubType.size() > 0;
-      if ( hasManyImplementations )
+      if ( subCall )
       {
-         tableName = toSnackCaseFromCamelCase( classSimpleName( declaredClassName )
+         tableName = toSnackCaseFromCamelCase( classSimpleName( declaringClassName )
                  + "_"
                  + name
-                 + "_"
                  + classSimpleName( propertyClassName ) );
       } else
       {
-         tableName = toSnackCaseFromCamelCase( classSimpleName( declaredClassName )
+         tableName = toSnackCaseFromCamelCase( classSimpleName( declaringClassName )
                  + "_"
                  + name );
       }
@@ -218,8 +228,10 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( " NOT NULL," )
               .append( LINE_SEPARATOR );
 
+      boolean allow = false;
       for ( PropertyDescriptor property : properties )
       {
+         allow = true;
          final Class type;
          if ( property.type() instanceof Class )
          {
@@ -238,26 +250,32 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                  .append( LINE_SEPARATOR );
       }
 
-      valueTable
-              .append( " PRIMARY KEY (" )
-              .append( escapeSqlColumnOrTable( "id" ) )
-              .append( ") " )
-              .append( LINE_SEPARATOR )
-              .append( tableEnd() )
-              .append( LINE_SEPARATOR );
 
-      final Statement statement = connection.createStatement();
-
-      statement.executeUpdate( valueTable.toString() );
-      statement.close();
-
-      logger.info( valueTable.toString() );
-
-      if ( hasManyImplementations )
+      if ( allow )
       {
+         valueTable
+                 .append( " PRIMARY KEY (" )
+                 .append( escapeSqlColumnOrTable( "id" ) )
+                 .append( ") " )
+                 .append( LINE_SEPARATOR )
+                 .append( tableEnd() )
+                 .append( LINE_SEPARATOR );
+
+         final Statement statement = connection.createStatement();
+
+         statement.executeUpdate( valueTable.toString() );
+         statement.close();
+
+         logger.info( valueTable.toString() );
+
+      }
+
+      if ( valuesSubType.size() > 0 )
+      {
+         manyImplFields.add( new PropertyInfo( declaringClassName, name ) );
          for ( Class subType : valuesSubType )
          {
-            createSubPropertyTable( subType.getName(), name, declaredClassName );
+            createSubPropertyTable( subType.getName(), name, declaringClassName, true );
          }
       }
 
@@ -573,6 +591,55 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    protected String tableName()
    {
       return toSnackCaseFromCamelCase( entityInfo.getClassSimpleName() );
+   }
+
+   static class PropertyInfo
+   {
+      private String declaringClassName;
+      private String name;
+
+      public PropertyInfo()
+      {
+      }
+
+      public PropertyInfo( String declaringClassName, String name )
+      {
+         this.declaringClassName = declaringClassName;
+         this.name = name;
+      }
+
+      public String getDeclaringClassName()
+      {
+         return declaringClassName;
+      }
+
+      public String getName()
+      {
+         return name;
+      }
+
+      @Override
+      public boolean equals( Object o )
+      {
+         if ( this == o )
+            return true;
+         if ( o == null || getClass() != o.getClass() )
+            return false;
+
+         PropertyInfo that = ( PropertyInfo ) o;
+
+         if ( declaringClassName != null ? !declaringClassName.equals( that.declaringClassName ) : that.declaringClassName != null )
+            return false;
+         return name != null ? name.equals( that.name ) : that.name == null;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         int result = declaringClassName != null ? declaringClassName.hashCode() : 0;
+         result = 31 * result + ( name != null ? name.hashCode() : 0 );
+         return result;
+      }
    }
 
 }
