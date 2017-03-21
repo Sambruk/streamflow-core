@@ -1,6 +1,7 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.joda.time.DateTime;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.runtime.types.CollectionType;
 import org.qi4j.runtime.types.MapType;
 import org.qi4j.spi.entity.EntityDescriptor;
@@ -13,6 +14,7 @@ import org.qi4j.spi.value.ValueDescriptor;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 
 import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
@@ -107,7 +109,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( LINE_SEPARATOR )
               .append( " " )
               .append( escapeSqlColumnOrTable( "id" ) )
-              .append( " INT(11) UNSIGNED NOT NULL AUTO_INCREMENT," )
+              .append( " INT(11) NOT NULL AUTO_INCREMENT," )
               .append( LINE_SEPARATOR );
 
       if ( isMap )
@@ -183,7 +185,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                        .append( " " )
                        .append( escapeSqlColumnOrTable( "embedded" ) )
-                       .append( " INT(11) UNSIGNED NOT NULL," )
+                       .append( " INT(11) NOT NULL," )
                        .append( LINE_SEPARATOR )
 
 
@@ -192,7 +194,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                        .append( " FOREIGN KEY (" )
                        .append( escapeSqlColumnOrTable( "embedded" ) )
                        .append( ") REFERENCES " )
-                       .append( escapeSqlColumnOrTable( classSimpleName( ( ( CollectionType ) property.type() ).collectedType().type().name() ) ) )
+                       .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( classSimpleName( ( ( CollectionType ) property.type() ).collectedType().type().name() ) ) ) )
                        .append( " (" )
                        .append( escapeSqlColumnOrTable( "id" ) )
                        .append( ")," )
@@ -234,7 +236,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                        .append( " " )
                        .append( escapeSqlColumnOrTable( "embedded" ) )
-                       .append( " INT(11) UNSIGNED NOT NULL," )
+                       .append( " INT(11) NOT NULL," )
                        .append( LINE_SEPARATOR )
 
 
@@ -307,6 +309,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             final Statement foreignKeyStatement = connection.createStatement();
 
             foreignKeyStatement.executeUpdate( foreignKey.toString() );
+
             foreignKeyStatement.close();
 
             logger.info( foreignKey.toString() );
@@ -319,7 +322,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    private void createSubPropertyTable( String propertyClassName ) throws ClassNotFoundException, SQLException, NoSuchFieldException
    {
 
-      if ( subPropertyClasses.add( propertyClassName ) )
+      if ( subPropertyClasses.add( propertyClassName ) && !propertyClassName.contains( "java." ) && !propertyClassName.equals(EntityReference.class.getName()) )
       {
          final Class clazz = Class.forName( propertyClassName );
 
@@ -341,7 +344,12 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          final String tableName = toSnackCaseFromCamelCase( classSimpleName( propertyClassName ) );
 
          final ValueDescriptor valueDescriptor = module.valueDescriptor( propertyClassName );
+
          final Set<PropertyDescriptor> properties = valueDescriptor.state().properties();
+
+         for (Class valuesSubTypeClazz : valuesSubType) {
+            properties.addAll( module.valueDescriptor( valuesSubTypeClazz.getName() ).state().properties() );
+         }
 
          final StringBuilder valueTable = new StringBuilder();
          valueTable.append( "CREATE TABLE " )
@@ -371,13 +379,15 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                if ( type.isEnum() || !type.getName().contains( "streamflow" ) )
                {
+
                   valueTable
                           .append( " " )
                           .append( escapeSqlColumnOrTable( columnName ) )
                           .append( " " )
-                          .append( detectSqlType( type ) )
+                          .append( type.equals( EntityReference.class ) ? stringSqlType(255) :  detectSqlType( type ) )
                           .append( " NULL," )
                           .append( LINE_SEPARATOR );
+
                } else
                {
 
@@ -413,7 +423,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                final boolean isMap = rawType.equals( Map.class );
 
                final Class actualType = ( Class ) paramType.getActualTypeArguments()[0];
-               if ( !isMap && ( actualType.isEnum() || !actualType.getName().contains( "streamflow" ) ) )
+               if ( !isMap && ( actualType.isEnum() || !actualType.getName().contains( "streamflow" ) && !actualType.getName().contains( "java." ) ) )
                {
                   createSubPropertyTable( actualType.getName() );
 
@@ -438,32 +448,34 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                           .append( " NOT NULL," )
                           .append( LINE_SEPARATOR );
 
+                  if (!actualType.equals(EntityReference.class))
+                  {
+                     final int hashCodeOwner = ( tableName + columnName + "owner" ).hashCode();
+                     collectionTable
+                             .append( " CONSTRAINT FK_owner_" )
+                             .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
+                             .append( " FOREIGN KEY (" )
+                             .append( escapeSqlColumnOrTable( "owner_id" ) )
+                             .append( ") REFERENCES " )
+                             .append( escapeSqlColumnOrTable( tableName ) )
+                             .append( " (" )
+                             .append( escapeSqlColumnOrTable( "id" ) )
+                             .append( ")," )
+                             .append( LINE_SEPARATOR );
 
-                  final int hashCodeOwner = ( tableName + columnName + "owner" ).hashCode();
-                  collectionTable
-                          .append( " CONSTRAINT FK_owner_" )
-                          .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
-                          .append( " FOREIGN KEY (" )
-                          .append( escapeSqlColumnOrTable( "owner_id" ) )
-                          .append( ") REFERENCES " )
-                          .append( escapeSqlColumnOrTable( tableName ) )
-                          .append( " (" )
-                          .append( escapeSqlColumnOrTable( "id" ) )
-                          .append( ")," )
-                          .append( LINE_SEPARATOR );
-
-                  final int hashCodeLink = (tableName + columnName + "link" ).hashCode();
-                  collectionTable
-                          .append( " CONSTRAINT FK_link_" )
-                          .append( hashCodeLink >= 0 ? hashCodeLink : ( -1 * hashCodeLink ) )
-                          .append( " FOREIGN KEY (" )
-                          .append( escapeSqlColumnOrTable( "link_id" ) )
-                          .append( ") REFERENCES " )
-                          .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( actualType.getSimpleName() ) ) )
-                          .append( " (" )
-                          .append( escapeSqlColumnOrTable( "id" ) )
-                          .append( ")," )
-                          .append( LINE_SEPARATOR );
+                     final int hashCodeLink = (tableName + columnName + "link" ).hashCode();
+                     collectionTable
+                             .append( " CONSTRAINT FK_link_" )
+                             .append( hashCodeLink >= 0 ? hashCodeLink : ( -1 * hashCodeLink ) )
+                             .append( " FOREIGN KEY (" )
+                             .append( escapeSqlColumnOrTable( "link_id" ) )
+                             .append( ") REFERENCES " )
+                             .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( actualType.getSimpleName() ) ) )
+                             .append( " (" )
+                             .append( escapeSqlColumnOrTable( "id" ) )
+                             .append( ")," )
+                             .append( LINE_SEPARATOR );
+                  }
 
                   collectionTable
                           .append( " PRIMARY KEY (" )
@@ -501,7 +513,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                           .append( " " )
                           .append( escapeSqlColumnOrTable( "embedded" ) )
-                          .append( " INT(11) UNSIGNED NOT NULL," )
+                          .append( " INT(11) NOT NULL," )
                           .append( LINE_SEPARATOR )
 
 
@@ -518,7 +530,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
 
                           .append( " PRIMARY KEY (" )
-                          .append( escapeSqlColumnOrTable( "identity" ) )
+                          .append( escapeSqlColumnOrTable( "id" ) )
                           .append( "," )
                           .append( escapeSqlColumnOrTable( "embedded" ) )
                           .append( ") " )
