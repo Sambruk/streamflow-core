@@ -15,14 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -214,6 +212,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                statement.executeUpdate( collectionTable.toString() );
                statement.close();
+
+               logger.info( collectionTable.toString() );
 
             } else
             {
@@ -477,10 +477,10 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                   final Statement statement = connection.createStatement();
 
                   statement.executeUpdate( collectionTable.toString() );
+                  statement.close();
 
                   logger.info( collectionTable.toString() );
 
-                  statement.close();
                } else
                {
 
