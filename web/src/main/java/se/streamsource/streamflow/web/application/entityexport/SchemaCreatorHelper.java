@@ -97,7 +97,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
    }
 
-   private void createCollectionTables( boolean isMap ) throws SQLException
+   private void createCollectionTables( boolean isMap ) throws SQLException, ClassNotFoundException
    {
 
       final StringBuilder collectionTable = new StringBuilder();
@@ -109,7 +109,10 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( LINE_SEPARATOR )
               .append( " " )
               .append( escapeSqlColumnOrTable( "id" ) )
-              .append( " INT(11) NOT NULL AUTO_INCREMENT," )
+              .append( " " )
+              .append( detectSqlType( Integer.class ) )
+              .append( " NOT NULL " )
+              .append( dbVendor == DbVendor.mssql ? "IDENTITY (1, 1)," : "AUTO_INCREMENT," )
               .append( LINE_SEPARATOR );
 
       if ( isMap )
@@ -185,7 +188,9 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                        .append( " " )
                        .append( escapeSqlColumnOrTable( "embedded" ) )
-                       .append( " INT(11) NOT NULL," )
+                       .append( " " )
+                       .append( detectSqlType( Integer.class ) )
+                       .append( " NOT NULL," )
                        .append( LINE_SEPARATOR )
 
 
@@ -236,7 +241,9 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                        .append( " " )
                        .append( escapeSqlColumnOrTable( "embedded" ) )
-                       .append( " INT(11) NOT NULL," )
+                       .append( " " )
+                       .append( detectSqlType( Integer.class ) )
+                       .append( " NOT NULL," )
                        .append( LINE_SEPARATOR )
 
 
@@ -279,7 +286,9 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( escapeSqlColumnOrTable( tableName() ) )
                     .append( " ADD " )
                     .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( associationName ) ) )
-                    .append( " INT(11) NULL;" );
+                    .append( " " )
+                    .append( detectSqlType( Integer.class ) )
+                    .append( " NULL;" );
 
             final Statement addColumnStatement = connection.createStatement();
 
@@ -438,12 +447,14 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                           .append( " " )
                           .append( escapeSqlColumnOrTable( "owner_id" ) )
+                          .append( " " )
                           .append( detectSqlType( Integer.class ) )
                           .append( " NOT NULL," )
                           .append( LINE_SEPARATOR )
 
                           .append( " " )
                           .append( escapeSqlColumnOrTable( "link_id" ) )
+                          .append( " " )
                           .append( detectSqlType( Integer.class ) )
                           .append( " NOT NULL," )
                           .append( LINE_SEPARATOR );
@@ -507,13 +518,16 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                           .append( " " )
                           .append( escapeSqlColumnOrTable( "id" ) )
+                          .append( " " )
                           .append( detectSqlType( Integer.class ) )
                           .append( " NOT NULL," )
                           .append( LINE_SEPARATOR )
 
                           .append( " " )
                           .append( escapeSqlColumnOrTable( "embedded" ) )
-                          .append( " INT(11) NOT NULL," )
+                          .append( " " )
+                          .append( detectSqlType( Integer.class ) )
+                          .append( " NOT NULL," )
                           .append( LINE_SEPARATOR )
 
 
@@ -823,13 +837,13 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
       if ( Boolean.class.equals( type ) )
       {
-         return "BIT(1)";
+         return dbVendor == DbVendor.mssql ? "BIT" : "BIT(1)";
       } else if ( Integer.class.equals( type ) )
       {
-         return "INT(11)";
+         return dbVendor == DbVendor.mssql ? "INT" : "INT(11)";
       } else if ( Long.class.equals( type ) )
       {
-         return "BIGINT(20)";
+         return dbVendor == DbVendor.mssql ? "BIGINT" : "BIGINT(20)";
       } else if ( Float.class.equals( type ) )
       {
          return "FLOAT";
@@ -858,13 +872,13 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
       if ( Boolean.class.equals( type ) )
       {
-         return "BIT(1)";
+         return dbVendor == DbVendor.mssql ? "BIT" : "BIT(1)";
       } else if ( Integer.class.equals( type ) )
       {
-         return "INT(11)";
+         return dbVendor == DbVendor.mssql ? "INT" : "INT(11)";
       } else if ( Long.class.equals( type ) )
       {
-         return "BIGINT(20)";
+         return dbVendor == DbVendor.mssql ? "BIGINT" : "BIGINT(20)";
       } else if ( Float.class.equals( type ) )
       {
          return "FLOAT";
