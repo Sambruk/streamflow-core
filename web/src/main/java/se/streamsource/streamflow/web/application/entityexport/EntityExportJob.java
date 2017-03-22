@@ -67,9 +67,7 @@ public interface EntityExportJob extends Job, TransientComposite
       public void execute( JobExecutionContext context ) throws JobExecutionException
       {
 
-         Connection connection = null;
-
-         try
+         try ( Connection connection = dataSource.get().getConnection() )
          {
 
             while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
@@ -120,7 +118,7 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportHelper.setExistsAssociations( existsAssociations );
                entityExportHelper.setExistsManyAssociations( existsManyAssociations );
                entityExportHelper.setSubProps( subProps );
-               entityExportHelper.setConnection( dataSource.get().getConnection() );
+               entityExportHelper.setConnection( connection );
                entityExportHelper.setEntity( entity );
                entityExportHelper.setAllProperties( entityType.properties() );
                entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
@@ -138,19 +136,6 @@ public interface EntityExportJob extends Job, TransientComposite
          } catch ( Exception e )
          {
             throw new JobExecutionException( e );
-         } finally
-         {
-            try
-            {
-               if ( connection != null && !connection.isClosed() )
-               {
-                  connection.close();
-               }
-            } catch ( SQLException e )
-            {
-               logger.error( "Error:", e );
-            }
-
          }
 
       }

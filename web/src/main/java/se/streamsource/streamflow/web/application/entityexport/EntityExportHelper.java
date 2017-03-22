@@ -1,6 +1,5 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,10 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,10 +64,6 @@ public class EntityExportHelper extends AbstractExportHelper
       saveSubProperties();
 
       connection.commit();
-      if ( connection != null && !connection.isClosed() )
-      {
-         connection.close();
-      }
 
    }
 

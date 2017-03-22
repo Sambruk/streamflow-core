@@ -40,9 +40,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -50,7 +55,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * JAVADOC
  */
-@Mixins({EntityExportService.Mixin.class, EntityStateChangeListener.class})
+@Mixins({ EntityExportService.Mixin.class, EntityStateChangeListener.class })
 public interface EntityExportService
         extends StateChangeListener,
         EntityExportJob,
@@ -108,19 +113,33 @@ public interface EntityExportService
                  && thisConfig.configuration().enabled().get() )
          {
 
-            if( thisConfig.configuration().createSchema().get() )
+            try ( final Connection connection = dataSource.get().getConnection() )
             {
-               createSchema();
+               final Map<String, Set<String>> schema =
+                       thisConfig.configuration().createSchema().get() ?
+                               createSchema( connection ) : new HashMap<String, Set<String>>();
+
+               addSchemaInfo( schema, connection );
+
+               caching = new Caching( cachingService, Caches.ENTITYSTATES );
+               caching.removeAll();
+
+               export( schema );
+
+            } catch ( Exception e )
+            {
+               logger.error( "Unexpected exception:", e );
             }
 
-            caching = new Caching( cachingService, Caches.ENTITYSTATES );
 
-            caching.removeAll();
-
-            export();
 
          }
 
+      }
+
+      private void addSchemaInfo( Map<String, Set<String>> schema, Connection connection ) throws SQLException
+      {
+         final DatabaseMetaData metaData = connection.getMetaData();
       }
 
       @Override
@@ -201,7 +220,7 @@ public interface EntityExportService
 
       }
 
-      private void createSchema() throws Exception
+      private Map<String, Set<String>> createSchema( Connection connection ) throws Exception
       {
          final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
          final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
@@ -209,12 +228,12 @@ public interface EntityExportService
 
          final SchemaCreatorHelper schemaUpdater = new SchemaCreatorHelper();
          schemaUpdater.setModule( moduleSPI );
-         schemaUpdater.setConnection( dataSource.get().getConnection() );
+         schemaUpdater.setConnection( connection );
          schemaUpdater.setDbVendor( dbVendor );
-         schemaUpdater.create();
+         return schemaUpdater.create();
       }
 
-      private void export() throws IOException, InterruptedException
+      private void export( Map<String, Set<String>> schema ) throws IOException, InterruptedException
       {
          logger.info( "Started entities export from ES index." );
 
