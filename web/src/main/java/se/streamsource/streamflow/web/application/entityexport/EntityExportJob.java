@@ -26,16 +26,10 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
-import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,9 +120,9 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportHelper.setClassName( description );
                entityExportHelper.setModule ( moduleSPI );
                entityExportHelper.setDbVendor( getDbVendor() );
-               entityExportHelper.setEntityExportService( entityExportService );
+               entityExportHelper.setTables( entityExportService.getTables() );
 
-               entityExportHelper.help();
+               entityExportService.setTables( entityExportHelper.help() );
 
                entityExportService.savedSuccess( entity );
 

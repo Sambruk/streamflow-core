@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,9 +39,9 @@ public class EntityExportHelper extends AbstractExportHelper
    private ArrayList<ManyAssociationType> allManyAssociations;
    private ArrayList<AssociationType> allAssociations;
    private String className;
-   private EntityExportService entityExportService;
+   private Map<String, Set<String>> tables;
 
-   public void help() throws Exception
+   public Map<String, Set<String>> help() throws Exception
    {
 
       connection.setAutoCommit( false );
@@ -76,6 +77,8 @@ public class EntityExportHelper extends AbstractExportHelper
       statement.close();
 
       connection.commit();
+
+      return tables;
 
    }
 
@@ -173,11 +176,11 @@ public class EntityExportHelper extends AbstractExportHelper
                   }
                } else
                {
-                  processCollection( value, key );
+                  processCollection( key, value );
                }
             } else
             {
-               processCollection( value, key );
+               processCollection( key, value );
             }
 
          } else if ( value instanceof ValueComposite )
@@ -195,6 +198,72 @@ public class EntityExportHelper extends AbstractExportHelper
       }
 
       return subProperties;
+   }
+
+   private String processCollection( String name, Object value ) throws SQLException, JSONException, ClassNotFoundException
+   {
+      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( name );
+      final String identity = entity.getString( "identity" );
+
+      final boolean isMap = value instanceof Map;
+      createCollectionTableIfNotExist( tableName, tables, isMap );
+
+      StringBuilder result = new StringBuilder();
+
+      final Collection<?> objects = isMap ? (( Map<?, ?> ) value).keySet() : ( Collection<?> ) value;
+
+      String query = "INSERT INTO "
+              + escapeSqlColumnOrTable( tableName )
+              + " ("
+              + escapeSqlColumnOrTable( "owner" )
+              + "," + escapeSqlColumnOrTable( "property_value" )
+              + ( isMap ? "," + escapeSqlColumnOrTable( "property_key" ) : "" )
+              + ") VALUES (?,?" + ( isMap ? ",?" : ")" );
+
+      boolean allowSave = false;
+
+      for ( Object o : objects )
+      {
+         final String objKey = ;
+         final String objValue = map.get( o.toString() ).toString();
+      }
+      if ( isMap )
+      {
+
+
+      } else
+      {
+         final Map<?, ?> map = ( Map<?, ?> ) value;
+         final Set<?> keySet = map.keySet();
+
+         for ( Object o : keySet )
+         {
+
+
+            String query = "INSERT INTO " +
+                    tableName +
+                    " (" + escapeSqlColumnOrTable( "property_key"  )+ "," + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?,?)";
+
+            PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
+            preparedStatement.setString( 1, objKey );
+            preparedStatement.setString( 2, objValue );
+            preparedStatement.executeUpdate();
+            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
+            generatedKey.next();
+            int id = generatedKey.getInt( 1 );
+            if ( result.length() > 0 )
+            {
+               result.append( SEPARATOR );
+            }
+            result.append( tableName )
+                    .append( ";" )
+                    .append( id );
+            preparedStatement.close();
+         }
+
+      }
+
+      return result.toString();
    }
 
    private Map<String, String> updateAssociations( StringBuilder query ) throws Exception
@@ -422,8 +491,8 @@ public class EntityExportHelper extends AbstractExportHelper
       this.module = module;
    }
 
-   public void setEntityExportService( EntityExportService entityExportService )
+   public void setTables( Map<String, Set<String>> tables )
    {
-      this.entityExportService = entityExportService;
+      this.tables = tables;
    }
 }

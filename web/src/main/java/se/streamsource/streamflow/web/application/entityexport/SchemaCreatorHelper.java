@@ -30,8 +30,6 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    private EntityType entityType;
    private EntityInfo entityInfo;
 
-   private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
-
    private Map<String, Set<String>> tableColumns;
 
    public Map<String, Set<String>> create() throws Exception
@@ -298,54 +296,6 @@ public class SchemaCreatorHelper extends AbstractExportHelper
       statement.close();
 
       logger.info( mainTableCreate.toString() );
-
-   }
-
-   private String stringSqlType( int length )
-   {
-
-      final boolean isMax = length == Integer.MAX_VALUE;
-
-      switch ( dbVendor )
-      {
-         case mssql:
-            return isMax ? "NTEXT" : "NVARCHAR(" + length + ")";
-
-         default:
-            return isMax ? "TEXT" : "VARCHAR(" + length + ")";
-      }
-   }
-
-   private String detectSqlType( Class type ) throws ClassNotFoundException
-   {
-
-      if ( Boolean.class.equals( type ) )
-      {
-         return dbVendor == DbVendor.mssql ? "BIT" : "BIT(1)";
-      } else if ( Integer.class.equals( type ) )
-      {
-         return dbVendor == DbVendor.mssql ? "INT" : "INT(11)";
-      } else if ( Long.class.equals( type ) )
-      {
-         return dbVendor == DbVendor.mssql ? "BIGINT" : "BIGINT(20)";
-      } else if ( Float.class.equals( type ) )
-      {
-         return "FLOAT";
-      } else if ( Double.class.equals( type ) )
-      {
-         return "DOUBLE";
-      } else if ( type.isEnum() )
-      {
-         return stringSqlType( 255 );
-      } else if ( type.equals( String.class )
-              || type.equals( Date.class )
-              || type.equals( DateTime.class ) )
-      {
-         return stringSqlType( Integer.MAX_VALUE );
-      } else
-      {
-         throw new IllegalArgumentException();
-      }
 
    }
 

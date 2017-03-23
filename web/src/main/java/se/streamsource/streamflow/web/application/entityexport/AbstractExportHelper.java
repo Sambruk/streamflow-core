@@ -24,7 +24,8 @@ import java.util.Set;
 public abstract class AbstractExportHelper
 {
 
-   protected static final String SEPARATOR = ":separator:";
+   public static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+
 
    protected Connection connection;
    protected ModuleSPI module;
@@ -32,68 +33,67 @@ public abstract class AbstractExportHelper
 
    protected abstract String tableName();
 
-   protected String processCollection( Object value, String key ) throws SQLException, JSONException
+   protected void createCollectionTableIfNotExist( String tableName, Map<String, Set<String>> tables, boolean isMap ) throws SQLException, ClassNotFoundException
    {
-      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( key );
-      StringBuilder result = new StringBuilder();
-      if ( value instanceof Collection )
+
+      if ( tables.get( tableName ) == null )
       {
-         for ( Object o : ( Collection<?> ) value )
+         final StringBuilder collectionTable = new StringBuilder();
+
+         collectionTable
+                 .append( "CREATE TABLE " )
+                 .append( escapeSqlColumnOrTable( tableName ) )
+                 .append( " (" )
+                 .append( LINE_SEPARATOR )
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "id" ) )
+                 .append( " " )
+                 .append( detectSqlType( Integer.class ) )
+                 .append( " NOT NULL " )
+                 .append( dbVendor == DbVendor.mssql ? "IDENTITY (1, 1)," : "AUTO_INCREMENT," )
+                 .append( LINE_SEPARATOR );
+
+         if ( isMap )
          {
-
-            String query = "INSERT INTO " +
-                    escapeSqlColumnOrTable( tableName )+
-                    " (" + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?)";
-
-            PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
-            preparedStatement.setString( 1, o.toString() );
-            preparedStatement.executeUpdate();
-            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
-            generatedKey.next();
-            int id = generatedKey.getInt( 1 );
-            if ( result.length() > 0 )
-            {
-               result.append( SEPARATOR );
-            }
-            result.append( tableName )
-                    .append( ";" )
-                    .append( id );
-            preparedStatement.close();
+            collectionTable
+                    .append( " " )
+                    .append( escapeSqlColumnOrTable( "property_key" ) )
+                    .append( " " )
+                    .append( stringSqlType( Integer.MAX_VALUE ) )
+                    .append( " NULL," )
+                    .append( LINE_SEPARATOR );
          }
-      } else
-      {
-         final Map<?, ?> map = ( Map<?, ?> ) value;
-         final Set<?> keySet = map.keySet();
 
-         for ( Object o : keySet )
-         {
-            final String objKey = o.toString();
-            final String objValue = map.get( o ).toString();
+         collectionTable
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "owner" ) )
+                 .append( " " )
+                 .append( stringSqlType( 255 ) )
+                 .append( " NULL," )
+                 .append( LINE_SEPARATOR );
 
-            String query = "INSERT INTO " +
-                    tableName +
-                    " (" + escapeSqlColumnOrTable( "property_key"  )+ "," + escapeSqlColumnOrTable( "property_value" )+ ") VALUES (?,?)";
+         collectionTable
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "property_value" ) )
+                 .append( " " )
+                 .append( stringSqlType( Integer.MAX_VALUE ) )
+                 .append( " NULL," )
+                 .append( LINE_SEPARATOR )
+                 .append( " PRIMARY KEY (" )
+                 .append( escapeSqlColumnOrTable( "id" ) )
+                 .append( ") " )
+                 .append( LINE_SEPARATOR )
+                 .append( ");" )
+                 .append( LINE_SEPARATOR );
 
-            PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
-            preparedStatement.setString( 1, objKey );
-            preparedStatement.setString( 2, objValue );
-            preparedStatement.executeUpdate();
-            final ResultSet generatedKey = preparedStatement.getGeneratedKeys();
-            generatedKey.next();
-            int id = generatedKey.getInt( 1 );
-            if ( result.length() > 0 )
-            {
-               result.append( SEPARATOR );
-            }
-            result.append( tableName )
-                    .append( ";" )
-                    .append( id );
-            preparedStatement.close();
-         }
+         final Statement statement = connection.createStatement();
+
+         statement.executeUpdate( collectionTable.toString() );
+         statement.close();
+
 
       }
 
-      return result.toString();
    }
 
    protected void setSimpleType( final PreparedStatement statement,
@@ -196,6 +196,54 @@ public abstract class AbstractExportHelper
          }
       }
       return stringBuilder.toString();
+   }
+
+   protected String detectSqlType( Class type ) throws ClassNotFoundException
+   {
+
+      if ( Boolean.class.equals( type ) )
+      {
+         return dbVendor == DbVendor.mssql ? "BIT" : "BIT(1)";
+      } else if ( Integer.class.equals( type ) )
+      {
+         return dbVendor == DbVendor.mssql ? "INT" : "INT(11)";
+      } else if ( Long.class.equals( type ) )
+      {
+         return dbVendor == DbVendor.mssql ? "BIGINT" : "BIGINT(20)";
+      } else if ( Float.class.equals( type ) )
+      {
+         return "FLOAT";
+      } else if ( Double.class.equals( type ) )
+      {
+         return "DOUBLE";
+      } else if ( type.isEnum() )
+      {
+         return stringSqlType( 255 );
+      } else if ( type.equals( String.class )
+              || type.equals( Date.class )
+              || type.equals( DateTime.class ) )
+      {
+         return stringSqlType( Integer.MAX_VALUE );
+      } else
+      {
+         throw new IllegalArgumentException();
+      }
+
+   }
+
+   protected String stringSqlType( int length )
+   {
+
+      final boolean isMax = length == Integer.MAX_VALUE;
+
+      switch ( dbVendor )
+      {
+         case mssql:
+            return isMax ? "NTEXT" : "NVARCHAR(" + length + ")";
+
+         default:
+            return isMax ? "TEXT" : "VARCHAR(" + length + ")";
+      }
    }
 
    //setters

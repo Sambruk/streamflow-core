@@ -75,8 +75,8 @@ public interface EntityExportService
 
    void savedSuccess( JSONObject entity );
 
-   Set<String> getColumns( String tableName );
-   void addTable( String tableName, Set<String> columnNames );
+   Map<String, Set<String>> getTables();
+   void setTables(  Map<String, Set<String>> tables );
 
    abstract class Mixin
            implements EntityExportService
@@ -243,15 +243,15 @@ public interface EntityExportService
       }
 
       @Override
-      public Set<String> getColumns( String tableName )
+      public Map<String, Set<String>> getTables()
       {
-         return schema.get( tableName );
+         return schema;
       }
 
       @Override
-      public void addTable( String tableName, Set<String> columnNames )
+      public void setTables( Map<String, Set<String>> tables )
       {
-         schema.put( tableName, columnNames );
+         schema = tables;
       }
 
       @Override
