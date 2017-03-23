@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.collections.map.SingletonMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.qi4j.api.value.ValueComposite;
@@ -26,9 +27,10 @@ import java.util.Map;
 public class ValueExportHelper extends AbstractExportHelper
 {
 
+   public static final String COLUMN_DESCRIPTION_SUFFIX = "_table";
    private ValueComposite value;
 
-   public String help() throws Exception
+   public SingletonMap help() throws Exception
    {
 
       ValueDescriptor valueDescriptor = module.valueDescriptor( name() );
@@ -123,7 +125,7 @@ public class ValueExportHelper extends AbstractExportHelper
          if( type.isValue() )
          {
             final ValueComposite value = ( ValueComposite ) type.fromJSON( jsonObject.getJSONObject( key ), module );
-            preparedStatement.setString( i, processValueComposite( value ) );
+//            preparedStatement.setString( i, processValueComposite( value ) );
          } else if( type instanceof CollectionType || type instanceof MapType )
          {
             if( type instanceof CollectionType && ( ( CollectionType ) type ).collectedType().isValue() )
@@ -158,7 +160,7 @@ public class ValueExportHelper extends AbstractExportHelper
       final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
       final int id = generatedKeys.next() ? generatedKeys.getInt( 0 ) : 0;
       preparedStatement.close();
-      return tableName() + ";" + id;
+      return new SingletonMap();
    }
 
    private boolean jsonEmpty( String json )

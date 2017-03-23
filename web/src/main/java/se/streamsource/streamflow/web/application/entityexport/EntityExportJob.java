@@ -67,7 +67,7 @@ public interface EntityExportJob extends Job, TransientComposite
       public void execute( JobExecutionContext context ) throws JobExecutionException
       {
 
-         try ( Connection connection = dataSource.get().getConnection() )
+         try ( final Connection connection = dataSource.get().getConnection() )
          {
 
             while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
@@ -126,6 +126,7 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportHelper.setClassName( description );
                entityExportHelper.setModule ( moduleSPI );
                entityExportHelper.setDbVendor( getDbVendor() );
+               entityExportHelper.setEntityExportService( entityExportService );
 
                entityExportHelper.help();
 
@@ -187,8 +188,6 @@ public interface EntityExportJob extends Job, TransientComposite
          return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
       }
 
-
    }
-
 
 }

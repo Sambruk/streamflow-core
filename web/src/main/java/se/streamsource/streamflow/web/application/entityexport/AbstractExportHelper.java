@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -128,7 +129,7 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected String processValueComposite( ValueComposite value ) throws Exception
+   protected SingletonMap processValueComposite( ValueComposite value ) throws Exception
    {
       final ValueExportHelper valueExportHelper = new ValueExportHelper();
       valueExportHelper.setValue( value );

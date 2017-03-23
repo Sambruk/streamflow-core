@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.collections.map.SingletonMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +38,7 @@ public class EntityExportHelper extends AbstractExportHelper
    private ArrayList<ManyAssociationType> allManyAssociations;
    private ArrayList<AssociationType> allAssociations;
    private String className;
+   private EntityExportService entityExportService;
 
    public void help() throws Exception
    {
@@ -52,16 +54,26 @@ public class EntityExportHelper extends AbstractExportHelper
       {
          deleteEntityAndRelations( isExistRS.getString( "identity" ) );
       }
-
       isExistRS.close();
 
-      mainUpdate( identity );
+      final StringBuilder query = mainUpdate();
 
-      saveAssociations();
+      final Map<String, String> associations = updateAssociations( query );
 
       saveManyAssociations();
 
-      saveSubProperties();
+      final List<SingletonMap> subProperties = saveSubProperties( query );
+
+      query
+              .deleteCharAt( query.length() - 1 )
+              .append( " WHERE " )
+              .append( escapeSqlColumnOrTable( "identity" ) )
+              .append( " = ?" );
+
+      final PreparedStatement statement = connection.prepareStatement( query.toString() );
+      addArguments( statement, associations, subProperties, identity );
+      statement.executeUpdate();
+      statement.close();
 
       connection.commit();
 
@@ -112,7 +124,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
    }
 
-   private void mainUpdate( String identity ) throws SQLException, JSONException, ClassNotFoundException
+   private StringBuilder mainUpdate() throws SQLException, JSONException, ClassNotFoundException
    {
 
       StringBuilder query = new StringBuilder( "UPDATE  " )
@@ -120,7 +132,6 @@ public class EntityExportHelper extends AbstractExportHelper
               .append( " SET " );
 
 
-      boolean hasProps = false;
       for ( PropertyType existsProperty : existsProperties )
       {
          final String name = existsProperty.qualifiedName().name();
@@ -131,39 +142,22 @@ public class EntityExportHelper extends AbstractExportHelper
                     .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
                     .append( " = ?," );
 
-            hasProps = true;
          }
       }
 
-      if ( hasProps )
-      {
-         query
-                 .deleteCharAt( query.length() - 1 )
-                 .append( " WHERE " )
-                 .append( escapeSqlColumnOrTable( "identity" ) )
-                 .append( " = ?" );
+      return query;
 
-
-         final PreparedStatement statement = connection.prepareStatement( query.toString() );
-         final int index = addArguments( statement );
-         statement.setString( index, identity );
-         statement.executeUpdate();
-         statement.close();
-      }
    }
 
-   private void saveSubProperties() throws Exception
+   private List<SingletonMap> saveSubProperties( StringBuilder query ) throws Exception
    {
+
+      List<SingletonMap> subProperties = new ArrayList<>();
       final Set<String> keys = subProps.keySet();
       for ( String key : keys )
       {
 
          final Object value = subProps.get( key );
-
-         StringBuilder query = new StringBuilder( "UPDATE  " )
-                 .append( escapeSqlColumnOrTable( tableName() ) )
-                 .append( " SET " );
-         StringBuilder temp = new StringBuilder();
 
          if ( value instanceof Collection || value instanceof Map )
          {
@@ -175,45 +169,35 @@ public class EntityExportHelper extends AbstractExportHelper
                {
                   for ( Object o : ( Collection<?> ) value )
                   {
-                     if ( temp.length() == 0 )
-                     {
-                        temp.append( processValueComposite( ( ValueComposite ) o ) );
-                     } else
-                     {
-                        temp.append( SEPARATOR ).append( processValueComposite( ( ValueComposite ) o ) );
-                     }
+                     processValueComposite( ( ValueComposite ) o );
                   }
                } else
                {
-                  temp.append( processCollection( value, key ) );
+                  processCollection( value, key );
                }
             } else
             {
-               temp.append( processCollection( value, key ) );
+               processCollection( value, key );
             }
 
          } else if ( value instanceof ValueComposite )
          {
-            temp.append( processValueComposite( ( ValueComposite ) value ) );
+            query
+                    .append( key )
+                    .append( "=?," )
+                    .append( key )
+                    .append( ValueExportHelper.COLUMN_DESCRIPTION_SUFFIX )
+                    .append( "=?," );
+
+            subProperties.add( processValueComposite( ( ValueComposite ) value ) );
          }
 
-         query
-                 .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
-                 .append( "= ?" )
-                 .append( " WHERE " )
-                 .append( escapeSqlColumnOrTable( "identity" ) )
-                 .append( " = ?" );
-
-         PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
-         preparedStatement.setString( 1, temp.toString() );
-         preparedStatement.setString( 2, entity.getString( "identity" ) );
-         preparedStatement.executeUpdate();
-         preparedStatement.close();
-
       }
+
+      return subProperties;
    }
 
-   private void saveAssociations() throws Exception
+   private Map<String, String> updateAssociations( StringBuilder query ) throws Exception
    {
       Map<String, String> associations = new LinkedHashMap<>();
 
@@ -241,35 +225,16 @@ public class EntityExportHelper extends AbstractExportHelper
       {
          final Set<String> keys = associations.keySet();
 
-         StringBuilder query = new StringBuilder( "UPDATE  " )
-                 .append( escapeSqlColumnOrTable( tableName() ) )
-                 .append( " SET " );
-
          for ( String key : keys )
          {
             query
                     .append( escapeSqlColumnOrTable( key ) )
                     .append( " = ?," );
          }
-         query
-                 .deleteCharAt( query.length() - 1 )
-                 .append( " WHERE " )
-                 .append( escapeSqlColumnOrTable( "identity" ) )
-                 .append( " = ?" );
 
-         final PreparedStatement preparedStatement = connection.prepareStatement( query.toString() );
-
-         int i = 1;
-         for ( String key : keys )
-         {
-            preparedStatement.setString( i++, associations.get( key ) );
-         }
-         preparedStatement.setString( i, entity.getString( "identity" ) );
-         preparedStatement.executeUpdate();
-         preparedStatement.close();
       }
 
-
+      return associations;
    }
 
    private void checkEntityExists( String type, String identity ) throws Exception
@@ -293,66 +258,9 @@ public class EntityExportHelper extends AbstractExportHelper
    {
       StringBuilder select = new StringBuilder( "SELECT " );
 
-      //Delete sub properties
-      boolean allow = false;
-      int count = 0;
       for ( PropertyType property : allProperties )
       {
-         if ( property.type().isValue()
-                 || property.type().type().name().equals( List.class.getName() )
-                 || property.type().type().name().equals( Set.class.getName() )
-                 || property.type().type().name().equals( Map.class.getName() ) )
-         {
-            allow = true;
-            select
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
-                    .append( "," );
-            count++;
-         }
-
-      }
-
-      if ( allow )
-      {
-         select
-                 .deleteCharAt( select.length() - 1 )
-                 .append( " FROM " )
-                 .append( escapeSqlColumnOrTable( tableName() ) );
-
-         final ResultSet resultSet = connection.prepareStatement( select.toString() ).executeQuery();
-
-         for ( int i = 1; i <= count; i++ )
-         {
-            if ( !resultSet.next() )
-            {
-               break;
-            }
-            String id = resultSet.getString( i );
-
-            if ( id == null )
-            {
-               continue;
-            }
-
-            String[] splitted;
-            if ( id.contains( SEPARATOR ) )
-            {
-               splitted = id.split( SEPARATOR );
-            } else
-            {
-               splitted = new String[]{id};
-            }
-
-            for ( String s : splitted )
-            {
-               final String[] split = s.split( ";" );
-               final String delete = "DELETE FROM " + escapeSqlColumnOrTable( split[0] ) + " WHERE id = ?";
-               final PreparedStatement preparedStatement = connection.prepareStatement( delete );
-               preparedStatement.setString( 1, split[1] );
-               preparedStatement.executeUpdate();
-               preparedStatement.close();
-            }
-         }
+         deleteSubProperty( property.qualifiedName().type() );
       }
 
       //Delete many associations
@@ -404,7 +312,16 @@ public class EntityExportHelper extends AbstractExportHelper
       preparedStatement.close();
    }
 
-   private int addArguments( PreparedStatement statement ) throws JSONException, SQLException, ClassNotFoundException
+   private void deleteSubProperty( String type )
+   {
+      // TODO: 23.03.17
+   }
+
+   private void addArguments( PreparedStatement statement,
+                             Map<String, String> associations,
+                             List<SingletonMap> subProperties,
+                             String identity
+                             ) throws JSONException, SQLException, ClassNotFoundException
    {
       int i = 1;
       for ( PropertyType existsProperty : existsProperties )
@@ -421,7 +338,20 @@ public class EntityExportHelper extends AbstractExportHelper
          setSimpleType(statement, type, entity, name, i++);
 
       }
-      return i;
+
+      for ( String key : associations.keySet() )
+      {
+         statement.setString( i++, associations.get( key ) );
+      }
+
+      for ( SingletonMap subProperty : subProperties )
+      {
+         statement.setInt( i++, ( Integer ) subProperty.getKey() );
+         statement.setString( i++, subProperty.getValue().toString() );
+      }
+
+      statement.setString( i, identity );
+
    }
 
    @Override
@@ -490,5 +420,10 @@ public class EntityExportHelper extends AbstractExportHelper
    public void setModule ( ModuleSPI module )
    {
       this.module = module;
+   }
+
+   public void setEntityExportService( EntityExportService entityExportService )
+   {
+      this.entityExportService = entityExportService;
    }
 }
