@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +75,9 @@ public interface EntityExportService
 
    void savedSuccess( JSONObject entity );
 
+   Set<String> getColumns( String tableName );
+   void addTable( String tableName, Set<String> columnNames );
+
    abstract class Mixin
            implements EntityExportService
    {
@@ -87,6 +91,8 @@ public interface EntityExportService
       private AtomicLong cacheIdGenerator = new AtomicLong( 1 );
       private AtomicLong currentId = new AtomicLong( 1 );
       private AtomicBoolean isExported = new AtomicBoolean( false );
+
+      private Map<String, Set<String>> schema;
 
       @Service
       FileConfiguration config;
@@ -115,7 +121,7 @@ public interface EntityExportService
 
             try ( final Connection connection = dataSource.get().getConnection() )
             {
-               final Map<String, Set<String>> schema =
+               schema =
                        thisConfig.configuration().createSchema().get() ?
                                createSchema( connection ) : new HashMap<String, Set<String>>();
 
@@ -124,13 +130,12 @@ public interface EntityExportService
                caching = new Caching( cachingService, Caches.ENTITYSTATES );
                caching.removeAll();
 
-               export( schema );
+               export();
 
             } catch ( Exception e )
             {
                logger.error( "Unexpected exception:", e );
             }
-
 
 
          }
@@ -140,6 +145,29 @@ public interface EntityExportService
       private void addSchemaInfo( Map<String, Set<String>> schema, Connection connection ) throws SQLException
       {
          final DatabaseMetaData metaData = connection.getMetaData();
+
+         String[] types = {"TABLE"};
+         final ResultSet tablesRs =
+                 metaData.getTables( null, null, "%", types );
+
+         while ( tablesRs.next() )
+         {
+            final String tableName = tablesRs.getString( "TABLE_NAME" );
+
+            Set<String> columns = schema.get( tableName );
+            if ( columns == null )
+            {
+               columns = new HashSet<>();
+            }
+
+            final ResultSet columnsRs= metaData.getColumns( null, null, tableName, null );
+            while ( columnsRs.next() )
+            {
+               columns.add( columnsRs.getString( "COLUMN_NAME" ) );
+            }
+
+            schema.put( tableName, columns );
+         }
       }
 
       @Override
@@ -215,6 +243,18 @@ public interface EntityExportService
       }
 
       @Override
+      public Set<String> getColumns( String tableName )
+      {
+         return schema.get( tableName );
+      }
+
+      @Override
+      public void addTable( String tableName, Set<String> columnNames )
+      {
+         schema.put( tableName, columnNames );
+      }
+
+      @Override
       public void passivate() throws Exception
       {
 
@@ -233,7 +273,7 @@ public interface EntityExportService
          return schemaUpdater.create();
       }
 
-      private void export( Map<String, Set<String>> schema ) throws IOException, InterruptedException
+      private void export() throws IOException, InterruptedException
       {
          logger.info( "Started entities export from ES index." );
 

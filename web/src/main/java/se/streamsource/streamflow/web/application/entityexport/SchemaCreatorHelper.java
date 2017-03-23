@@ -117,7 +117,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          columns.add( "owner_id" );
          columns.add( "link_id" );
 
-         tableColumns.put( escapeSqlColumnOrTable( tableName ), columns );
+         tableColumns.put( tableName, columns );
 
          if ( i == 1 )
          {
