@@ -36,8 +36,11 @@ import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -125,6 +128,8 @@ public interface EntityExportService
                        thisConfig.configuration().createSchema().get() ?
                                createSchema( connection ) : new HashMap<String, Set<String>>();
 
+//               schema = new HashMap<>);
+
                addSchemaInfo( schema, connection );
 
                caching = new Caching( cachingService, Caches.ENTITYSTATES );
@@ -198,42 +203,37 @@ public interface EntityExportService
       @Override
       public void savedSuccess( JSONObject entity )
       {
-
-         String description = null;
          try
          {
-            description = entity.getString( "_description" );
-         } catch ( JSONException e )
-         {
-            logger.error( "Error: ", e );
-         }
-
-         try
-         {
-            List<String> info = IOUtils.readLines( new FileInputStream( infoFileAbsPath ), "UTF-8" );
-
-            final String modified = entity.getLong( "_modified" ) + "";
-            final String identity = entity.getString( "identity" );
-
-            if ( info.size() < 2 || !( info.get( 0 ).equals( modified ) ) )
+            try ( final BufferedReader br = new BufferedReader( new FileReader( infoFileAbsPath ) ) )
             {
-               info = new ArrayList<>( 2 );
-               info.add( modified );
-               info.add( identity );
-            } else
-            {
-               info.add( identity );
+               final String modifiedFromInfo = br.readLine();
+
+               final Long modified = entity.getLong( "_modified" );
+               final String identity = entity.getString( "identity" );
+
+               final PrintWriter pw;
+
+               if ( modifiedFromInfo == null
+                       || br.readLine() == null
+                       || !modifiedFromInfo.equals( modified.toString() ) )
+               {
+                  pw = new PrintWriter( infoFileAbsPath );
+                  pw.println( modified );
+                  pw.println( identity );
+               } else
+               {
+                  pw = new PrintWriter( new FileWriter( infoFileAbsPath, true ) );
+                  pw.println( identity );
+               }
+
+               pw.flush();
+               pw.close();
+
+               logger.info( "Entity #" + currentId.get() + " exported to sql with id=" + identity );
+
             }
 
-            PrintWriter pw = new PrintWriter( infoFileAbsPath );
-            for ( String line : info )
-            {
-               pw.println( line );
-            }
-            pw.flush();
-            pw.close();
-
-            logger.info( "Entity #" + currentId.get() + " exported to sql with id=" + identity );
          } catch ( Exception e )
          {
             logger.error( "Error: ", e );

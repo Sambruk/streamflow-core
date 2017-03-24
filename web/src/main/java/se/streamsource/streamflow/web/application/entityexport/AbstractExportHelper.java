@@ -6,15 +6,18 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +28,7 @@ public abstract class AbstractExportHelper
 {
 
    public static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
-
+   protected final Logger logger = LoggerFactory.getLogger( this.getClass().getName() );
 
    protected Connection connection;
    protected ModuleSPI module;
@@ -46,11 +49,10 @@ public abstract class AbstractExportHelper
                  .append( " (" )
                  .append( LINE_SEPARATOR )
                  .append( " " )
-                 .append( escapeSqlColumnOrTable( "id" ) )
+                 .append( escapeSqlColumnOrTable( "owner" ) )
                  .append( " " )
-                 .append( detectSqlType( Integer.class ) )
-                 .append( " NOT NULL " )
-                 .append( dbVendor == DbVendor.mssql ? "IDENTITY (1, 1)," : "AUTO_INCREMENT," )
+                 .append( stringSqlType( 255 ) )
+                 .append( " NOT NULL," )
                  .append( LINE_SEPARATOR );
 
          if ( isMap )
@@ -66,32 +68,112 @@ public abstract class AbstractExportHelper
 
          collectionTable
                  .append( " " )
-                 .append( escapeSqlColumnOrTable( "owner" ) )
-                 .append( " " )
-                 .append( stringSqlType( 255 ) )
-                 .append( " NULL," )
-                 .append( LINE_SEPARATOR );
-
-         collectionTable
-                 .append( " " )
                  .append( escapeSqlColumnOrTable( "property_value" ) )
                  .append( " " )
                  .append( stringSqlType( Integer.MAX_VALUE ) )
-                 .append( " NULL," )
-                 .append( LINE_SEPARATOR )
-                 .append( " PRIMARY KEY (" )
-                 .append( escapeSqlColumnOrTable( "id" ) )
-                 .append( ") " )
+                 .append( " NULL" )
                  .append( LINE_SEPARATOR )
                  .append( ");" )
                  .append( LINE_SEPARATOR );
 
-         final Statement statement = connection.createStatement();
+         try ( final Statement statement = connection.createStatement() )
+         {
+            statement.executeUpdate( collectionTable.toString() );
+         }
+         
+      }
 
-         statement.executeUpdate( collectionTable.toString() );
-         statement.close();
+   }
+
+   protected void createManyAssocTableIfNotExists( String tableName, Map<String, Set<String>> tableColumns, ManyAssociationType manyAssociation ) throws ClassNotFoundException, SQLException
+   {
+      if ( tableColumns.get( tableName ) == null )
+      {
+         String associationTable = null;
+
+         final Class<?> clazz = Class.forName( manyAssociation.type() );
+
+         int i = 0;
+         for ( EntityInfo info : EntityInfo.values() )
+         {
+            if ( clazz.isAssignableFrom( info.getEntityClass() ) )
+            {
+               associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
+               i++;
+            }
+         }
+
+         final StringBuilder manyAssoc = new StringBuilder();
 
 
+         manyAssoc
+                 .append( "CREATE TABLE " )
+                 .append( escapeSqlColumnOrTable( tableName ) )
+                 .append( " (" )
+                 .append( LINE_SEPARATOR )
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( " " )
+                 .append( stringSqlType( 255 ) )
+                 .append( " NOT NULL," )
+                 .append( LINE_SEPARATOR )
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "link_id" ) )
+                 .append( " " )
+                 .append( stringSqlType( 255 ) )
+                 .append( " NOT NULL," )
+                 .append( LINE_SEPARATOR );
+
+         final HashSet<String> columns = new HashSet<>();
+         columns.add( "owner_id" );
+         columns.add( "link_id" );
+
+         tableColumns.put( tableName, columns );
+
+         if ( i == 1 )
+         {
+            final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
+            manyAssoc
+                    .append( " CONSTRAINT FK_owner_" )
+                    .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
+                    .append( " FOREIGN KEY (" )
+                    .append( escapeSqlColumnOrTable( "owner_id" ) )
+                    .append( ") REFERENCES " )
+                    .append( escapeSqlColumnOrTable( tableName() ) )
+                    .append( " (" )
+                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( ")," )
+                    .append( LINE_SEPARATOR );
+
+            final int hashCodeLink = ( tableName() + tableName + "link" ).hashCode();
+            manyAssoc
+                    .append( " CONSTRAINT FK_link_" )
+                    .append( hashCodeLink >= 0 ? hashCodeLink : ( -1 * hashCodeLink ) )
+                    .append( " FOREIGN KEY (" )
+                    .append( escapeSqlColumnOrTable( "link_id" ) )
+                    .append( ") REFERENCES " )
+                    .append( escapeSqlColumnOrTable( associationTable ) )
+                    .append( " (" )
+                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( ")," )
+                    .append( LINE_SEPARATOR );
+         }
+
+         manyAssoc
+                 .append( " PRIMARY KEY (" )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( "," )
+                 .append( escapeSqlColumnOrTable( "link_id" ) )
+                 .append( ")" )
+                 .append( LINE_SEPARATOR )
+                 .append( ");" );
+
+         try (final Statement statement = connection.createStatement())
+         {
+            statement.executeUpdate( manyAssoc.toString() );
+         }
+
+         logger.info( manyAssoc.toString() );
       }
 
    }
@@ -137,7 +219,6 @@ public abstract class AbstractExportHelper
       valueExportHelper.setModule( module );
       valueExportHelper.setDbVendor( dbVendor );
       return valueExportHelper.help();
-
    }
 
    protected ResultSet selectFromWhereId( String tableName, String id ) throws SQLException, JSONException

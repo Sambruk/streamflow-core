@@ -6,10 +6,7 @@ import org.qi4j.runtime.types.MapType;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
-import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,8 +21,6 @@ import java.util.Set;
  */
 public class SchemaCreatorHelper extends AbstractExportHelper
 {
-
-   private final static Logger logger = LoggerFactory.getLogger( SchemaCreatorHelper.class.getName() );
 
    private EntityType entityType;
    private EntityInfo entityInfo;
@@ -61,109 +56,11 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
             createForeignKeys();
 
-            createManyAssociationsTables();
-
          }
       }
 
       return tableColumns;
 
-   }
-
-   private void createManyAssociationsTables() throws ClassNotFoundException, SQLException
-   {
-      for ( ManyAssociationType manyAssociation : entityType.manyAssociations() )
-      {
-         final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
-
-         String associationTable = null;
-
-         final Class<?> clazz = Class.forName( manyAssociation.type() );
-
-         int i = 0;
-         for ( EntityInfo info : EntityInfo.values() )
-         {
-            if ( clazz.isAssignableFrom( info.getEntityClass() ) )
-            {
-               associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
-               i++;
-            }
-         }
-
-         final StringBuilder manyAssoc = new StringBuilder();
-
-
-         manyAssoc
-                 .append( "CREATE TABLE " )
-                 .append( escapeSqlColumnOrTable( tableName ) )
-                 .append( " (" )
-                 .append( LINE_SEPARATOR )
-                 .append( " " )
-                 .append( escapeSqlColumnOrTable( "owner_id" ) )
-                 .append( " " )
-                 .append( stringSqlType( 255 ) )
-                 .append( " NOT NULL," )
-                 .append( LINE_SEPARATOR )
-                 .append( " " )
-                 .append( escapeSqlColumnOrTable( "link_id" ) )
-                 .append( " " )
-                 .append( stringSqlType( 255 ) )
-                 .append( " NOT NULL," )
-                 .append( LINE_SEPARATOR );
-
-         final HashSet<String> columns = new HashSet<>();
-         columns.add( "owner_id" );
-         columns.add( "link_id" );
-
-         tableColumns.put( tableName, columns );
-
-         if ( i == 1 )
-         {
-            final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
-            manyAssoc
-                    .append( " CONSTRAINT FK_owner_" )
-                    .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
-                    .append( " FOREIGN KEY (" )
-                    .append( escapeSqlColumnOrTable( "owner_id" ) )
-                    .append( ") REFERENCES " )
-                    .append( escapeSqlColumnOrTable( tableName() ) )
-                    .append( " (" )
-                    .append( escapeSqlColumnOrTable( "identity" ) )
-                    .append( ")," )
-                    .append( LINE_SEPARATOR );
-
-            final int hashCodeLink = ( tableName() + tableName + "link" ).hashCode();
-            manyAssoc
-                    .append( " CONSTRAINT FK_link_" )
-                    .append( hashCodeLink >= 0 ? hashCodeLink : ( -1 * hashCodeLink ) )
-                    .append( " FOREIGN KEY (" )
-                    .append( escapeSqlColumnOrTable( "link_id" ) )
-                    .append( ") REFERENCES " )
-                    .append( escapeSqlColumnOrTable( associationTable ) )
-                    .append( " (" )
-                    .append( escapeSqlColumnOrTable( "identity" ) )
-                    .append( ")," )
-                    .append( LINE_SEPARATOR );
-
-         }
-
-         manyAssoc
-                 .append( " PRIMARY KEY (" )
-                 .append( escapeSqlColumnOrTable( "owner_id" ) )
-                 .append( "," )
-                 .append( escapeSqlColumnOrTable( "link_id" ) )
-                 .append( ")" )
-                 .append( LINE_SEPARATOR )
-                 .append( ");" );
-
-         final Statement statement = connection.createStatement();
-
-         statement.executeUpdate( manyAssoc.toString() );
-         statement.close();
-
-         logger.info( manyAssoc.toString() );
-
-      }
    }
 
    private void createForeignKeys() throws ClassNotFoundException, SQLException
