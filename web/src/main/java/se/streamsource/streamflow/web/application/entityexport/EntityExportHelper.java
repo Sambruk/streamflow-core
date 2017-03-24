@@ -61,10 +61,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
       saveManyAssociations();
 
-      // TODO: 24.03.17
-//      final List<SingletonMap> subProperties = saveSubProperties( query );
-      final List<SingletonMap> subProperties = new ArrayList<>();
-
+      final List<SingletonMap> subProperties = saveSubProperties( query );
 
       if ( !query.substring( query.length() - 4 ).equals( "SET " ) )
       {
@@ -181,7 +178,7 @@ public class EntityExportHelper extends AbstractExportHelper
                {
                   for ( Object o : ( Collection<?> ) value )
                   {
-                     processValueComposite( ( ValueComposite ) o );
+//                     processValueComposite( ( ValueComposite ) o );
                   }
                } else
                {
@@ -195,13 +192,13 @@ public class EntityExportHelper extends AbstractExportHelper
          } else if ( value instanceof ValueComposite )
          {
 
-            query
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
-                    .append( "=?," )
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key + ValueExportHelper.COLUMN_DESCRIPTION_SUFFIX ) ) )
-                    .append( "=?," );
-
-            subProperties.add( processValueComposite( ( ValueComposite ) value ) );
+//            query
+//                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
+//                    .append( "=?," )
+//                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key + ValueExportHelper.COLUMN_DESCRIPTION_SUFFIX ) ) )
+//                    .append( "=?," );
+//
+//            subProperties.add( processValueComposite( ( ValueComposite ) value ) );
          }
 
       }
@@ -233,7 +230,7 @@ public class EntityExportHelper extends AbstractExportHelper
          for ( Object o : objects )
          {
             preparedStatement.setString( 1, identity );
-            final String strValue = isMap ? ( ( Map<?, ?> ) value ).get( o.toString() ).toString() : o.toString();
+            final String strValue = isMap ? ( ( Map<?, ?> ) value ).get( o ).toString() : o.toString();
             preparedStatement.setString( 2, strValue );
 
             if ( isMap )

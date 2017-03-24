@@ -128,8 +128,6 @@ public interface EntityExportService
                        thisConfig.configuration().createSchema().get() ?
                                createSchema( connection ) : new HashMap<String, Set<String>>();
 
-//               schema = new HashMap<>);
-
                addSchemaInfo( schema, connection );
 
                caching = new Caching( cachingService, Caches.ENTITYSTATES );

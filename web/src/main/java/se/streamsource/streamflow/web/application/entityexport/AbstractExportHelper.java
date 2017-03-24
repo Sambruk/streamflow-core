@@ -36,12 +36,14 @@ public abstract class AbstractExportHelper
 
    protected abstract String tableName();
 
-   protected void createCollectionTableIfNotExist( String tableName, Map<String, Set<String>> tables, boolean isMap ) throws SQLException, ClassNotFoundException
+   protected void createCollectionTableIfNotExist( String tableName, Map<String, Set<String>> tableColumns, boolean isMap ) throws SQLException, ClassNotFoundException
    {
 
-      if ( tables.get( tableName ) == null )
+      if ( tableColumns.get( tableName ) == null )
       {
          final StringBuilder collectionTable = new StringBuilder();
+
+         final HashSet<String> columns = new HashSet<>();
 
          collectionTable
                  .append( "CREATE TABLE " )
@@ -54,6 +56,7 @@ public abstract class AbstractExportHelper
                  .append( stringSqlType( 255 ) )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR );
+         columns.add( "owner" );
 
          if ( isMap )
          {
@@ -64,7 +67,21 @@ public abstract class AbstractExportHelper
                     .append( stringSqlType( Integer.MAX_VALUE ) )
                     .append( " NULL," )
                     .append( LINE_SEPARATOR );
+            columns.add( "property_key" );
          }
+
+         final int hashCodeOwner = tableName.hashCode();
+         collectionTable
+                 .append( " CONSTRAINT FK_owner_" )
+                 .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
+                 .append( " FOREIGN KEY (" )
+                 .append( escapeSqlColumnOrTable( "owner" ) )
+                 .append( ") REFERENCES " )
+                 .append( escapeSqlColumnOrTable( tableName() ) )
+                 .append( " (" )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( ")," )
+                 .append( LINE_SEPARATOR );
 
          collectionTable
                  .append( " " )
@@ -75,12 +92,15 @@ public abstract class AbstractExportHelper
                  .append( LINE_SEPARATOR )
                  .append( ");" )
                  .append( LINE_SEPARATOR );
+         columns.add( "property_value" );
+
 
          try ( final Statement statement = connection.createStatement() )
          {
             statement.executeUpdate( collectionTable.toString() );
          }
-         
+
+         tableColumns.put( tableName, columns );
       }
 
    }
@@ -104,8 +124,7 @@ public abstract class AbstractExportHelper
          }
 
          final StringBuilder manyAssoc = new StringBuilder();
-
-
+         
          manyAssoc
                  .append( "CREATE TABLE " )
                  .append( escapeSqlColumnOrTable( tableName ) )
@@ -130,21 +149,21 @@ public abstract class AbstractExportHelper
 
          tableColumns.put( tableName, columns );
 
+         final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
+         manyAssoc
+                 .append( " CONSTRAINT FK_owner_" )
+                 .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
+                 .append( " FOREIGN KEY (" )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
+                 .append( ") REFERENCES " )
+                 .append( escapeSqlColumnOrTable( tableName() ) )
+                 .append( " (" )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( ")," )
+                 .append( LINE_SEPARATOR );
+
          if ( i == 1 )
          {
-            final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
-            manyAssoc
-                    .append( " CONSTRAINT FK_owner_" )
-                    .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
-                    .append( " FOREIGN KEY (" )
-                    .append( escapeSqlColumnOrTable( "owner_id" ) )
-                    .append( ") REFERENCES " )
-                    .append( escapeSqlColumnOrTable( tableName() ) )
-                    .append( " (" )
-                    .append( escapeSqlColumnOrTable( "identity" ) )
-                    .append( ")," )
-                    .append( LINE_SEPARATOR );
-
             final int hashCodeLink = ( tableName() + tableName + "link" ).hashCode();
             manyAssoc
                     .append( " CONSTRAINT FK_link_" )
