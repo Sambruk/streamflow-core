@@ -37,7 +37,6 @@ public class EntityExportHelper extends AbstractExportHelper
    private ArrayList<ManyAssociationType> allManyAssociations;
    private ArrayList<AssociationType> allAssociations;
    private String className;
-   private Map<String, Set<String>> tables;
 
    public Map<String, Set<String>> help() throws Exception
    {
@@ -182,11 +181,11 @@ public class EntityExportHelper extends AbstractExportHelper
                   }
                } else
                {
-                  processCollection( key, value, tables, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
+                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
                }
             } else
             {
-               processCollection( key, value, tables, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) )  );
+               processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) )  );
             }
 
          } else if ( value instanceof ValueComposite )
@@ -426,10 +425,5 @@ public class EntityExportHelper extends AbstractExportHelper
    public void setClassName( String className )
    {
       this.className = className;
-   }
-
-   public void setTables( Map<String, Set<String>> tables )
-   {
-      this.tables = tables;
    }
 }

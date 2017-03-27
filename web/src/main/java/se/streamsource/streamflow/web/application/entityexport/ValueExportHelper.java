@@ -1,19 +1,21 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.collections.map.SingletonMap;
+import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.util.Function;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.composite.StateDescriptor;
 import org.qi4j.spi.property.PropertyDescriptor;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,18 +35,54 @@ public class ValueExportHelper extends AbstractExportHelper
 
       List<PropertyDescriptor> properties = new ArrayList<>( module.valueDescriptor( value.type().getName() ).state().properties() );
 
+      createSubPropertyTableIfNotExists();
+
       final String query = mainInsert( properties );
 
-      PreparedStatement preparedStatement = connection.prepareStatement( query );
+      PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
 
-      addArguments( properties, preparedStatement );
+      final Map<QualifiedName, Boolean> collections = addArguments( properties, preparedStatement );
 
-      return new SingletonMap();
+      preparedStatement.executeUpdate();
+
+      final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+      generatedKeys.next();
+      final int id = generatedKeys.getInt( 1 );
+
+      saveSubProperties( collections, id );
+
+      return new SingletonMap(id, tableName());
    }
 
-   private void addArguments( List<PropertyDescriptor> properties, PreparedStatement statement ) throws Exception
+   private void saveSubProperties( Map<QualifiedName, Boolean> collections, int id ) throws Exception
    {
 
+      final Set<QualifiedName> qualifiedNames = collections.keySet();
+
+      for ( QualifiedName qualifiedName : qualifiedNames )
+      {
+         final Boolean isValue = collections.get( qualifiedName );
+
+         if ( isValue )
+         {
+            for ( Object o : ( Collection<?> ) value )
+            {
+               processValueComposite( ( ValueComposite ) o );
+            }
+         } else
+         {
+            processCollection( qualifiedName.name(),
+                    value.state().getProperty( qualifiedName ).get(),
+                    new PreparedStatementIntegerBinder( id, detectSqlType( Integer.class ) )
+            );
+         }
+      }
+
+   }
+
+   private Map<QualifiedName, Boolean> addArguments( List<PropertyDescriptor> properties, PreparedStatement statement ) throws Exception
+   {
+      Map<QualifiedName, Boolean> existsCollections = new LinkedHashMap<>();
       int i = 1;
       for ( PropertyDescriptor property : properties )
       {
@@ -63,7 +101,6 @@ public class ValueExportHelper extends AbstractExportHelper
                if ( ValueComposite.class.isAssignableFrom( val.getClass() )
                        && EntityInfo.from( val.getClass() ) == EntityInfo.UNKNOWN )
                {
-
                   final SingletonMap singletonMap = processValueComposite( ( ValueComposite ) val );
                   statement.setInt( i++, ( Integer ) singletonMap.getKey() );
 
@@ -71,7 +108,6 @@ public class ValueExportHelper extends AbstractExportHelper
                {
                   setSimpleType( statement, val, i++ );
                }
-
             }
 
          } else if ( type instanceof ParameterizedType )
@@ -81,21 +117,20 @@ public class ValueExportHelper extends AbstractExportHelper
             if ( ownerType.equals( Map.class ) )
             {
                final Map val = ( Map ) value.state().getProperty( property.qualifiedName() ).get();
+               final boolean isValue = false;
                if ( !isEmptyOrNull( val ) )
                {
-                  processCollection( key, value, table, new PreparedStatementIntegerBinder( id, detectSqlType( Integer.class ) ) );
-
+                  existsCollections.put( property.qualifiedName(), isValue );
                }
             } else
             {
                final Class<?> actualType = ( Class<?> ) parameterizedType.getActualTypeArguments()[0];
                final boolean isValue = ValueComposite.class.isAssignableFrom( actualType )
                        && EntityInfo.from( actualType ) == EntityInfo.UNKNOWN;
-
                final Collection val = ( Collection ) value.state().getProperty( property.qualifiedName() ).get();
                if ( !isEmptyOrNull( val ) )
                {
-                  processCollection( key, value, table, new PreparedStatementIntegerBinder( id, detectSqlType( Integer.class ) ) );
+                  existsCollections.put( property.qualifiedName(), isValue );
                }
             }
          } else
@@ -104,6 +139,8 @@ public class ValueExportHelper extends AbstractExportHelper
          }
 
       }
+
+      return existsCollections;
 
    }
 

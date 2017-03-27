@@ -35,20 +35,56 @@ public abstract class AbstractExportHelper
    protected Connection connection;
    protected ModuleSPI module;
    protected DbVendor dbVendor;
+   protected Map<String, Set<String>> tables;
 
    protected abstract String tableName();
 
+   protected void createSubPropertyTableIfNotExists() throws SQLException
+   {
+      if ( tables.get( tableName() ) == null )
+      {
+
+         final StringBuilder subPropertyTable = new StringBuilder();
+
+         final HashSet<String> columns = new HashSet<>();
+
+         subPropertyTable
+                 .append( "CREATE TABLE " )
+                 .append( escapeSqlColumnOrTable( tableName() ) )
+                 .append( " (" )
+                 .append( LINE_SEPARATOR )
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "id" ) )
+                 .append( " " )
+                 .append( detectSqlType( Integer.class ) )
+                 .append( " NOT NULL " )
+                 .append( dbVendor == DbVendor.mysql ? "AUTO_INCREMENT," : " indentity(1,1)," )
+                 .append( LINE_SEPARATOR )
+                 .append( " PRIMARY KEY (" )
+                 .append( escapeSqlColumnOrTable( "id" ) )
+                 .append( ")" )
+                 .append( LINE_SEPARATOR )
+                 .append( ");" );
+         columns.add( "id" );
+
+         final Statement statement = connection.createStatement();
+
+         statement.executeUpdate( subPropertyTable.toString() );
+
+         tables.put( tableName(), columns );
+      }
+   }
+
    void processCollection( String name,
                                    Object value,
-                                   Map<String, Set<String>> tables,
-                                   PreparedStatementValueBinder valueBinder
+                           PreparedStatementValueBinder valueBinder
    ) throws SQLException, JSONException, ClassNotFoundException
    {
       final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( name ) + "_coll";
 
       final boolean isMap = value instanceof Map;
 
-      createCollectionTableIfNotExist( tableName, tables, isMap, valueBinder );
+      createCollectionTableIfNotExist( tableName, isMap, valueBinder );
 
       final Collection<?> objects = isMap ? ( ( Map<?, ?> ) value ).keySet() : ( Collection<?> ) value;
 
@@ -80,10 +116,10 @@ public abstract class AbstractExportHelper
 
    }
 
-   void createCollectionTableIfNotExist( String tableName, Map<String, Set<String>> tableColumns, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException
+   void createCollectionTableIfNotExist( String tableName, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException
    {
 
-      if ( tableColumns.get( tableName ) == null )
+      if ( tables.get( tableName ) == null )
       {
          final StringBuilder collectionTable = new StringBuilder();
 
@@ -123,7 +159,8 @@ public abstract class AbstractExportHelper
                  .append( ") REFERENCES " )
                  .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " (" )
-                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( valueBinder.getSqlType().equals( stringSqlType( 255 ) )
+                         ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
                  .append( ")," )
                  .append( LINE_SEPARATOR );
 
@@ -144,7 +181,7 @@ public abstract class AbstractExportHelper
             statement.executeUpdate( collectionTable.toString() );
          }
 
-         tableColumns.put( tableName, columns );
+         tables.put( tableName, columns );
       }
 
    }
@@ -376,7 +413,7 @@ public abstract class AbstractExportHelper
       return stringBuilder.toString();
    }
 
-   String detectSqlType( Class type ) throws ClassNotFoundException
+   String detectSqlType( Class type )
    {
 
       if ( Boolean.class.equals( type ) )
@@ -439,5 +476,10 @@ public abstract class AbstractExportHelper
    public void setDbVendor( DbVendor dbVendor )
    {
       this.dbVendor = dbVendor;
+   }
+
+   public void setTables( Map<String, Set<String>> tables )
+   {
+      this.tables = tables;
    }
 }
