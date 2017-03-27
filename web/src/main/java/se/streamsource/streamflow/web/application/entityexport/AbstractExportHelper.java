@@ -12,6 +12,7 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -278,6 +279,28 @@ public abstract class AbstractExportHelper
 
    }
 
+   protected void addColumn( String name, Class<?> type )
+   {
+
+      final Set<String> columns = tables.get( tableName() );
+
+      assert columns != null;
+
+      if ( columns.add( name ) )
+      {
+         StringBuilder alterTable = new StringBuilder();
+
+         alterTable.append( "ALTER TABLE " )
+                 .append( escapeSqlColumnOrTable( name ) )
+                 .append( LINE_SEPARATOR )
+      }
+
+
+
+
+
+   }
+
    void setSimpleType( final PreparedStatement statement,
                                  final Class clazz,
                                  final JSONObject jsonObj,
@@ -352,6 +375,7 @@ public abstract class AbstractExportHelper
       valueExportHelper.setConnection( connection );
       valueExportHelper.setModule( module );
       valueExportHelper.setDbVendor( dbVendor );
+      valueExportHelper.setTables( tables );
       return valueExportHelper.help();
    }
 

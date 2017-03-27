@@ -27,7 +27,6 @@ import java.util.Set;
 public class ValueExportHelper extends AbstractExportHelper
 {
 
-   public static final String COLUMN_DESCRIPTION_SUFFIX = "_table";
    private ValueComposite value;
 
    public SingletonMap help() throws Exception
@@ -164,8 +163,12 @@ public class ValueExportHelper extends AbstractExportHelper
                   continue;
                }
 
+               final String name = toSnackCaseFromCamelCase( property.qualifiedName().name() );
+
+               addColumn( name, (Class<?>) property.type() );
+
                query
-                       .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
+                       .append( escapeSqlColumnOrTable( name ) )
                        .append( "," );
                i++;
             }
