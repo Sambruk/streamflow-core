@@ -99,11 +99,11 @@ public enum EntityInfo
       return entityClass;
    }
 
-   public static EntityInfo fromClass( String clazzName )
+   public static EntityInfo from( Class<?> clazz )
    {
       for ( EntityInfo entityInfo : values() )
       {
-         if ( clazzName.equals( entityInfo.entityClass.getName() ) )
+         if ( clazz.equals( entityInfo.entityClass ) )
          {
             return entityInfo;
          }

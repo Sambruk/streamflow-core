@@ -5,6 +5,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.structure.ModuleSPI;
@@ -16,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +38,49 @@ public abstract class AbstractExportHelper
 
    protected abstract String tableName();
 
-   protected void createCollectionTableIfNotExist( String tableName, Map<String, Set<String>> tableColumns, boolean isMap ) throws SQLException, ClassNotFoundException
+   void processCollection( String name,
+                                   Object value,
+                                   Map<String, Set<String>> tables,
+                                   PreparedStatementValueBinder valueBinder
+   ) throws SQLException, JSONException, ClassNotFoundException
+   {
+      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( name ) + "_coll";
+
+      final boolean isMap = value instanceof Map;
+
+      createCollectionTableIfNotExist( tableName, tables, isMap, valueBinder );
+
+      final Collection<?> objects = isMap ? ( ( Map<?, ?> ) value ).keySet() : ( Collection<?> ) value;
+
+      String query = "INSERT INTO "
+              + escapeSqlColumnOrTable( tableName )
+              + " ("
+              + escapeSqlColumnOrTable( "owner" )
+              + "," + escapeSqlColumnOrTable( "property_value" )
+              + ( isMap ? "," + escapeSqlColumnOrTable( "property_key" ) : "" )
+              + ") VALUES (?,?" + ( isMap ? ",?)" : ")" );
+
+      try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
+      {
+         for ( Object o : objects )
+         {
+            valueBinder.bind( preparedStatement, 1 );
+            final String strValue = isMap ? ( ( Map<?, ?> ) value ).get( o ).toString() : o.toString();
+            preparedStatement.setString( 2, strValue );
+
+            if ( isMap )
+            {
+               preparedStatement.setString( 3, o.toString() );
+            }
+            preparedStatement.addBatch();
+         }
+
+         preparedStatement.executeBatch();
+      }
+
+   }
+
+   void createCollectionTableIfNotExist( String tableName, Map<String, Set<String>> tableColumns, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException
    {
 
       if ( tableColumns.get( tableName ) == null )
@@ -53,7 +97,7 @@ public abstract class AbstractExportHelper
                  .append( " " )
                  .append( escapeSqlColumnOrTable( "owner" ) )
                  .append( " " )
-                 .append( stringSqlType( 255 ) )
+                 .append( valueBinder.getSqlType() )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR );
          columns.add( "owner" );
@@ -105,7 +149,7 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected void createManyAssocTableIfNotExists( String tableName, Map<String, Set<String>> tableColumns, ManyAssociationType manyAssociation ) throws ClassNotFoundException, SQLException
+   void createManyAssocTableIfNotExists( String tableName, Map<String, Set<String>> tableColumns, ManyAssociationType manyAssociation ) throws ClassNotFoundException, SQLException
    {
       if ( tableColumns.get( tableName ) == null )
       {
@@ -124,7 +168,7 @@ public abstract class AbstractExportHelper
          }
 
          final StringBuilder manyAssoc = new StringBuilder();
-         
+
          manyAssoc
                  .append( "CREATE TABLE " )
                  .append( escapeSqlColumnOrTable( tableName ) )
@@ -187,7 +231,7 @@ public abstract class AbstractExportHelper
                  .append( LINE_SEPARATOR )
                  .append( ");" );
 
-         try (final Statement statement = connection.createStatement())
+         try ( final Statement statement = connection.createStatement() )
          {
             statement.executeUpdate( manyAssoc.toString() );
          }
@@ -197,11 +241,11 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected void setSimpleType( final PreparedStatement statement,
-                               final Class clazz,
-                               final JSONObject jsonObj,
-                               final String name,
-                               final int i ) throws JSONException, SQLException
+   void setSimpleType( final PreparedStatement statement,
+                                 final Class clazz,
+                                 final JSONObject jsonObj,
+                                 final String name,
+                                 final int i ) throws JSONException, SQLException
    {
       if ( Boolean.class.equals( clazz ) )
       {
@@ -230,7 +274,41 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected SingletonMap processValueComposite( ValueComposite value ) throws Exception
+   void setSimpleType( final PreparedStatement statement,
+                                 Object value,
+                                 final int i ) throws JSONException, SQLException
+   {
+      if ( Boolean.class.equals( value.getClass() ) )
+      {
+         statement.setBoolean( i, ( Boolean ) value );
+      } else if ( Integer.class.equals( value.getClass() ) )
+      {
+         statement.setInt( i, ( Integer ) value );
+      } else if ( Long.class.equals( value.getClass() ) )
+      {
+         statement.setLong( i, ( Long ) value );
+      } else if ( Float.class.equals( value.getClass() ) )
+      {
+         statement.setFloat( i, ( Float ) value );
+      } else if ( Double.class.equals( value.getClass() ) )
+      {
+         statement.setDouble( i, ( Double ) value );
+      } else if ( String.class.equals( value.getClass() )
+              || value.getClass().isEnum()
+              || Date.class.equals( value.getClass() )
+              || DateTime.class.equals( value.getClass() ) )
+      {
+         statement.setString( i, ( String ) value );
+      } else if ( EntityReference.class.equals( value.getClass() ) )
+      {
+         statement.setString( i, ( ( EntityReference ) value ).identity() );
+      } else
+      {
+         throw new IllegalArgumentException();
+      }
+   }
+
+   SingletonMap processValueComposite( ValueComposite value ) throws Exception
    {
       final ValueExportHelper valueExportHelper = new ValueExportHelper();
       valueExportHelper.setValue( value );
@@ -240,7 +318,7 @@ public abstract class AbstractExportHelper
       return valueExportHelper.help();
    }
 
-   protected ResultSet selectFromWhereId( String tableName, String id ) throws SQLException, JSONException
+   ResultSet selectFromWhereId( String tableName, String id ) throws SQLException, JSONException
    {
       String isExistQuery = "SELECT " + escapeSqlColumnOrTable( "identity" ) +
               " FROM " + escapeSqlColumnOrTable( tableName ) +
@@ -252,7 +330,7 @@ public abstract class AbstractExportHelper
       return isExistPS.executeQuery();
    }
 
-   protected String escapeSqlColumnOrTable( String name )
+   String escapeSqlColumnOrTable( String name )
    {
       switch ( dbVendor )
       {
@@ -267,12 +345,12 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected String classSimpleName( String className )
+   String classSimpleName( String className )
    {
       return ClassUtils.getShortClassName( className );
    }
 
-   protected String toSnackCaseFromCamelCase( String str )
+   String toSnackCaseFromCamelCase( String str )
    {
       StringBuilder stringBuilder = new StringBuilder();
 
@@ -298,7 +376,7 @@ public abstract class AbstractExportHelper
       return stringBuilder.toString();
    }
 
-   protected String detectSqlType( Class type ) throws ClassNotFoundException
+   String detectSqlType( Class type ) throws ClassNotFoundException
    {
 
       if ( Boolean.class.equals( type ) )

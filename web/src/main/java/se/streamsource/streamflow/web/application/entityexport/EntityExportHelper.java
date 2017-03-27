@@ -178,71 +178,32 @@ public class EntityExportHelper extends AbstractExportHelper
                {
                   for ( Object o : ( Collection<?> ) value )
                   {
-//                     processValueComposite( ( ValueComposite ) o );
+                     processValueComposite( ( ValueComposite ) o );
                   }
                } else
                {
-                  processCollection( key, value );
+                  processCollection( key, value, tables, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
                }
             } else
             {
-               processCollection( key, value );
+               processCollection( key, value, tables, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) )  );
             }
 
          } else if ( value instanceof ValueComposite )
          {
 
-//            query
-//                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
-//                    .append( "=?," )
-//                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key + ValueExportHelper.COLUMN_DESCRIPTION_SUFFIX ) ) )
-//                    .append( "=?," );
-//
-//            subProperties.add( processValueComposite( ( ValueComposite ) value ) );
+            query
+                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
+                    .append( "=?," )
+                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key + ValueExportHelper.COLUMN_DESCRIPTION_SUFFIX ) ) )
+                    .append( "=?," );
+
+            subProperties.add( processValueComposite( ( ValueComposite ) value ) );
          }
 
       }
 
       return subProperties;
-   }
-
-   private void processCollection( String name, Object value ) throws SQLException, JSONException, ClassNotFoundException
-   {
-      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( name ) + "_coll";
-      final String identity = entity.getString( "identity" );
-
-      final boolean isMap = value instanceof Map;
-
-      createCollectionTableIfNotExist( tableName, tables, isMap );
-
-      final Collection<?> objects = isMap ? ( ( Map<?, ?> ) value ).keySet() : ( Collection<?> ) value;
-
-      String query = "INSERT INTO "
-              + escapeSqlColumnOrTable( tableName )
-              + " ("
-              + escapeSqlColumnOrTable( "owner" )
-              + "," + escapeSqlColumnOrTable( "property_value" )
-              + ( isMap ? "," + escapeSqlColumnOrTable( "property_key" ) : "" )
-              + ") VALUES (?,?" + ( isMap ? ",?)" : ")" );
-
-      try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
-      {
-         for ( Object o : objects )
-         {
-            preparedStatement.setString( 1, identity );
-            final String strValue = isMap ? ( ( Map<?, ?> ) value ).get( o ).toString() : o.toString();
-            preparedStatement.setString( 2, strValue );
-
-            if ( isMap )
-            {
-               preparedStatement.setString( 3, o.toString() );
-            }
-            preparedStatement.addBatch();
-         }
-
-         preparedStatement.executeBatch();
-      }
-
    }
 
    private Map<String, String> updateAssociations( StringBuilder query ) throws Exception
@@ -442,11 +403,6 @@ public class EntityExportHelper extends AbstractExportHelper
       this.subProps = subProps;
    }
 
-   public void setConnection( Connection connection )
-   {
-      this.connection = connection;
-   }
-
    public void setEntity( JSONObject entity )
    {
       this.entity = entity;
@@ -470,11 +426,6 @@ public class EntityExportHelper extends AbstractExportHelper
    public void setClassName( String className )
    {
       this.className = className;
-   }
-
-   public void setModule( ModuleSPI module )
-   {
-      this.module = module;
    }
 
    public void setTables( Map<String, Set<String>> tables )

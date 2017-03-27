@@ -46,7 +46,7 @@ public interface EntityExportJob extends Job, TransientComposite
       private final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
 
       @Service
-      private EntityExportService entityExportService;
+      EntityExportService entityExportService;
 
       @Structure
       ModuleSPI moduleSPI;
