@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.qi4j.api.composite.Composite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +40,13 @@ public abstract class AbstractExportHelper
 
    protected abstract String tableName();
 
-   protected void createSubPropertyTableIfNotExists() throws SQLException
+   protected void createSubPropertyTableIfNotExists( String tableName ) throws SQLException
    {
-      if ( tables.get( tableName() ) == null )
+      if ( tables.get( tableName ) == null )
       {
 
          String subPropertyTable = "CREATE TABLE " +
-                 escapeSqlColumnOrTable( tableName() ) +
+                 escapeSqlColumnOrTable( tableName ) +
                  " (" +
                  LINE_SEPARATOR +
                  " " +
@@ -71,7 +70,7 @@ public abstract class AbstractExportHelper
 
          statement.executeUpdate( subPropertyTable );
 
-         tables.put( tableName(), columns );
+         tables.put( tableName, columns );
       }
    }
 
@@ -181,6 +180,8 @@ public abstract class AbstractExportHelper
             statement.executeUpdate( collectionTable.toString() );
          }
 
+         logger.info( collectionTable.toString() );
+
          tables.put( tableName, columns );
       }
 
@@ -266,6 +267,8 @@ public abstract class AbstractExportHelper
          }
 
          logger.info( manyAssoc.toString() );
+
+         logger.info( manyAssoc.toString() );
       }
 
    }
@@ -287,10 +290,16 @@ public abstract class AbstractExportHelper
                  " " +
                  detectSqlType( type );
 
+         logger.info( alterTable );
+
          statement.addBatch( alterTable );
 
          if ( ValueComposite.class.isAssignableFrom( type ) )
          {
+
+            final String reference = toSnackCaseFromCamelCase( type.getSimpleName() );
+
+            createSubPropertyTableIfNotExists( reference );
 
             final String alterTableConstraint = "ALTER TABLE " +
                     escapeSqlColumnOrTable( tableName() ) +
@@ -298,8 +307,11 @@ public abstract class AbstractExportHelper
                     "ADD FOREIGN KEY (" +
                     escapeSqlColumnOrTable( name ) +
                     ") REFERENCES " +
-                    escapeSqlColumnOrTable( toSnackCaseFromCamelCase( type.getSimpleName() ) ) +
+                    escapeSqlColumnOrTable( reference ) +
                     "(" + escapeSqlColumnOrTable( "id" ) + ")";
+
+            logger.info( alterTableConstraint );
+
             statement.addBatch( alterTableConstraint );
          }
       }

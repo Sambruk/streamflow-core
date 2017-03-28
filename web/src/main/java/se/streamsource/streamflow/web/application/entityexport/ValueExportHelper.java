@@ -5,12 +5,14 @@ import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.property.PropertyDescriptor;
+import se.streamsource.streamflow.api.administration.filter.ActionValue;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +34,7 @@ public class ValueExportHelper extends AbstractExportHelper
 
       List<PropertyDescriptor> properties = new ArrayList<>( module.valueDescriptor( value.type().getName() ).state().properties() );
 
-      createSubPropertyTableIfNotExists();
+      createSubPropertyTableIfNotExists( tableName() );
 
       final String query = mainInsert( properties );
 
@@ -203,7 +205,13 @@ public class ValueExportHelper extends AbstractExportHelper
             }
          }
 
-         statement.executeBatch();
+         try
+         {
+            statement.executeBatch();
+         } catch ( SQLException e )
+         {
+            logger.error( "" );
+         }
 
       }
 
@@ -244,6 +252,9 @@ public class ValueExportHelper extends AbstractExportHelper
       if ( FieldValue.class.isAssignableFrom( value.type() ) )
       {
          return toSnackCaseFromCamelCase( FieldValue.class.getSimpleName() );
+      } else if ( ActionValue.class.isAssignableFrom( value.type() ) )
+      {
+         return toSnackCaseFromCamelCase( ActionValue.class.getSimpleName() );
       }
 
       return toSnackCaseFromCamelCase( value.type().getSimpleName() );
