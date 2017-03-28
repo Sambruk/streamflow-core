@@ -9,12 +9,11 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.structure.ModuleSPI;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -76,8 +75,9 @@ public class EntityExportHelper extends AbstractExportHelper
             statement.executeUpdate();
          }
 
-         connection.commit();
       }
+
+      connection.commit();
 
       return tables;
 
@@ -162,44 +162,55 @@ public class EntityExportHelper extends AbstractExportHelper
 
       List<SingletonMap> subProperties = new ArrayList<>();
       final Set<String> keys = subProps.keySet();
-      for ( String key : keys )
+
+      try ( final Statement statement = connection.createStatement() )
       {
-
-         final Object value = subProps.get( key );
-
-         if ( value instanceof Collection || value instanceof Map )
+         for ( String key : keys )
          {
 
-            if ( !( value instanceof Map ) )
+            final Object value = subProps.get( key );
+
+            if ( value instanceof Collection || value instanceof Map )
             {
-               final Object first = Iterables.first( ( Iterable<?> ) value );
-               if ( first instanceof ValueComposite )
+
+               if ( !( value instanceof Map ) )
                {
-                  for ( Object o : ( Collection<?> ) value )
+                  final Object first = Iterables.first( ( Iterable<?> ) value );
+                  if ( first instanceof ValueComposite )
                   {
-                     processValueComposite( ( ValueComposite ) o );
+
+                     List<SingletonMap> collectionOfValues = new ArrayList<>();
+                     for ( Object o : ( Collection<?> ) value )
+                     {
+                        collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
+                     }
+                  } else
+                  {
+                     processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
                   }
                } else
                {
-                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
+                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) )  );
                }
-            } else
+
+            } else if ( value instanceof ValueComposite )
             {
-               processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) )  );
+
+               query
+                       .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
+                       .append( "=?," );
+
+               final ValueComposite valueComposite = ( ValueComposite ) value;
+
+               subProperties.add( processValueComposite( valueComposite ) );
+
+               addColumn( toSnackCaseFromCamelCase( key ), valueComposite.type(), statement );
+
             }
 
-         } else if ( value instanceof ValueComposite )
-         {
-
-            query
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
-                    .append( "=?," )
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key + ValueExportHelper.COLUMN_DESCRIPTION_SUFFIX ) ) )
-                    .append( "=?," );
-
-            subProperties.add( processValueComposite( ( ValueComposite ) value ) );
          }
 
+         statement.executeBatch();
       }
 
       return subProperties;
@@ -362,7 +373,6 @@ public class EntityExportHelper extends AbstractExportHelper
       for ( SingletonMap subProperty : subProperties )
       {
          statement.setInt( i++, ( Integer ) subProperty.getKey() );
-         statement.setString( i++, subProperty.getValue().toString() );
       }
 
       statement.setString( i, identity );

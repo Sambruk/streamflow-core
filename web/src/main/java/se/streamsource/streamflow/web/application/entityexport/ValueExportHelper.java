@@ -1,21 +1,18 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.collections.map.SingletonMap;
-import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.property.PropertyDescriptor;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,29 +148,39 @@ public class ValueExportHelper extends AbstractExportHelper
               .append( " (" );
 
       int i = 0;
-      for ( PropertyDescriptor property : properties )
+      try ( final Statement statement = connection.createStatement() )
       {
-         if ( property.type() instanceof Class )
+         boolean columnAdded = false;
+         for ( PropertyDescriptor property : properties )
          {
-            final Object val = value.state().getProperty( property.qualifiedName() ).get();
-            if ( val != null )
+            if ( property.type() instanceof Class )
             {
-               if ( val instanceof String && ( ( String ) val ).isEmpty() )
+               final Object val = value.state().getProperty( property.qualifiedName() ).get();
+               if ( val != null )
                {
-                  continue;
+                  if ( val instanceof String && ( ( String ) val ).isEmpty() )
+                  {
+                     continue;
+                  }
+
+                  final String name = toSnackCaseFromCamelCase( property.qualifiedName().name() );
+
+                  columnAdded |= addColumn( name, (Class<?>) property.type(), statement );
+
+                  query
+                          .append( escapeSqlColumnOrTable( name ) )
+                          .append( "," );
+                  i++;
                }
-
-               final String name = toSnackCaseFromCamelCase( property.qualifiedName().name() );
-
-               addColumn( name, (Class<?>) property.type() );
-
-               query
-                       .append( escapeSqlColumnOrTable( name ) )
-                       .append( "," );
-               i++;
             }
          }
+
+         if ( columnAdded )
+         {
+            statement.executeBatch();
+         }
       }
+
 
       query.deleteCharAt( query.length() - 1 )
               .append( ") VALUES (" );
@@ -203,6 +210,12 @@ public class ValueExportHelper extends AbstractExportHelper
    @Override
    protected String tableName()
    {
+      //exclusions
+      if ( FieldValue.class.isAssignableFrom( value.type() ) )
+      {
+         return toSnackCaseFromCamelCase( FieldValue.class.getSimpleName() );
+      }
+
       return toSnackCaseFromCamelCase( value.type().getSimpleName() );
    }
 

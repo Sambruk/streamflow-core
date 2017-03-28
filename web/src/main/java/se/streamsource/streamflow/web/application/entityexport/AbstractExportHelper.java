@@ -11,8 +11,8 @@ import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.api.administration.form.FieldValue;
 
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,7 +59,7 @@ public abstract class AbstractExportHelper
                  .append( " " )
                  .append( detectSqlType( Integer.class ) )
                  .append( " NOT NULL " )
-                 .append( dbVendor == DbVendor.mysql ? "AUTO_INCREMENT," : " indentity(1,1)," )
+                 .append( dbVendor == DbVendor.mysql ? "AUTO_INCREMENT," : "identity(1,1)," )
                  .append( LINE_SEPARATOR )
                  .append( " PRIMARY KEY (" )
                  .append( escapeSqlColumnOrTable( "id" ) )
@@ -279,26 +279,52 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected void addColumn( String name, Class<?> type )
+   protected boolean addColumn( String name, Class<?> type, Statement statement ) throws SQLException
    {
-
       final Set<String> columns = tables.get( tableName() );
 
       assert columns != null;
 
-      if ( columns.add( name ) )
+      final boolean columnAdded = columns.add( name );
+      if ( columnAdded )
       {
-         StringBuilder alterTable = new StringBuilder();
+         final String alterTable = "ALTER TABLE " +
+                 escapeSqlColumnOrTable( tableName() ) +
+                 LINE_SEPARATOR +
+                 "ADD " +
+                 escapeSqlColumnOrTable( name ) +
+                 " " +
+                 detectSqlType( type );
 
-         alterTable.append( "ALTER TABLE " )
-                 .append( escapeSqlColumnOrTable( name ) )
-                 .append( LINE_SEPARATOR )
+         statement.addBatch( alterTable );
+
+         if ( ValueComposite.class.isAssignableFrom( type ) )
+         {
+
+            final String typeSimpleName;
+
+            //exclusions
+            if ( FieldValue.class.isAssignableFrom( type ) )
+            {
+               typeSimpleName = FieldValue.class.getSimpleName();
+            } else
+            {
+               typeSimpleName = type.getSimpleName();
+            }
+
+            final String alterTableConstraint = "ALTER TABLE " +
+                    escapeSqlColumnOrTable( tableName() ) +
+                    LINE_SEPARATOR +
+                    "ADD FOREIGN KEY (" +
+                    escapeSqlColumnOrTable( name ) +
+                    ") REFERENCES " +
+                    escapeSqlColumnOrTable( toSnackCaseFromCamelCase( typeSimpleName ) ) +
+                    "(" + escapeSqlColumnOrTable( "id" ) + ")";
+            statement.addBatch( alterTableConstraint );
+         }
       }
 
-
-
-
-
+      return columnAdded;
    }
 
    void setSimpleType( final PreparedStatement statement,
@@ -443,7 +469,8 @@ public abstract class AbstractExportHelper
       if ( Boolean.class.equals( type ) )
       {
          return dbVendor == DbVendor.mssql ? "BIT" : "BIT(1)";
-      } else if ( Integer.class.equals( type ) )
+      } else if ( Integer.class.equals( type )
+              || ValueComposite.class.isAssignableFrom( type ) )
       {
          return dbVendor == DbVendor.mssql ? "INT" : "INT(11)";
       } else if ( Long.class.equals( type ) )
@@ -463,6 +490,9 @@ public abstract class AbstractExportHelper
               || type.equals( DateTime.class ) )
       {
          return stringSqlType( Integer.MAX_VALUE );
+      } else if ( EntityReference.class.equals( type ) )
+      {
+         return stringSqlType( 255 );
       } else
       {
          throw new IllegalArgumentException();
