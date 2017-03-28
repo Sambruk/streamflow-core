@@ -46,32 +46,30 @@ public abstract class AbstractExportHelper
       if ( tables.get( tableName() ) == null )
       {
 
-         final StringBuilder subPropertyTable = new StringBuilder();
+         String subPropertyTable = "CREATE TABLE " +
+                 escapeSqlColumnOrTable( tableName() ) +
+                 " (" +
+                 LINE_SEPARATOR +
+                 " " +
+                 escapeSqlColumnOrTable( "id" ) +
+                 " " +
+                 detectSqlType( Integer.class ) +
+                 " NOT NULL " +
+                 ( dbVendor == DbVendor.mysql ? "AUTO_INCREMENT," : "identity(1,1)," ) +
+                 LINE_SEPARATOR +
+                 " PRIMARY KEY (" +
+                 escapeSqlColumnOrTable( "id" ) +
+                 ")" +
+                 LINE_SEPARATOR +
+                 ");";
 
          final HashSet<String> columns = new HashSet<>();
 
-         subPropertyTable
-                 .append( "CREATE TABLE " )
-                 .append( escapeSqlColumnOrTable( tableName() ) )
-                 .append( " (" )
-                 .append( LINE_SEPARATOR )
-                 .append( " " )
-                 .append( escapeSqlColumnOrTable( "id" ) )
-                 .append( " " )
-                 .append( detectSqlType( Integer.class ) )
-                 .append( " NOT NULL " )
-                 .append( dbVendor == DbVendor.mysql ? "AUTO_INCREMENT," : "identity(1,1)," )
-                 .append( LINE_SEPARATOR )
-                 .append( " PRIMARY KEY (" )
-                 .append( escapeSqlColumnOrTable( "id" ) )
-                 .append( ")" )
-                 .append( LINE_SEPARATOR )
-                 .append( ");" );
          columns.add( "id" );
 
          final Statement statement = connection.createStatement();
 
-         statement.executeUpdate( subPropertyTable.toString() );
+         statement.executeUpdate( subPropertyTable );
 
          tables.put( tableName(), columns );
       }
@@ -381,7 +379,7 @@ public abstract class AbstractExportHelper
               || Date.class.equals( value.getClass() )
               || DateTime.class.equals( value.getClass() ) )
       {
-         statement.setString( i, ( String ) value );
+         statement.setString( i, value.toString() );
       } else if ( EntityReference.class.equals( value.getClass() ) )
       {
          statement.setString( i, ( ( EntityReference ) value ).identity() );

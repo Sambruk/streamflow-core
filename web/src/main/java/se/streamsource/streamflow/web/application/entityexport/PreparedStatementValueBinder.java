@@ -15,6 +15,7 @@ abstract class PreparedStatementValueBinder<T>
    PreparedStatementValueBinder( T value, String sqlType )
    {
       this.value = value;
+      this.sqlType = sqlType;
    }
 
    abstract void bind( PreparedStatement preparedStatement, int index ) throws SQLException;

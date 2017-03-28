@@ -63,7 +63,7 @@ public class ValueExportHelper extends AbstractExportHelper
          if ( isValue )
          {
             List<SingletonMap> collectionOfValues = new ArrayList<>();
-            for ( Object o : ( Collection<?> ) value )
+            for ( Object o : ( Collection<?> ) value.state().getProperty( qualifiedName ).get() )
             {
                collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
             }
@@ -138,7 +138,7 @@ public class ValueExportHelper extends AbstractExportHelper
          } else if ( type instanceof ParameterizedType )
          {
             final ParameterizedType parameterizedType = ( ParameterizedType ) type;
-            final Type ownerType = parameterizedType.getOwnerType();
+            final Type ownerType = parameterizedType.getRawType();
             if ( ownerType.equals( Map.class ) )
             {
                final Map val = ( Map ) value.state().getProperty( property.qualifiedName() ).get();
@@ -207,6 +207,10 @@ public class ValueExportHelper extends AbstractExportHelper
 
       }
 
+      if ( i == 0 )
+      {
+         return "INSERT INTO " + escapeSqlColumnOrTable( tableName() ) + " DEFAULT VALUES";
+      }
 
       query.deleteCharAt( query.length() - 1 )
               .append( ") VALUES (" );

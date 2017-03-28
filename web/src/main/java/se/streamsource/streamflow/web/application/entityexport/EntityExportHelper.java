@@ -100,6 +100,9 @@ public class EntityExportHelper extends AbstractExportHelper
                if ( i == 0 )
                {
                   associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
+               } else
+               {
+                  associationTable = null;
                }
                i++;
             }
