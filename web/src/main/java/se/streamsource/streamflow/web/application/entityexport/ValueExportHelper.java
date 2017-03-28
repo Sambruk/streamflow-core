@@ -205,13 +205,7 @@ public class ValueExportHelper extends AbstractExportHelper
             }
          }
 
-         try
-         {
-            statement.executeBatch();
-         } catch ( SQLException e )
-         {
-            logger.error( "" );
-         }
+         statement.executeBatch();
 
       }
 
