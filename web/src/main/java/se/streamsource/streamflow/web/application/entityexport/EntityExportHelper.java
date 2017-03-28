@@ -87,47 +87,68 @@ public class EntityExportHelper extends AbstractExportHelper
    {
       for ( ManyAssociationType existsManyAssociation : existsManyAssociations )
       {
-         String tableName = tableName() + "_" + toSnackCaseFromCamelCase( existsManyAssociation.qualifiedName().name() ) + "_cross_ref";
 
-         createManyAssocTableIfNotExists( tableName, tables, existsManyAssociation );
+         final Class<?> clazz = Class.forName( existsManyAssociation.type() );
+
+         String associationTable = null;
+
+         int i = 0;
+         for ( EntityInfo info : EntityInfo.values() )
+         {
+            if ( clazz.isAssignableFrom( info.getEntityClass() ) )
+            {
+               if ( i == 0 )
+               {
+                  associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
+               }
+               i++;
+            }
+         }
+
+         final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( existsManyAssociation.qualifiedName().name() ) + "_cross_ref";
+
+         createCrossRefTableIfNotExists( tableName, tables, associationTable, stringSqlType( 255 ), stringSqlType( 255 ) );
 
          final String name = existsManyAssociation.qualifiedName().name();
          final JSONArray array = entity.getJSONArray( name );
-         for ( int i = 0; ; i++ )
+
+         final String query = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
+                 " (owner_id,link_id) VALUES (?,?)";
+
+         try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
          {
-            final JSONObject arrEl = array.optJSONObject( i );
-            if ( arrEl == null )
+            for ( int j = 0; ; j++ )
             {
-               break;
-            }
-
-            final Class<?> assocClassName = Class.forName( existsManyAssociation.type() );
-            int j = 0;
-            String associationClass = null;
-            for ( EntityInfo entityInfo : EntityInfo.values() )
-            {
-               if ( assocClassName.isAssignableFrom( entityInfo.getEntityClass() ) )
+               final JSONObject arrEl = array.optJSONObject( j );
+               if ( arrEl == null )
                {
-                  associationClass = entityInfo.getEntityClass().getName();
-                  j++;
+                  break;
                }
-            }
-            if ( j == 1 )
-            {
-               checkEntityExists( associationClass, arrEl.getString( "identity" ) );
-            }
 
-            final String query = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
-                    " (owner_id,link_id) VALUES (?,?)";
+               final Class<?> assocClassName = Class.forName( existsManyAssociation.type() );
+               int k = 0;
+               String associationClass = null;
+               for ( EntityInfo entityInfo : EntityInfo.values() )
+               {
+                  if ( assocClassName.isAssignableFrom( entityInfo.getEntityClass() ) )
+                  {
+                     associationClass = entityInfo.getEntityClass().getName();
+                     k++;
+                  }
+               }
+               if ( k == 1 )
+               {
+                  checkEntityExists( associationClass, arrEl.getString( "identity" ) );
+               }
 
-            try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
-            {
                preparedStatement.setString( 1, entity.getString( "identity" ) );
                preparedStatement.setString( 2, arrEl.getString( "identity" ) );
-               preparedStatement.executeUpdate();
+               preparedStatement.addBatch();
             }
 
+            preparedStatement.executeBatch();
          }
+
 
       }
 
@@ -184,13 +205,36 @@ public class EntityExportHelper extends AbstractExportHelper
                      {
                         collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
                      }
+
+                     final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( key ) + "_cross_ref";
+
+                     final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
+
+                     createCrossRefTableIfNotExists( tableName, tables, associationTable, stringSqlType( 255 ), detectSqlType( Integer.class ) );
+
+                     final String insertSubProperties = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
+                             " (owner_id,link_id) VALUES (?,?)";
+
+                     try ( final PreparedStatement preparedStatement = connection.prepareStatement( insertSubProperties ) )
+                     {
+
+                        for ( SingletonMap val : collectionOfValues )
+                        {
+                           preparedStatement.setString( 1, entity.getString( "identity" ) );
+                           preparedStatement.setInt( 2, ( Integer ) val.getKey() );
+                           preparedStatement.addBatch();
+                        }
+
+                        preparedStatement.executeBatch();
+                     }
+
                   } else
                   {
                      processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
                   }
                } else
                {
-                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) )  );
+                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
                }
 
             } else if ( value instanceof ValueComposite )
@@ -204,7 +248,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
                subProperties.add( processValueComposite( valueComposite ) );
 
-               addColumn( toSnackCaseFromCamelCase( key ), valueComposite.type(), statement );
+               addColumn( toSnackCaseFromCamelCase( key ), detectType( valueComposite ), statement );
 
             }
 

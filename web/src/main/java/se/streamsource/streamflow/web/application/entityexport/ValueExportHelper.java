@@ -2,6 +2,7 @@ package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.collections.map.SingletonMap;
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.property.PropertyDescriptor;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
@@ -61,9 +62,32 @@ public class ValueExportHelper extends AbstractExportHelper
 
          if ( isValue )
          {
+            List<SingletonMap> collectionOfValues = new ArrayList<>();
             for ( Object o : ( Collection<?> ) value )
             {
-               processValueComposite( ( ValueComposite ) o );
+               collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
+            }
+
+            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( qualifiedName.name() ) + "_cross_ref";
+
+            final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
+
+            createCrossRefTableIfNotExists( tableName, tables, associationTable, detectSqlType( Integer.class ), detectSqlType( Integer.class ) );
+
+            final String insertSubProperties = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
+                    " (owner_id,link_id) VALUES (?,?)";
+
+            try ( final PreparedStatement preparedStatement = connection.prepareStatement( insertSubProperties ) )
+            {
+
+               for ( SingletonMap val : collectionOfValues )
+               {
+                  preparedStatement.setInt( 1, id );
+                  preparedStatement.setInt( 2, ( Integer ) val.getKey() );
+                  preparedStatement.addBatch();
+               }
+
+               preparedStatement.executeBatch();
             }
          } else
          {
@@ -97,7 +121,12 @@ public class ValueExportHelper extends AbstractExportHelper
                if ( ValueComposite.class.isAssignableFrom( val.getClass() )
                        && EntityInfo.from( val.getClass() ) == EntityInfo.UNKNOWN )
                {
-                  final SingletonMap singletonMap = processValueComposite( ( ValueComposite ) val );
+                  final ValueComposite valueComposite = ( ValueComposite ) val;
+
+                  final SingletonMap singletonMap = processValueComposite( valueComposite );
+
+                  addColumn( toSnackCaseFromCamelCase( property.qualifiedName().name() ), detectType( valueComposite ), statement );
+
                   statement.setInt( i++, ( Integer ) singletonMap.getKey() );
 
                } else
@@ -150,7 +179,6 @@ public class ValueExportHelper extends AbstractExportHelper
       int i = 0;
       try ( final Statement statement = connection.createStatement() )
       {
-         boolean columnAdded = false;
          for ( PropertyDescriptor property : properties )
          {
             if ( property.type() instanceof Class )
@@ -165,7 +193,7 @@ public class ValueExportHelper extends AbstractExportHelper
 
                   final String name = toSnackCaseFromCamelCase( property.qualifiedName().name() );
 
-                  columnAdded |= addColumn( name, (Class<?>) property.type(), statement );
+                  addColumn( name, (Class<?>) property.type(), statement );
 
                   query
                           .append( escapeSqlColumnOrTable( name ) )
@@ -175,10 +203,8 @@ public class ValueExportHelper extends AbstractExportHelper
             }
          }
 
-         if ( columnAdded )
-         {
-            statement.executeBatch();
-         }
+         statement.executeBatch();
+
       }
 
 

@@ -5,6 +5,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.qi4j.api.composite.Composite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.entity.association.ManyAssociationType;
@@ -187,23 +188,15 @@ public abstract class AbstractExportHelper
 
    }
 
-   void createManyAssocTableIfNotExists( String tableName, Map<String, Set<String>> tableColumns, ManyAssociationType manyAssociation ) throws ClassNotFoundException, SQLException
+   void createCrossRefTableIfNotExists( String tableName,
+                                        Map<String, Set<String>> tableColumns,
+                                        String associationTable,
+                                        String ownerType,
+                                        String linkType ) throws ClassNotFoundException, SQLException
    {
+
       if ( tableColumns.get( tableName ) == null )
       {
-         String associationTable = null;
-
-         final Class<?> clazz = Class.forName( manyAssociation.type() );
-
-         int i = 0;
-         for ( EntityInfo info : EntityInfo.values() )
-         {
-            if ( clazz.isAssignableFrom( info.getEntityClass() ) )
-            {
-               associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
-               i++;
-            }
-         }
 
          final StringBuilder manyAssoc = new StringBuilder();
 
@@ -215,13 +208,13 @@ public abstract class AbstractExportHelper
                  .append( " " )
                  .append( escapeSqlColumnOrTable( "owner_id" ) )
                  .append( " " )
-                 .append( stringSqlType( 255 ) )
+                 .append( ownerType )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR )
                  .append( " " )
                  .append( escapeSqlColumnOrTable( "link_id" ) )
                  .append( " " )
-                 .append( stringSqlType( 255 ) )
+                 .append( linkType )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR );
 
@@ -240,11 +233,11 @@ public abstract class AbstractExportHelper
                  .append( ") REFERENCES " )
                  .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " (" )
-                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( stringSqlType( 255 ).equals( ownerType ) ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
                  .append( ")," )
                  .append( LINE_SEPARATOR );
 
-         if ( i == 1 )
+         if ( associationTable != null )
          {
             final int hashCodeLink = ( tableName() + tableName + "link" ).hashCode();
             manyAssoc
@@ -255,7 +248,7 @@ public abstract class AbstractExportHelper
                     .append( ") REFERENCES " )
                     .append( escapeSqlColumnOrTable( associationTable ) )
                     .append( " (" )
-                    .append( escapeSqlColumnOrTable( "identity" ) )
+                    .append( stringSqlType( 255 ).equals( linkType ) ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
                     .append( ")," )
                     .append( LINE_SEPARATOR );
          }
@@ -301,30 +294,34 @@ public abstract class AbstractExportHelper
          if ( ValueComposite.class.isAssignableFrom( type ) )
          {
 
-            final String typeSimpleName;
-
-            //exclusions
-            if ( FieldValue.class.isAssignableFrom( type ) )
-            {
-               typeSimpleName = FieldValue.class.getSimpleName();
-            } else
-            {
-               typeSimpleName = type.getSimpleName();
-            }
-
             final String alterTableConstraint = "ALTER TABLE " +
                     escapeSqlColumnOrTable( tableName() ) +
                     LINE_SEPARATOR +
                     "ADD FOREIGN KEY (" +
                     escapeSqlColumnOrTable( name ) +
                     ") REFERENCES " +
-                    escapeSqlColumnOrTable( toSnackCaseFromCamelCase( typeSimpleName ) ) +
+                    escapeSqlColumnOrTable( toSnackCaseFromCamelCase( type.getSimpleName() ) ) +
                     "(" + escapeSqlColumnOrTable( "id" ) + ")";
             statement.addBatch( alterTableConstraint );
          }
       }
 
       return columnAdded;
+   }
+
+
+   protected Class<?> detectType( ValueComposite valueComposite )
+   {
+
+      final Class<? extends Composite> type = valueComposite.type();
+
+      //exclusions
+      if ( FieldValue.class.isAssignableFrom( type ) )
+      {
+         return FieldValue.class;
+      }
+
+      return type;
    }
 
    void setSimpleType( final PreparedStatement statement,
