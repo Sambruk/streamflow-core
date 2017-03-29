@@ -42,7 +42,7 @@ public abstract class AbstractExportHelper
 
    protected void createSubPropertyTableIfNotExists( String tableName ) throws SQLException
    {
-      if ( tables.get( tableName ) == null )
+      if ( !tables.containsKey( tableName ) )
       {
 
          String subPropertyTable = "CREATE TABLE " +
@@ -118,7 +118,7 @@ public abstract class AbstractExportHelper
    void createCollectionTableIfNotExist( String tableName, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException
    {
 
-      if ( tables.get( tableName ) == null )
+      if ( !tables.containsKey( tableName ) )
       {
          final StringBuilder collectionTable = new StringBuilder();
 
@@ -160,7 +160,7 @@ public abstract class AbstractExportHelper
                  .append( " (" )
                  .append( valueBinder.getSqlType().equals( stringSqlType( 255 ) )
                          ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
-                 .append( ")," )
+                 .append( ") ON DELETE CASCADE," )
                  .append( LINE_SEPARATOR );
 
          collectionTable
@@ -233,7 +233,7 @@ public abstract class AbstractExportHelper
                  .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " (" )
                  .append( stringSqlType( 255 ).equals( ownerType ) ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
-                 .append( ")," )
+                 .append( ") ON DELETE CASCADE," )
                  .append( LINE_SEPARATOR );
 
          if ( associationTable != null )

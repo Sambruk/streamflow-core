@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.runtime.types.CollectionType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
@@ -49,7 +50,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
          if ( isExistRS.next() )
          {
-            deleteEntityAndRelations( isExistRS.getString( "identity" ), tables );
+            deleteEntityAndRelations( isExistRS.getString( "identity" ) );
          }
       }
 
@@ -322,70 +323,78 @@ public class EntityExportHelper extends AbstractExportHelper
 
    }
 
-   private void deleteEntityAndRelations( String identity, Map<String, Set<String>> tableColumns ) throws SQLException, ClassNotFoundException, JSONException
+   private void deleteEntityAndRelations( String identity ) throws SQLException, ClassNotFoundException, JSONException
    {
-      for ( PropertyType property : allProperties )
-      {
-         deleteSubProperty( property.qualifiedName().type() );
-      }
+//      for ( PropertyType property : allProperties )
+//      {
+//
+//         if ( property.type().isValue() )
+//         {
+//            deleteSubProperty( property.propertyType().name(), identity );
+//         } else if ( property.type() instanceof CollectionType )
+//         {
+//            final CollectionType type = ( CollectionType ) property.type();
+//
+//            deleteSubProperty( property.propertyType().name(), identity );
+//         }
+//      }
+//
+//      try
+//      {
+//
+//      } catch ( SQLException  )
+//
+//      final String query = "DELETE FROM " + escapeSqlColumnOrTable( tableName() ) +
+//              " WHERE " + escapeSqlColumnOrTable( "identity" ) + " = ?";
+//
+//      try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
+//      {
+//         preparedStatement.setString( 1, identity );
+//         preparedStatement.executeUpdate();
+//      }
 
-      //Delete many associations
-      for ( ManyAssociationType manyAssociation : allManyAssociations )
-      {
-         String tableName = tableName() + "_" + toSnackCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
 
-         if ( tableColumns.get( tableName ) != null )
-         {
-            final String delete = "DELETE FROM " + escapeSqlColumnOrTable( tableName ) + " WHERE owner_id = ?";
-            try ( final PreparedStatement preparedStatement = connection.prepareStatement( delete ) )
-            {
-               preparedStatement.setString( 1, identity );
-               preparedStatement.executeUpdate();
-            }
-         }
-      }
-
-      //Set main entity all columns to NULL except identity
-
-      final StringBuilder queryNullUpdate = new StringBuilder( "UPDATE " )
-              .append( tableName() )
-              .append( " SET " );
-
-      final Set<String> columns = tableColumns.get( tableName() );
-
-      for ( PropertyType property : allProperties )
-      {
-         final String name = property.qualifiedName().name();
-         final String columnName = toSnackCaseFromCamelCase( name );
-         if ( !name.equals( "identity" ) && columns.contains( columnName ) )
-         {
-            queryNullUpdate.append( escapeSqlColumnOrTable( columnName ) )
-                    .append( "=NULL," );
-         }
-      }
-
-      for ( AssociationType association : allAssociations )
-      {
-         final String name = association.qualifiedName().name();
-         queryNullUpdate.append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
-                 .append( "=NULL," );
-      }
-
-      final String query = queryNullUpdate
-              .deleteCharAt( queryNullUpdate.length() - 1 )
-              .append( " WHERE " )
-              .append( escapeSqlColumnOrTable( "identity" ) )
-              .append( " = ?" )
-              .toString();
-
-      try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
-      {
-         preparedStatement.setString( 1, identity );
-         preparedStatement.executeUpdate();
-      }
+//      //Set main entity all columns to NULL except identity
+//
+//      final StringBuilder queryNullUpdate = new StringBuilder( "UPDATE " )
+//              .append( tableName() )
+//              .append( " SET " );
+//
+//      final Set<String> columns = tables.get( tableName() );
+//
+//      for ( PropertyType property : allProperties )
+//      {
+//         final String name = property.qualifiedName().name();
+//         final String columnName = toSnackCaseFromCamelCase( name );
+//         if ( !name.equals( "identity" ) && columns.contains( columnName ) )
+//         {
+//            queryNullUpdate.append( escapeSqlColumnOrTable( columnName ) )
+//                    .append( "=NULL," );
+//         }
+//      }
+//
+//      for ( AssociationType association : allAssociations )
+//      {
+//         final String name = association.qualifiedName().name();
+//         queryNullUpdate.append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
+//                 .append( "=NULL," );
+//      }
+//
+//      final String query = queryNullUpdate
+//              .deleteCharAt( queryNullUpdate.length() - 1 )
+//              .append( " WHERE " )
+//              .append( escapeSqlColumnOrTable( "identity" ) )
+//              .append( " = ?" )
+//              .toString();
+//
+//      try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
+//      {
+//         preparedStatement.setString( 1, identity );
+//         preparedStatement.executeUpdate();
+//      }
    }
 
-   private void deleteSubProperty( String type )
+   private void deleteSubProperty( String type, String identity )
    {
       // TODO: 23.03.17
    }
