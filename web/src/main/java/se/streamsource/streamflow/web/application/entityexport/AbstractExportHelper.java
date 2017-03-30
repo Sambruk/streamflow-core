@@ -160,7 +160,7 @@ public abstract class AbstractExportHelper
                  .append( " (" )
                  .append( valueBinder.getSqlType().equals( stringSqlType( 255 ) )
                          ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
-                 .append( ")," )
+                 .append( valueBinder.getSqlType().equals( detectSqlType( Integer.class ) ) ? ") ON DELETE CASCADE," : ")," )
                  .append( LINE_SEPARATOR );
 
          collectionTable
@@ -233,7 +233,7 @@ public abstract class AbstractExportHelper
                  .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " (" )
                  .append( stringSqlType( 255 ).equals( ownerType ) ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
-                 .append( ")," )
+                 .append( ownerType.equals( detectSqlType( Integer.class ) ) ? ") ON DELETE CASCADE," : ")," )
                  .append( LINE_SEPARATOR );
 
          if ( associationTable != null )
@@ -268,7 +268,44 @@ public abstract class AbstractExportHelper
 
          logger.info( manyAssoc.toString() );
 
-         logger.info( manyAssoc.toString() );
+         if ( associationTable != null && linkType.equals( detectSqlType( Integer.class ) ) )
+         {
+
+            if ( dbVendor == DbVendor.mssql )
+            {
+               final String trigger = "CREATE TRIGGER trg_" + tableName + LINE_SEPARATOR +
+                       "  ON " + escapeSqlColumnOrTable( tableName ) + LINE_SEPARATOR +
+                       "  AFTER DELETE AS" + LINE_SEPARATOR +
+                       "  BEGIN" + LINE_SEPARATOR +
+                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)\n" +
+                       "  END";
+
+               try ( final Statement statement = connection.createStatement() )
+               {
+                  statement.executeUpdate( trigger );
+               }
+
+               logger.info( trigger );
+            } else {
+
+               final String trigger = "CREATE TRIGGER trg_" + tableName + LINE_SEPARATOR +
+                       "  AFTER DELETE " + LINE_SEPARATOR +
+                       "  ON " + escapeSqlColumnOrTable( tableName ) + " FOR EACH ROW"+ LINE_SEPARATOR +
+                       "  BEGIN" + LINE_SEPARATOR +
+                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)\n" +
+                       "  END";
+
+               try ( final Statement statement = connection.createStatement() )
+               {
+                  statement.executeUpdate( trigger );
+               }
+
+               logger.info( trigger );
+
+            }
+
+         }
+
       }
 
    }
