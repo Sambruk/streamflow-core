@@ -331,7 +331,16 @@ public class EntityExportHelper extends AbstractExportHelper
       {
          if ( property.type() instanceof CollectionType )
          {
-            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() ) + "_coll";
+
+            final String tableName;
+            if ( ( ( CollectionType ) property.type() ).collectedType().isValue() )
+            {
+               tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() ) + "_cross_ref";
+            } else
+            {
+               tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() ) + "_coll";
+            }
+
             if ( tables.containsKey( tableName ) )
             {
                final String delete = "DELETE FROM " + escapeSqlColumnOrTable( tableName ) + " WHERE owner_id = ?";
