@@ -154,7 +154,7 @@ public abstract class AbstractExportHelper
                  .append( " CONSTRAINT FK_owner_" )
                  .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
                  .append( " FOREIGN KEY (" )
-                 .append( escapeSqlColumnOrTable( "owner" ) )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
                  .append( ") REFERENCES " )
                  .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " (" )
@@ -223,7 +223,7 @@ public abstract class AbstractExportHelper
 
          tableColumns.put( tableName, columns );
 
-         final int hashCodeOwner = ( tableName() + tableName + "owner" ).hashCode();
+         final int hashCodeOwner = ( tableName() + tableName + "owner_id" ).hashCode();
          manyAssoc
                  .append( " CONSTRAINT FK_owner_" )
                  .append( hashCodeOwner >= 0 ? hashCodeOwner : ( -1 * hashCodeOwner ) )
