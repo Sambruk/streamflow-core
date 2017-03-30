@@ -90,7 +90,7 @@ public abstract class AbstractExportHelper
       String query = "INSERT INTO "
               + escapeSqlColumnOrTable( tableName )
               + " ("
-              + escapeSqlColumnOrTable( "owner" )
+              + escapeSqlColumnOrTable( "owner_id" )
               + "," + escapeSqlColumnOrTable( "property_value" )
               + ( isMap ? "," + escapeSqlColumnOrTable( "property_key" ) : "" )
               + ") VALUES (?,?" + ( isMap ? ",?)" : ")" );
@@ -130,12 +130,12 @@ public abstract class AbstractExportHelper
                  .append( " (" )
                  .append( LINE_SEPARATOR )
                  .append( " " )
-                 .append( escapeSqlColumnOrTable( "owner" ) )
+                 .append( escapeSqlColumnOrTable( "owner_id" ) )
                  .append( " " )
                  .append( valueBinder.getSqlType() )
                  .append( " NOT NULL," )
                  .append( LINE_SEPARATOR );
-         columns.add( "owner" );
+         columns.add( "owner_id" );
 
          if ( isMap )
          {
@@ -160,7 +160,7 @@ public abstract class AbstractExportHelper
                  .append( " (" )
                  .append( valueBinder.getSqlType().equals( stringSqlType( 255 ) )
                          ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
-                 .append( ") ON DELETE CASCADE," )
+                 .append( ")," )
                  .append( LINE_SEPARATOR );
 
          collectionTable
@@ -233,7 +233,7 @@ public abstract class AbstractExportHelper
                  .append( escapeSqlColumnOrTable( tableName() ) )
                  .append( " (" )
                  .append( stringSqlType( 255 ).equals( ownerType ) ? escapeSqlColumnOrTable( "identity" ) : escapeSqlColumnOrTable( "id" ) )
-                 .append( ") ON DELETE CASCADE," )
+                 .append( ")," )
                  .append( LINE_SEPARATOR );
 
          if ( associationTable != null )

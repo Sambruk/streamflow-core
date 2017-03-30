@@ -1,5 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.hadoop.service.Service;
 import org.joda.time.DateTime;
 import org.qi4j.runtime.types.CollectionType;
 import org.qi4j.runtime.types.MapType;
@@ -8,11 +9,14 @@ import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.property.PropertyType;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +36,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
       tableColumns = new HashMap<>();
 
+      List<String> schema = new LinkedList<>();
+
       //main tables
       for ( EntityInfo entityInfo : EntityInfo.values() )
       {
@@ -41,7 +47,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
             entityType = entityDescriptor.entityType();
 
-            createMainTable();
+            schema.add( createMainTable() );
          }
       }
 
@@ -54,16 +60,26 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
             entityType = entityDescriptor.entityType();
 
-            createForeignKeys();
+            createForeignKeys( schema );
 
          }
+      }
+
+
+      try ( final Statement statement = connection.createStatement() )
+      {
+         for ( String command : schema )
+         {
+            statement.addBatch( command );
+         }
+         statement.executeBatch();
       }
 
       return tableColumns;
 
    }
 
-   private void createForeignKeys() throws ClassNotFoundException, SQLException
+   private void createForeignKeys( List<String> schema ) throws ClassNotFoundException, SQLException
    {
       for ( AssociationType association : entityType.associations() )
       {
@@ -103,20 +119,16 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( escapeSqlColumnOrTable( "identity" ) )
                     .append( ");" );
 
-            final Statement statement = connection.createStatement();
-
-            statement.executeUpdate( foreignKey.toString() );
-            statement.close();
-
             logger.info( foreignKey.toString() );
 
+            schema.add( foreignKey.toString() );
          }
 
       }
 
    }
 
-   private void createMainTable() throws ClassNotFoundException, SQLException
+   private String createMainTable() throws ClassNotFoundException, SQLException
    {
       final StringBuilder mainTableCreate = new StringBuilder();
       mainTableCreate.append( "CREATE TABLE " )
@@ -187,12 +199,9 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( ");" )
               .append( LINE_SEPARATOR );
 
-      final Statement statement = connection.createStatement();
-
-      statement.executeUpdate( mainTableCreate.toString() );
-      statement.close();
-
       logger.info( mainTableCreate.toString() );
+
+      return mainTableCreate.toString();
 
    }
 
