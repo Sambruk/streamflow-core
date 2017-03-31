@@ -56,6 +56,11 @@ public class EntityExportHelper extends AbstractExportHelper
          }
       }
 
+      if ( entity.optBoolean( "_removed" ) )
+      {
+         return tables;
+      }
+
       final StringBuilder query = mainUpdate();
 
       final Map<String, String> associations = updateAssociations( query );

@@ -78,6 +78,13 @@ public class EntityStateChangeListener
             for ( EntityState changedState : changedStates )
             {
                if ( !changedState.status().equals( EntityStatus.LOADED ) ) {
+                  if ( changedState.status().equals( EntityStatus.REMOVED ) )
+                  {
+                     final JSONObject object = new JSONObject();
+                     object
+                             .put( "identity", changedState.identity() )
+                             .put( "_removed", true );
+                  }
                   entityExportService.saveToCache( toJSON( changedState ) );
                }
             }
