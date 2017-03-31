@@ -191,7 +191,8 @@ public interface EntityExportService
       @Override
       public String getNextEntity()
       {
-         if ( statisticsCounter == 1 )
+         final Integer loggingStatisticsEntitiesCount = thisConfig.configuration().loggingStatisticsEntitiesCount().get();
+         if ( loggingStatisticsEntitiesCount > 0 && statisticsCounter == 1 )
          {
             statisticsStartExportTime = System.currentTimeMillis();
          }
