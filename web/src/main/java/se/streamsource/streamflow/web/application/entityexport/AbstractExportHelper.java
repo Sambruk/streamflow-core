@@ -21,6 +21,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -277,7 +278,9 @@ public abstract class AbstractExportHelper
                        "  ON " + escapeSqlColumnOrTable( tableName ) + LINE_SEPARATOR +
                        "  AFTER DELETE AS" + LINE_SEPARATOR +
                        "  BEGIN" + LINE_SEPARATOR +
-                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)\n" +
+                       "    IF @@ROWCOUNT = 0" + LINE_SEPARATOR +
+                       "      RETURN" + LINE_SEPARATOR +
+                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)"  + LINE_SEPARATOR +
                        "  END";
 
                try ( final Statement statement = connection.createStatement() )
@@ -288,19 +291,7 @@ public abstract class AbstractExportHelper
                logger.info( trigger );
             } else {
 
-               final String trigger = "CREATE TRIGGER trg_" + tableName + LINE_SEPARATOR +
-                       "  AFTER DELETE " + LINE_SEPARATOR +
-                       "  ON " + escapeSqlColumnOrTable( tableName ) + " FOR EACH ROW"+ LINE_SEPARATOR +
-                       "  BEGIN" + LINE_SEPARATOR +
-                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)\n" +
-                       "  END";
-
-               try ( final Statement statement = connection.createStatement() )
-               {
-                  statement.executeUpdate( trigger );
-               }
-
-               logger.info( trigger );
+               // TODO: 30.03.17
 
             }
 
@@ -310,14 +301,64 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected boolean addColumn( String name, Class<?> type, Statement statement ) throws SQLException
+   protected void createTrigger( Set<String> triggerStatements ) throws SQLException
+   {
+      if ( !triggerStatements.isEmpty() )
+      {
+
+         if ( dbVendor == DbVendor.mssql )
+         {
+            final String triggerName = "trg_" + tableName();
+
+            Set<String> triggerStatementsPersisted = tables.get( triggerName );
+            if ( triggerStatementsPersisted == null )
+            {
+               triggerStatementsPersisted = new LinkedHashSet<>();
+            }
+
+            StringBuilder trigger = new StringBuilder();
+
+            trigger.append( triggerStatementsPersisted.isEmpty() ? "CREATE" : "ALTER" )
+                    .append( " TRIGGER " )
+                    .append( triggerName )
+                    .append( LINE_SEPARATOR )
+                    .append( " ON " )
+                    .append( escapeSqlColumnOrTable( tableName() ) )
+                    .append( LINE_SEPARATOR )
+                    .append( " AFTER UPDATE AS " )
+                    .append( LINE_SEPARATOR )
+                    .append( "BEGIN" )
+                    .append( LINE_SEPARATOR );
+
+            triggerStatementsPersisted.addAll( triggerStatements );
+
+            for ( String statement :triggerStatementsPersisted )
+            {
+               trigger.append( statement )
+                       .append( LINE_SEPARATOR );
+            }
+
+            trigger.append( "END" );
+
+            try ( final Statement statement = connection.createStatement() )
+            {
+               statement.executeUpdate( trigger.toString() );
+            }
+
+            tables.put( triggerName, triggerStatementsPersisted );
+
+         }
+
+      }
+   }
+
+   protected String addColumn( String name, Class<?> type, Statement statement ) throws SQLException
    {
       final Set<String> columns = tables.get( tableName() );
 
       assert columns != null;
 
-      final boolean columnAdded = columns.add( name );
-      if ( columnAdded )
+      if ( columns.add( name ) )
       {
          final String alterTable = "ALTER TABLE " +
                  escapeSqlColumnOrTable( tableName() ) +
@@ -350,10 +391,23 @@ public abstract class AbstractExportHelper
             logger.info( alterTableConstraint );
 
             statement.addBatch( alterTableConstraint );
+
+            if ( dbVendor == DbVendor.mssql )
+            {
+               return "IF UPDATE(" + escapeSqlColumnOrTable( name ) + ")" + LINE_SEPARATOR +
+                       "    BEGIN" + LINE_SEPARATOR +
+                       "      DELETE FROM " + escapeSqlColumnOrTable( reference ) + LINE_SEPARATOR +
+                       "      WHERE id IN (SELECT d." + escapeSqlColumnOrTable( name ) + LINE_SEPARATOR +
+                       "                   FROM deleted d" + LINE_SEPARATOR +
+                       "                     JOIN inserted i ON " + ( columns.contains( "identity" ) ? "d.[identity] = i.[identity]" : "d.[id] = i.[id]" ) + LINE_SEPARATOR +
+                       "                   WHERE d." + escapeSqlColumnOrTable( name ) + " IS NOT NULL AND i." + escapeSqlColumnOrTable( name ) + " IS NULL)" + LINE_SEPARATOR +
+                       "    END";
+            }
+
          }
       }
 
-      return columnAdded;
+      return "";
    }
 
 

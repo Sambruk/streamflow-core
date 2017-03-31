@@ -17,7 +17,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -188,6 +190,8 @@ public class EntityExportHelper extends AbstractExportHelper
       List<SingletonMap> subProperties = new ArrayList<>();
       final Set<String> keys = subProps.keySet();
 
+      Set<String> triggerStatements = new LinkedHashSet<>();
+
       try ( final Statement statement = connection.createStatement() )
       {
          for ( String key : keys )
@@ -252,7 +256,12 @@ public class EntityExportHelper extends AbstractExportHelper
 
                subProperties.add( processValueComposite( valueComposite ) );
 
-               addColumn( toSnackCaseFromCamelCase( key ), detectType( valueComposite ), statement );
+               final String triggerStatement = addColumn( toSnackCaseFromCamelCase( key ), detectType( valueComposite ), statement );
+
+               if ( !triggerStatement.isEmpty() )
+               {
+                  triggerStatements.add( triggerStatement );
+               }
 
             }
 
@@ -260,6 +269,8 @@ public class EntityExportHelper extends AbstractExportHelper
 
          statement.executeBatch();
       }
+
+      createTrigger( triggerStatements );
 
       return subProperties;
    }

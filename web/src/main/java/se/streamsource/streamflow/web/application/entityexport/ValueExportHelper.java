@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,70 +103,87 @@ public class ValueExportHelper extends AbstractExportHelper
 
    }
 
-   private Map<QualifiedName, Boolean> addArguments( List<PropertyDescriptor> properties, PreparedStatement statement ) throws Exception
+   private Map<QualifiedName, Boolean> addArguments( List<PropertyDescriptor> properties, PreparedStatement preparedStatement ) throws Exception
    {
       Map<QualifiedName, Boolean> existsCollections = new LinkedHashMap<>();
-      int i = 1;
-      for ( PropertyDescriptor property : properties )
-      {
-         final Type type = property.type();
-         if ( type instanceof Class )
-         {
 
-            final Object val = value.state().getProperty( property.qualifiedName() ).get();
-            if ( val != null )
+      try ( final Statement statement = connection.createStatement() )
+      {
+
+         Set<String> triggerStatements = new LinkedHashSet<>();
+
+         int i = 1;
+         for ( PropertyDescriptor property : properties )
+         {
+            final Type type = property.type();
+            if ( type instanceof Class )
             {
-               if ( val instanceof String && ( ( String ) val ).isEmpty() )
+
+               final Object val = value.state().getProperty( property.qualifiedName() ).get();
+               if ( val != null )
                {
-                  continue;
+                  if ( val instanceof String && ( ( String ) val ).isEmpty() )
+                  {
+                     continue;
+                  }
+
+                  if ( ValueComposite.class.isAssignableFrom( val.getClass() )
+                          && EntityInfo.from( val.getClass() ) == EntityInfo.UNKNOWN )
+                  {
+                     final ValueComposite valueComposite = ( ValueComposite ) val;
+
+                     final SingletonMap singletonMap = processValueComposite( valueComposite );
+
+                     final String triggerStatement = addColumn( toSnackCaseFromCamelCase( property.qualifiedName().name() ), detectType( valueComposite ), statement );
+
+                     if ( !triggerStatement.isEmpty() )
+                     {
+                        triggerStatements.add( triggerStatement );
+                     }
+
+                     preparedStatement.setInt( i++, ( Integer ) singletonMap.getKey() );
+
+                  } else
+                  {
+                     setSimpleType( preparedStatement, val, i++ );
+                  }
                }
 
-               if ( ValueComposite.class.isAssignableFrom( val.getClass() )
-                       && EntityInfo.from( val.getClass() ) == EntityInfo.UNKNOWN )
+            } else if ( type instanceof ParameterizedType )
+            {
+               final ParameterizedType parameterizedType = ( ParameterizedType ) type;
+               final Type ownerType = parameterizedType.getRawType();
+               if ( ownerType.equals( Map.class ) )
                {
-                  final ValueComposite valueComposite = ( ValueComposite ) val;
-
-                  final SingletonMap singletonMap = processValueComposite( valueComposite );
-
-                  addColumn( toSnackCaseFromCamelCase( property.qualifiedName().name() ), detectType( valueComposite ), statement );
-
-                  statement.setInt( i++, ( Integer ) singletonMap.getKey() );
-
+                  final Map val = ( Map ) value.state().getProperty( property.qualifiedName() ).get();
+                  final boolean isValue = false;
+                  if ( !isEmptyOrNull( val ) )
+                  {
+                     existsCollections.put( property.qualifiedName(), isValue );
+                  }
                } else
                {
-                  setSimpleType( statement, val, i++ );
-               }
-            }
-
-         } else if ( type instanceof ParameterizedType )
-         {
-            final ParameterizedType parameterizedType = ( ParameterizedType ) type;
-            final Type ownerType = parameterizedType.getRawType();
-            if ( ownerType.equals( Map.class ) )
-            {
-               final Map val = ( Map ) value.state().getProperty( property.qualifiedName() ).get();
-               final boolean isValue = false;
-               if ( !isEmptyOrNull( val ) )
-               {
-                  existsCollections.put( property.qualifiedName(), isValue );
+                  final Class<?> actualType = ( Class<?> ) parameterizedType.getActualTypeArguments()[0];
+                  final boolean isValue = ValueComposite.class.isAssignableFrom( actualType )
+                          && EntityInfo.from( actualType ) == EntityInfo.UNKNOWN;
+                  final Collection val = ( Collection ) value.state().getProperty( property.qualifiedName() ).get();
+                  if ( !isEmptyOrNull( val ) )
+                  {
+                     existsCollections.put( property.qualifiedName(), isValue );
+                  }
                }
             } else
             {
-               final Class<?> actualType = ( Class<?> ) parameterizedType.getActualTypeArguments()[0];
-               final boolean isValue = ValueComposite.class.isAssignableFrom( actualType )
-                       && EntityInfo.from( actualType ) == EntityInfo.UNKNOWN;
-               final Collection val = ( Collection ) value.state().getProperty( property.qualifiedName() ).get();
-               if ( !isEmptyOrNull( val ) )
-               {
-                  existsCollections.put( property.qualifiedName(), isValue );
-               }
+               new IllegalArgumentException( String.format( "Unknown parameter of type %s", type.getClass().getName() ) );
             }
-         } else
-         {
-            new IllegalArgumentException( String.format( "Unknown parameter of type %s", type.getClass().getName() ) );
+
          }
 
+         statement.executeBatch();
+
+         createTrigger( triggerStatements );
       }
+
 
       return existsCollections;
 
@@ -178,6 +196,7 @@ public class ValueExportHelper extends AbstractExportHelper
               .append( escapeSqlColumnOrTable( tableName() ) )
               .append( " (" );
 
+      Set<String> triggerStatements = new LinkedHashSet<>();
       int i = 0;
       try ( final Statement statement = connection.createStatement() )
       {
@@ -195,7 +214,13 @@ public class ValueExportHelper extends AbstractExportHelper
 
                   final String name = toSnackCaseFromCamelCase( property.qualifiedName().name() );
 
-                  addColumn( name, (Class<?>) property.type(), statement );
+
+                  final String triggerStatement = addColumn( name, (Class<?>) property.type(), statement );
+
+                  if ( !triggerStatement.isEmpty() )
+                  {
+                     triggerStatements.add( triggerStatement );
+                  }
 
                   query
                           .append( escapeSqlColumnOrTable( name ) )
@@ -208,6 +233,8 @@ public class ValueExportHelper extends AbstractExportHelper
          statement.executeBatch();
 
       }
+
+      createTrigger( triggerStatements );
 
       if ( i == 0 )
       {
