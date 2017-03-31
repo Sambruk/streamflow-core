@@ -1,7 +1,6 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
-import org.apache.hadoop.service.Service;
-import org.joda.time.DateTime;
+import org.apache.commons.io.IOUtils;
 import org.qi4j.runtime.types.CollectionType;
 import org.qi4j.runtime.types.MapType;
 import org.qi4j.spi.entity.EntityDescriptor;
@@ -9,10 +8,11 @@ import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.property.PropertyType;
 
-import java.sql.PreparedStatement;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,15 +28,16 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
    private EntityType entityType;
    private EntityInfo entityInfo;
-
-   private Map<String, Set<String>> tableColumns;
+   private List<String> info;
+   private File infoFile;
 
    public Map<String, Set<String>> create() throws Exception
    {
 
-      tableColumns = new HashMap<>();
+      tables = new HashMap<>();
 
-      List<String> schema = new LinkedList<>();
+      info = IOUtils.readLines( new FileReader( infoFile ) );
+      final List<String> schema = new LinkedList<>();
 
       //main tables
       for ( EntityInfo entityInfo : EntityInfo.values() )
@@ -47,7 +48,13 @@ public class SchemaCreatorHelper extends AbstractExportHelper
             final EntityDescriptor entityDescriptor = module.entityDescriptor( entityInfo.getClassName() );
             entityType = entityDescriptor.entityType();
 
-            schema.add( createMainTable() );
+            final String mainTable = createMainTable();
+
+            if ( !mainTable.isEmpty() )
+            {
+               schema.add( mainTable );
+            }
+
          }
       }
 
@@ -75,7 +82,16 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          statement.executeBatch();
       }
 
-      return tableColumns;
+      try ( final PrintWriter pw = new PrintWriter( infoFile ) )
+      {
+         for ( String schemaComponent : info )
+         {
+            pw.println( schemaComponent );
+         }
+         pw.flush();
+      }
+
+      return tables;
 
    }
 
@@ -103,25 +119,27 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          {
             final int hashCode = ( tableName() + associationName ).hashCode();
 
-            final StringBuilder foreignKey = new StringBuilder();
-            foreignKey.append( "ALTER TABLE " )
-                    .append( escapeSqlColumnOrTable( tableName() ) )
-                    .append( " ADD CONSTRAINT " )
-                    .append( "FK_" )
-                    .append( associationName )
-                    .append( "_" )
-                    .append( hashCode > 0 ? hashCode : -1 * hashCode )
-                    .append( " FOREIGN KEY (" )
-                    .append( associationName )
-                    .append( ") REFERENCES " )
-                    .append( escapeSqlColumnOrTable( associationTable ) )
-                    .append( " (" )
-                    .append( escapeSqlColumnOrTable( "identity" ) )
-                    .append( ");" );
+            final String foreignKeyName = "FK_" + associationName + "_" + ( hashCode > 0 ? hashCode : -1 * hashCode );
 
-            logger.info( foreignKey.toString() );
+            if ( !info.contains( foreignKeyName ) )
+            {
+               final StringBuilder foreignKey = new StringBuilder();
+               foreignKey.append( "ALTER TABLE " )
+                       .append( escapeSqlColumnOrTable( tableName() ) )
+                       .append( " ADD CONSTRAINT " )
+                       .append( foreignKeyName )
+                       .append( " FOREIGN KEY (" )
+                       .append( associationName )
+                       .append( ") REFERENCES " )
+                       .append( escapeSqlColumnOrTable( associationTable ) )
+                       .append( " (" )
+                       .append( escapeSqlColumnOrTable( "identity" ) )
+                       .append( ");" );
 
-            schema.add( foreignKey.toString() );
+               logger.info( foreignKey.toString() );
+               schema.add( foreignKey.toString() );
+               info.add( foreignKeyName );
+            }
          }
 
       }
@@ -136,7 +154,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( " (" )
               .append( LINE_SEPARATOR );
 
-      tableColumns.put( tableName(), new HashSet<String>() );
+      tables.put( tableName(), new HashSet<String>() );
 
       for ( PropertyType property : entityType.properties() )
       {
@@ -151,7 +169,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     .append( " NOT NULL," )
                     .append( LINE_SEPARATOR );
 
-            final Set<String> columns = tableColumns.get( tableName() );
+            final Set<String> columns = tables.get( tableName() );
             columns.add( "identity" );
          } else
          {
@@ -160,15 +178,16 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                     || property.type() instanceof CollectionType
                     || property.type() instanceof MapType ) )
             {
+               final Class<?> clazz = Class.forName( property.type().type().name() );
                mainTableCreate
                        .append( " " )
                        .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
                        .append( " " )
-                       .append( detectSqlType( property ) )
+                       .append( detectSqlType( clazz ) )
                        .append( " NULL," )
                        .append( LINE_SEPARATOR );
 
-               final Set<String> columns = tableColumns.get( tableName() );
+               final Set<String> columns = tables.get( tableName() );
                columns.add( toSnackCaseFromCamelCase( property.qualifiedName().name() ) );
             }
 
@@ -199,44 +218,15 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( ");" )
               .append( LINE_SEPARATOR );
 
-      logger.info( mainTableCreate.toString() );
+      if ( info.contains( tableName() ) )
+      {
+         return "";
+      }
 
+      logger.info( mainTableCreate.toString() );
+      info.add( tableName() );
       return mainTableCreate.toString();
 
-   }
-
-   private String detectSqlType( PropertyType property ) throws ClassNotFoundException
-   {
-
-      final Class type = Class.forName( property.type().type().name() );
-
-      if ( Boolean.class.equals( type ) )
-      {
-         return dbVendor == DbVendor.mssql ? "BIT" : "BIT(1)";
-      } else if ( Integer.class.equals( type ) )
-      {
-         return dbVendor == DbVendor.mssql ? "INT" : "INT(11)";
-      } else if ( Long.class.equals( type ) )
-      {
-         return dbVendor == DbVendor.mssql ? "BIGINT" : "BIGINT(20)";
-      } else if ( Float.class.equals( type ) )
-      {
-         return "FLOAT";
-      } else if ( Double.class.equals( type ) )
-      {
-         return "DOUBLE";
-      } else if ( type.isEnum()
-              || Date.class.equals( type )
-              || DateTime.class.equals( type ) )
-      {
-         return stringSqlType( 255 );
-      } else if ( String.class.equals( type ) )
-      {
-         return "TEXT";
-      } else
-      {
-         throw new IllegalArgumentException();
-      }
    }
 
    @Override
@@ -245,4 +235,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
       return toSnackCaseFromCamelCase( entityInfo.getClassSimpleName() );
    }
 
+   public void setInfoFile( File infoFile )
+   {
+      this.infoFile = infoFile;
+   }
 }

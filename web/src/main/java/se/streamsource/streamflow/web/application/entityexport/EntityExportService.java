@@ -11,7 +11,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -48,7 +47,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +77,8 @@ public interface EntityExportService
    void savedSuccess( JSONObject entity );
 
    Map<String, Set<String>> getTables();
-   void setTables(  Map<String, Set<String>> tables );
+
+   void setTables( Map<String, Set<String>> tables );
 
    abstract class Mixin
            implements EntityExportService
@@ -124,9 +123,7 @@ public interface EntityExportService
 
             try ( final Connection connection = dataSource.get().getConnection() )
             {
-               schema =
-                       thisConfig.configuration().createSchema().get() ?
-                               createSchema( connection ) : new HashMap<String, Set<String>>();
+               schema = createBaseSchema( connection );
 
                addSchemaInfo( schema, connection );
 
@@ -137,7 +134,7 @@ public interface EntityExportService
 
             } catch ( Exception e )
             {
-               logger.error( "Unexpected exception:", e );
+               logger.error( "Unexpected exception: ", e );
             }
 
 
@@ -149,7 +146,7 @@ public interface EntityExportService
       {
          final DatabaseMetaData metaData = connection.getMetaData();
 
-         String[] types = {"TABLE"};
+         String[] types = { "TABLE" };
          final ResultSet tablesRs =
                  metaData.getTables( null, null, "%", types );
 
@@ -163,7 +160,7 @@ public interface EntityExportService
                columns = new HashSet<>();
             }
 
-            final ResultSet columnsRs= metaData.getColumns( null, null, tableName, null );
+            final ResultSet columnsRs = metaData.getColumns( null, null, tableName, null );
             while ( columnsRs.next() )
             {
                columns.add( columnsRs.getString( "COLUMN_NAME" ) );
@@ -258,8 +255,22 @@ public interface EntityExportService
 
       }
 
-      private Map<String, Set<String>> createSchema( Connection connection ) throws Exception
+      private Map<String, Set<String>> createBaseSchema( Connection connection ) throws Exception
       {
+
+         final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
+
+         if ( !infoFile.exists() )
+         {
+            final File parentDirectory = infoFile.getParentFile();
+            if ( !parentDirectory.exists() )
+            {
+               parentDirectory.mkdir();
+            }
+
+            infoFile.createNewFile();
+         }
+
          final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
          final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
          final DbVendor dbVendor = DbVendor.from( dataSourceConfiguration.dbVendor().get() );
@@ -268,6 +279,7 @@ public interface EntityExportService
          schemaUpdater.setModule( moduleSPI );
          schemaUpdater.setConnection( connection );
          schemaUpdater.setDbVendor( dbVendor );
+         schemaUpdater.setInfoFile( infoFile );
          return schemaUpdater.create();
       }
 
@@ -290,7 +302,7 @@ public interface EntityExportService
             {
                logger.error( "Error on reading last_processed_timestamp.info file.", e );
             }
-         } else if ( !( infoFile.getParentFile().mkdirs() & infoFile.createNewFile() ) )
+         } else if ( !( infoFile.createNewFile() ) )
          {
             throw new IllegalStateException( "Can't create file of last processed entities info" );
          }
