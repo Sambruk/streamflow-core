@@ -318,7 +318,7 @@ public abstract class AbstractExportHelper
 
             StringBuilder trigger = new StringBuilder();
 
-            trigger.append( triggerStatementsPersisted.isEmpty() ? "CREATE" : "ALTER" )
+            trigger.append( "CREATE OR ALTER" )
                     .append( " TRIGGER " )
                     .append( triggerName )
                     .append( LINE_SEPARATOR )

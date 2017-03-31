@@ -96,6 +96,12 @@ public interface EntityExportService
 
       private Map<String, Set<String>> schema;
 
+      //statistics
+      private long statisticsStartExportTime;
+      private int statisticsCounter = 1;
+      private long statisticsPackAmount = 0;
+      private double totalExportTime = 0;
+
       @Service
       FileConfiguration config;
       @Service
@@ -185,6 +191,11 @@ public interface EntityExportService
       @Override
       public String getNextEntity()
       {
+         if ( statisticsCounter == 1 )
+         {
+            statisticsStartExportTime = System.currentTimeMillis();
+         }
+
          final Element element = caching.get( currentId.get() );
          return element == null ? "" : ( String ) element.getObjectValue();
       }
@@ -225,7 +236,31 @@ public interface EntityExportService
                pw.flush();
                pw.close();
 
-               logger.info( "Entity #" + currentId.get() + " exported to sql with id=" + identity );
+               final Integer loggingStatisticsEntitiesCount = thisConfig.configuration().loggingStatisticsEntitiesCount().get();
+               if ( loggingStatisticsEntitiesCount > 0 )
+               {
+
+                  if ( statisticsCounter == loggingStatisticsEntitiesCount )
+                  {
+                     final long currentTime = System.currentTimeMillis();
+                     final long exportTime = currentTime - statisticsStartExportTime;
+                     totalExportTime += exportTime / loggingStatisticsEntitiesCount;
+                     statisticsPackAmount++;
+
+                     String message =
+                             String.format( "Exported %d entities with average time %.3f ms",
+                                     loggingStatisticsEntitiesCount * statisticsPackAmount,
+                                     totalExportTime / statisticsPackAmount );
+
+                     logger.info( message );
+
+                     statisticsCounter = 1;
+                  } else
+                  {
+                     statisticsCounter++;
+                  }
+
+               }
 
             }
 
@@ -285,76 +320,80 @@ public interface EntityExportService
 
       private void export() throws IOException, InterruptedException
       {
-         logger.info( "Started entities export from ES index." );
+         final int entitiesNumberForESrequest = thisConfig.configuration().entitiesNumberForESrequest().get();
 
-         final File infoFile = new File( config.dataDirectory(), "entityexport/last_processed_timestamp.info" );
-         infoFileAbsPath = infoFile.getAbsolutePath();
-
-         LastProcessedTimestampInfo lastProcessedTimestamp = new LastProcessedTimestampInfo( 0L );
-         if ( infoFile.exists() )
+         if ( entitiesNumberForESrequest != 0 )
          {
-            try
+            logger.info( "Started entities export from ES index." );
+
+            final File infoFile = new File( config.dataDirectory(), "entityexport/last_processed_timestamp.info" );
+            infoFileAbsPath = infoFile.getAbsolutePath();
+
+            LastProcessedTimestampInfo lastProcessedTimestamp = new LastProcessedTimestampInfo( 0L );
+            if ( infoFile.exists() )
             {
-               lastProcessedTimestamp = getLastProcessedTimestampInfo();
-            } catch ( IllegalStateException allOk )
+               try
+               {
+                  lastProcessedTimestamp = getLastProcessedTimestampInfo();
+               } catch ( IllegalStateException allOk )
+               {
+               } catch ( Exception e )
+               {
+                  logger.error( "Error on reading last_processed_timestamp.info file.", e );
+               }
+            } else if ( !( infoFile.createNewFile() ) )
             {
-            } catch ( Exception e )
-            {
-               logger.error( "Error on reading last_processed_timestamp.info file.", e );
+               throw new IllegalStateException( "Can't create file of last processed entities info" );
             }
-         } else if ( !( infoFile.createNewFile() ) )
-         {
-            throw new IllegalStateException( "Can't create file of last processed entities info" );
-         }
 
-         final int numberOfEntitiesForRequest = thisConfig.configuration().numberOfEntitiesForESrequest().get();
-         boolean searchContinue = true;
+            boolean searchContinue = true;
 
-         int numberOfExportedEntities = 0;
+            int numberOfExportedEntities = 0;
 
-         while ( searchContinue )
-         {
-            final SearchHit[] entities = searchEntitiesAfterTimestamp( lastProcessedTimestamp, numberOfEntitiesForRequest );
-
-            List<Element> forPersist = new ArrayList<>( entities.length );
-            for ( int i = 0; i < entities.length; i++ )
+            while ( searchContinue )
             {
+               final SearchHit[] entities = searchEntitiesAfterTimestamp( lastProcessedTimestamp, entitiesNumberForESrequest );
 
-               forPersist.add( new Element( cacheIdGenerator.getAndIncrement(), entities[i].getSourceAsString() ) );
-
-               if ( i == entities.length - 1 )
+               List<Element> forPersist = new ArrayList<>( entities.length );
+               for ( int i = 0; i < entities.length; i++ )
                {
 
-                  final String modifiedKey = "_modified";
+                  forPersist.add( new Element( cacheIdGenerator.getAndIncrement(), entities[i].getSourceAsString() ) );
 
-                  final Long modified = ( Long ) entities[i].getSource().get( modifiedKey );
-
-                  if ( !modified.equals( lastProcessedTimestamp.lastProcessedTimestamp ) )
+                  if ( i == entities.length - 1 )
                   {
-                     lastProcessedTimestamp.ids = new HashSet<>();
+
+                     final String modifiedKey = "_modified";
+
+                     final Long modified = ( Long ) entities[i].getSource().get( modifiedKey );
+
+                     if ( !modified.equals( lastProcessedTimestamp.lastProcessedTimestamp ) )
+                     {
+                        lastProcessedTimestamp.ids = new HashSet<>();
+                     }
+
+                     lastProcessedTimestamp.lastProcessedTimestamp = modified;
+
+                     for ( int j = entities.length - 1; j >= 0 &&
+                             entities[j].getSource().get( modifiedKey ).equals( lastProcessedTimestamp.lastProcessedTimestamp ); j-- )
+                     {
+                        lastProcessedTimestamp.ids.add( entities[j].getId() );
+                     }
+
                   }
-
-                  lastProcessedTimestamp.lastProcessedTimestamp = modified;
-
-                  for ( int j = entities.length - 1; j >= 0 &&
-                          entities[j].getSource().get( modifiedKey ).equals( lastProcessedTimestamp.lastProcessedTimestamp ); j-- )
-                  {
-                     lastProcessedTimestamp.ids.add( entities[j].getId() );
-                  }
-
                }
+
+               caching.putAll( forPersist );
+
+               logger.info( "Exported " + ( numberOfExportedEntities += entities.length ) + " entities" );
+
+               searchContinue = entities.length == entitiesNumberForESrequest;
             }
 
-            caching.putAll( forPersist );
+            isExported.set( true );
 
-            logger.info( "Exported " + ( numberOfExportedEntities += entities.length ) + " entities" );
-
-            searchContinue = entities.length == numberOfEntitiesForRequest;
+            logger.info( "Finished entities export from ES index." );
          }
-
-         isExported.set( true );
-
-         logger.info( "Finished entities export from ES index." );
       }
 
       private SearchHit[] searchEntitiesAfterTimestamp( LastProcessedTimestampInfo info, final int maxEntitiesPerRequest )

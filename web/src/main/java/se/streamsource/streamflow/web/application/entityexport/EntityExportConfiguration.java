@@ -31,9 +31,9 @@ public interface EntityExportConfiguration
 {
 
    @UseDefaults
-   Property<Integer> numberOfEntitiesForESrequest();
+   Property<Integer> entitiesNumberForESrequest();
 
    @UseDefaults
-   Property<Boolean> createSchema();
+   Property<Integer> loggingStatisticsEntitiesCount();
 
 }
