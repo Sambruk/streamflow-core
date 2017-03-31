@@ -121,7 +121,7 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportHelper.setModule ( moduleSPI );
                entityExportHelper.setDbVendor( getDbVendor() );
                entityExportHelper.setTables( entityExportService.getTables() );
-
+               entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
                entityExportService.setTables( entityExportHelper.help() );
 
                entityExportService.savedSuccess( entity );

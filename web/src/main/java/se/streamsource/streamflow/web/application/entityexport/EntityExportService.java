@@ -41,12 +41,11 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -71,12 +70,13 @@ public interface EntityExportService
    void saveToCache( String transaction );
 
    String getNextEntity();
+   String getSchemaInfoFileAbsPath();
 
    boolean hasNextEntity();
 
    void savedSuccess( JSONObject entity );
 
-   Map<String, Set<String>> getTables();
+   Map<String,Set<String>> getTables() throws IOException, ClassNotFoundException;
 
    void setTables( Map<String, Set<String>> tables );
 
@@ -94,7 +94,8 @@ public interface EntityExportService
       private AtomicLong currentId = new AtomicLong( 1 );
       private AtomicBoolean isExported = new AtomicBoolean( false );
 
-      private Map<String, Set<String>> schema;
+      private String schemaInfoFileAbsPath;
+      private Map<String, Set<String>> tables;
 
       //statistics
       private long statisticsStartExportTime;
@@ -126,12 +127,15 @@ public interface EntityExportService
                  && dataSource.isActive()
                  && thisConfig.configuration().enabled().get() )
          {
-
-            try ( final Connection connection = dataSource.get().getConnection() )
+            try
             {
-               schema = createBaseSchema( connection );
 
-               addSchemaInfo( schema, connection );
+               tables =  readSchemaStateFromFile();
+
+               try ( final Connection connection = dataSource.get().getConnection() )
+               {
+                  createBaseSchema( connection );
+               }
 
                caching = new Caching( cachingService, Caches.ENTITYSTATES );
                caching.removeAll();
@@ -142,37 +146,38 @@ public interface EntityExportService
             {
                logger.error( "Unexpected exception: ", e );
             }
-
-
          }
 
       }
 
-      private void addSchemaInfo( Map<String, Set<String>> schema, Connection connection ) throws SQLException
+      private Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException
       {
-         final DatabaseMetaData metaData = connection.getMetaData();
+         final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
+         schemaInfoFileAbsPath = infoFile.getAbsolutePath();
 
-         String[] types = { "TABLE" };
-         final ResultSet tablesRs =
-                 metaData.getTables( null, null, "%", types );
-
-         while ( tablesRs.next() )
+         if ( !infoFile.exists() )
          {
-            final String tableName = tablesRs.getString( "TABLE_NAME" );
-
-            Set<String> columns = schema.get( tableName );
-            if ( columns == null )
+            final File parentDirectory = infoFile.getParentFile();
+            if ( !parentDirectory.exists() )
             {
-               columns = new HashSet<>();
+               parentDirectory.mkdir();
             }
 
-            final ResultSet columnsRs = metaData.getColumns( null, null, tableName, null );
-            while ( columnsRs.next() )
-            {
-               columns.add( columnsRs.getString( "COLUMN_NAME" ) );
-            }
+            infoFile.createNewFile();
 
-            schema.put( tableName, columns );
+            return new HashMap<>();
+         }
+
+
+         try ( final FileInputStream fis = new FileInputStream( infoFile ) )
+         {
+            try ( final ObjectInputStream ois = new ObjectInputStream( fis ) )
+            {
+               return ( Map<String, Set<String>> ) ois.readObject();
+            }
+         } catch ( IOException e )
+         {
+            return new HashMap<>();
          }
       }
 
@@ -205,6 +210,18 @@ public interface EntityExportService
       public boolean hasNextEntity()
       {
          return !( cacheIdGenerator.get() == currentId.get() );
+      }
+
+      @Override
+      public Map<String, Set<String>> getTables() throws IOException, ClassNotFoundException
+      {
+         return tables;
+      }
+
+      @Override
+      public void setTables( Map<String, Set<String>> tables )
+      {
+         this.tables = tables;
       }
 
       @Override
@@ -274,15 +291,9 @@ public interface EntityExportService
       }
 
       @Override
-      public Map<String, Set<String>> getTables()
+      public String getSchemaInfoFileAbsPath()
       {
-         return schema;
-      }
-
-      @Override
-      public void setTables( Map<String, Set<String>> tables )
-      {
-         schema = tables;
+         return schemaInfoFileAbsPath;
       }
 
       @Override
@@ -291,22 +302,8 @@ public interface EntityExportService
 
       }
 
-      private Map<String, Set<String>> createBaseSchema( Connection connection ) throws Exception
+      private void createBaseSchema( Connection connection ) throws Exception
       {
-
-         final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
-
-         if ( !infoFile.exists() )
-         {
-            final File parentDirectory = infoFile.getParentFile();
-            if ( !parentDirectory.exists() )
-            {
-               parentDirectory.mkdir();
-            }
-
-            infoFile.createNewFile();
-         }
-
          final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
          final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
          final DbVendor dbVendor = DbVendor.from( dataSourceConfiguration.dbVendor().get() );
@@ -315,8 +312,9 @@ public interface EntityExportService
          schemaUpdater.setModule( moduleSPI );
          schemaUpdater.setConnection( connection );
          schemaUpdater.setDbVendor( dbVendor );
-         schemaUpdater.setInfoFile( infoFile );
-         return schemaUpdater.create();
+         schemaUpdater.setSchemaInfoFileAbsPath( schemaInfoFileAbsPath );
+         schemaUpdater.setTables( tables );
+         schemaUpdater.create();
       }
 
       private void export() throws IOException, InterruptedException

@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,9 +42,11 @@ public abstract class AbstractExportHelper
    protected DbVendor dbVendor;
    protected Map<String, Set<String>> tables;
 
+   protected String schemaInfoFileAbsPath;
+
    protected abstract String tableName();
 
-   protected void createSubPropertyTableIfNotExists( String tableName ) throws SQLException
+   protected void createSubPropertyTableIfNotExists( String tableName ) throws SQLException, IOException
    {
       if ( !tables.containsKey( tableName ) )
       {
@@ -72,13 +77,15 @@ public abstract class AbstractExportHelper
          statement.executeUpdate( subPropertyTable );
 
          tables.put( tableName, columns );
+
+         saveTablesState();
       }
    }
 
    void processCollection( String name,
                                    Object value,
                            PreparedStatementValueBinder valueBinder
-   ) throws SQLException, JSONException, ClassNotFoundException
+   ) throws SQLException, JSONException, ClassNotFoundException, IOException
    {
       final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( name ) + "_coll";
 
@@ -116,7 +123,7 @@ public abstract class AbstractExportHelper
 
    }
 
-   void createCollectionTableIfNotExist( String tableName, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException
+   void createCollectionTableIfNotExist( String tableName, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException, IOException
    {
 
       if ( !tables.containsKey( tableName ) )
@@ -184,6 +191,8 @@ public abstract class AbstractExportHelper
          logger.info( collectionTable.toString() );
 
          tables.put( tableName, columns );
+
+         saveTablesState();
       }
 
    }
@@ -301,7 +310,7 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected void createTrigger( Set<String> triggerStatements ) throws SQLException
+   protected void createTrigger( Set<String> triggerStatements ) throws SQLException, IOException
    {
       if ( !triggerStatements.isEmpty() )
       {
@@ -347,12 +356,14 @@ public abstract class AbstractExportHelper
 
             tables.put( triggerName, triggerStatementsPersisted );
 
+            saveTablesState();
+
          }
 
       }
    }
 
-   protected String addColumn( String name, Class<?> type, Statement statement ) throws SQLException
+   protected String addColumn( String name, Class<?> type, Statement statement ) throws SQLException, IOException
    {
       final Set<String> columns = tables.get( tableName() );
 
@@ -500,6 +511,7 @@ public abstract class AbstractExportHelper
       valueExportHelper.setModule( module );
       valueExportHelper.setDbVendor( dbVendor );
       valueExportHelper.setTables( tables );
+      valueExportHelper.setSchemaInfoFileAbsPath( schemaInfoFileAbsPath );
       return valueExportHelper.help();
    }
 
@@ -613,6 +625,17 @@ public abstract class AbstractExportHelper
       }
    }
 
+   protected void saveTablesState() throws IOException
+   {
+      try ( final FileOutputStream fos = new FileOutputStream( schemaInfoFileAbsPath ) )
+      {
+         try ( final ObjectOutputStream oos = new ObjectOutputStream( fos ) )
+         {
+            oos.writeObject( tables );
+         }
+      }
+   }
+
    //setters
 
    public void setConnection( Connection connection )
@@ -633,5 +656,10 @@ public abstract class AbstractExportHelper
    public void setTables( Map<String, Set<String>> tables )
    {
       this.tables = tables;
+   }
+
+   public void setSchemaInfoFileAbsPath( String infoFilePath )
+   {
+      this.schemaInfoFileAbsPath = infoFilePath;
    }
 }
