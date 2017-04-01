@@ -84,8 +84,11 @@ public class EntityStateChangeListener
                      object
                              .put( "identity", changedState.identity() )
                              .put( "_removed", true );
+                     entityExportService.saveToCache( object.toString() );
+                  } else
+                  {
+                     entityExportService.saveToCache( toJSON( changedState ) );
                   }
-                  entityExportService.saveToCache( toJSON( changedState ) );
                }
             }
 
