@@ -87,6 +87,8 @@ public class EntityExportHelper extends AbstractExportHelper
 
       connection.commit();
 
+      saveTablesState();
+
       return tables;
 
    }

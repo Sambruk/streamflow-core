@@ -77,8 +77,6 @@ public abstract class AbstractExportHelper
          statement.executeUpdate( subPropertyTable );
 
          tables.put( tableName, columns );
-
-         saveTablesState();
       }
    }
 
@@ -192,7 +190,6 @@ public abstract class AbstractExportHelper
 
          tables.put( tableName, columns );
 
-         saveTablesState();
       }
 
    }
@@ -355,8 +352,6 @@ public abstract class AbstractExportHelper
             }
 
             tables.put( triggerName, triggerStatementsPersisted );
-
-            saveTablesState();
 
          }
 
