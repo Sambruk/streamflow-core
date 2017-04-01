@@ -43,7 +43,9 @@ public abstract class AbstractExportHelper
    protected DbVendor dbVendor;
    protected Map<String, Set<String>> tables;
 
-   protected String schemaInfoFileAbsPath;
+   private String schemaInfoFileAbsPath;
+
+   protected boolean showSql;
 
    protected abstract String tableName();
 
@@ -187,7 +189,10 @@ public abstract class AbstractExportHelper
             statement.executeUpdate( collectionTable.toString() );
          }
 
-         logger.info( collectionTable.toString() );
+         if ( showSql )
+         {
+            logger.info( collectionTable.toString() );
+         }
 
          tables.put( tableName, columns );
 
@@ -274,7 +279,10 @@ public abstract class AbstractExportHelper
             statement.executeUpdate( manyAssoc.toString() );
          }
 
-         logger.info( manyAssoc.toString() );
+         if ( showSql )
+         {
+            logger.info( manyAssoc.toString() );
+         }
 
          if ( associationTable != null && linkType.equals( detectSqlType( Integer.class ) ) )
          {
@@ -295,7 +303,10 @@ public abstract class AbstractExportHelper
                   statement.executeUpdate( trigger );
                }
 
-               logger.info( trigger );
+               if ( showSql )
+               {
+                  logger.info( trigger );
+               }
             } else {
 
                // TODO: 30.03.17
@@ -375,7 +386,10 @@ public abstract class AbstractExportHelper
                  " " +
                  detectSqlType( type );
 
-         logger.info( alterTable );
+         if ( showSql )
+         {
+            logger.info( alterTable );
+         }
 
          statement.addBatch( alterTable );
 
@@ -395,7 +409,10 @@ public abstract class AbstractExportHelper
                     escapeSqlColumnOrTable( reference ) +
                     "(" + escapeSqlColumnOrTable( "id" ) + ")";
 
-            logger.info( alterTableConstraint );
+            if ( showSql )
+            {
+               logger.info( alterTableConstraint );
+            }
 
             statement.addBatch( alterTableConstraint );
 
@@ -514,6 +531,7 @@ public abstract class AbstractExportHelper
       valueExportHelper.setDbVendor( dbVendor );
       valueExportHelper.setTables( tables );
       valueExportHelper.setSchemaInfoFileAbsPath( schemaInfoFileAbsPath );
+      valueExportHelper.setShowSql( showSql );
       return valueExportHelper.help();
    }
 
@@ -661,5 +679,10 @@ public abstract class AbstractExportHelper
    public void setSchemaInfoFileAbsPath( String infoFilePath )
    {
       this.schemaInfoFileAbsPath = infoFilePath;
+   }
+
+   public void setShowSql( boolean showSql )
+   {
+      this.showSql = showSql;
    }
 }

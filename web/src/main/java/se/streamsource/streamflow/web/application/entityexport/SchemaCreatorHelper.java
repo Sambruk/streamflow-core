@@ -43,7 +43,10 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                   statement.executeUpdate( mainTable );
                }
 
-               logger.info( mainTable );
+               if ( showSql )
+               {
+                  logger.info( mainTable );
+               }
 
                saveTablesState();
             }
@@ -116,7 +119,11 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
                saveTablesState();
 
-               logger.info( foreignKey.toString() );
+               if ( showSql )
+               {
+                  logger.info( foreignKey.toString() );
+               }
+
             }
          }
 

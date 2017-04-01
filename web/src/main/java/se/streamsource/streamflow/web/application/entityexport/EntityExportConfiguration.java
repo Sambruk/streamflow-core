@@ -36,4 +36,7 @@ public interface EntityExportConfiguration
    @UseDefaults
    Property<Integer> loggingStatisticsEntitiesCount();
 
+   @UseDefaults
+   Property<Boolean> showSql();
+
 }

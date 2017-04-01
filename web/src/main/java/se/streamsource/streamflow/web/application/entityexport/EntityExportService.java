@@ -200,6 +200,11 @@ public interface EntityExportService
          if ( loggingStatisticsEntitiesCount > 0 && statisticsCounter == 1 )
          {
             statisticsStartExportTime = System.currentTimeMillis();
+         } else if ( loggingStatisticsEntitiesCount < 1 )
+         {
+            statisticsCounter = 1;
+            statisticsPackAmount = 0;
+            totalExportTime = 0;
          }
 
          final Element element = caching.get( currentId.get() );
@@ -258,7 +263,9 @@ public interface EntityExportService
                if ( loggingStatisticsEntitiesCount > 0 )
                {
 
-                  if ( statisticsCounter == loggingStatisticsEntitiesCount )
+                  final boolean isLastProcessed = currentId.get() + 1 == cacheIdGenerator.get();
+
+                  if ( statisticsCounter == loggingStatisticsEntitiesCount || isLastProcessed )
                   {
                      final long currentTime = System.currentTimeMillis();
                      final long exportTime = currentTime - statisticsStartExportTime;
@@ -266,9 +273,9 @@ public interface EntityExportService
                      statisticsPackAmount++;
 
                      String message =
-                             String.format( "Exported %d entities with average time %.3f ms",
-                                     loggingStatisticsEntitiesCount * statisticsPackAmount,
-                                     totalExportTime / statisticsPackAmount );
+                             String.format( "The average export time is %.3f ms of %d entities selection",
+                                     totalExportTime / statisticsPackAmount,
+                                     isLastProcessed ? loggingStatisticsEntitiesCount * ( statisticsPackAmount - 1 ) + statisticsCounter : loggingStatisticsEntitiesCount * statisticsPackAmount );
 
                      logger.info( message );
 
@@ -314,6 +321,7 @@ public interface EntityExportService
          schemaUpdater.setDbVendor( dbVendor );
          schemaUpdater.setSchemaInfoFileAbsPath( schemaInfoFileAbsPath );
          schemaUpdater.setTables( tables );
+         schemaUpdater.setShowSql( thisConfig.configuration().showSql().get() );
          schemaUpdater.create();
       }
 
