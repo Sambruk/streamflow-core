@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -468,28 +469,34 @@ public abstract class AbstractExportHelper
                                  Object value,
                                  final int i ) throws JSONException, SQLException
    {
-      if ( Boolean.class.equals( value.getClass() ) )
+      final Class<?> clazz = value.getClass();
+      if ( Boolean.class.equals( clazz ) )
       {
          statement.setBoolean( i, ( Boolean ) value );
-      } else if ( Integer.class.equals( value.getClass() ) )
+      } else if ( Integer.class.equals( clazz ) )
       {
          statement.setInt( i, ( Integer ) value );
-      } else if ( Long.class.equals( value.getClass() ) )
+      } else if ( Long.class.equals( clazz ) )
       {
          statement.setLong( i, ( Long ) value );
-      } else if ( Float.class.equals( value.getClass() ) )
+      } else if ( Float.class.equals( clazz ) )
       {
          statement.setFloat( i, ( Float ) value );
-      } else if ( Double.class.equals( value.getClass() ) )
+      } else if ( Double.class.equals( clazz ) )
       {
          statement.setDouble( i, ( Double ) value );
-      } else if ( String.class.equals( value.getClass() )
-              || value.getClass().isEnum()
-              || Date.class.equals( value.getClass() )
-              || DateTime.class.equals( value.getClass() ) )
+      } else if ( String.class.equals( clazz ) || clazz.isEnum() )
       {
          statement.setString( i, value.toString() );
-      } else if ( EntityReference.class.equals( value.getClass() ) )
+      } else if ( Date.class.equals( clazz ) )
+      {
+         final Date date = ( Date ) value;
+         statement.setTimestamp( i, new Timestamp( date.getTime() ) );
+      } else if ( DateTime.class.equals( clazz ) )
+      {
+         final DateTime dateTime = ( DateTime ) value;
+         statement.setTimestamp( i, new Timestamp( dateTime.getMillis() ) );
+      } else if ( EntityReference.class.equals( clazz ) )
       {
          statement.setString( i, ( ( EntityReference ) value ).identity() );
       } else
@@ -587,17 +594,15 @@ public abstract class AbstractExportHelper
       } else if ( Double.class.equals( type ) )
       {
          return "DOUBLE";
-      } else if ( type.isEnum() )
+      } else if ( Date.class.equals( type ) || DateTime.class.equals( type ))
+      {
+         return "DATETIME";
+      } else if ( type.isEnum() || EntityReference.class.equals( type ) )
       {
          return stringSqlType( 255 );
-      } else if ( type.equals( String.class )
-              || type.equals( Date.class )
-              || type.equals( DateTime.class ) )
+      } else if ( String.class.equals( type ) )
       {
          return stringSqlType( Integer.MAX_VALUE );
-      } else if ( EntityReference.class.equals( type ) )
-      {
-         return stringSqlType( 255 );
       } else
       {
          throw new IllegalArgumentException();
