@@ -95,11 +95,12 @@ public class EntityStateChangeListener
             if ( entityExportJob == null || trigger == null ) {
                entityExportJob = newJob( EntityExportJob.class ).withIdentity( "entityexportjob", "entityexportgroup" ).build();
                trigger = newTrigger().withIdentity( "entityexport", "entityexportgroup" ).startNow().build();
+               schedulerService.scheduleJob( entityExportJob, trigger );
             }
 
             if ( !schedulerService.isExecuting( entityExportJob.getKey() ) )
             {
-               schedulerService.scheduleJob( entityExportJob, trigger );
+              schedulerService.rescheduleJob( trigger.getKey(), trigger );
             }
 
          } catch ( Exception e )

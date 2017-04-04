@@ -2,14 +2,13 @@ package se.streamsource.streamflow.web.application.entityexport;
 
 import net.sf.ehcache.Element;
 import org.apache.commons.io.IOUtils;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
@@ -127,6 +126,10 @@ public interface EntityExportService
                  && dataSource.isActive()
                  && thisConfig.configuration().enabled().get() )
          {
+
+            caching = new Caching( cachingService, Caches.ENTITYSTATES );
+            caching.removeAll();
+
             try
             {
 
@@ -136,9 +139,6 @@ public interface EntityExportService
                {
                   createBaseSchema( connection );
                }
-
-               caching = new Caching( cachingService, Caches.ENTITYSTATES );
-               caching.removeAll();
 
                export();
 
@@ -327,108 +327,96 @@ public interface EntityExportService
 
       private void export() throws IOException, InterruptedException
       {
-         final int entitiesNumberForESrequest = thisConfig.configuration().entitiesNumberForESrequest().get();
 
-         if ( entitiesNumberForESrequest != 0 )
+         final File infoFile = new File( config.dataDirectory(), "entityexport/last_processed_timestamp.info" );
+         infoFileAbsPath = infoFile.getAbsolutePath();
+
+         LastProcessedTimestampInfo lastProcessedTimestamp = new LastProcessedTimestampInfo( 0L );
+         if ( infoFile.exists() )
          {
-            logger.info( "Started entities export from ES index." );
-
-            final File infoFile = new File( config.dataDirectory(), "entityexport/last_processed_timestamp.info" );
-            infoFileAbsPath = infoFile.getAbsolutePath();
-
-            LastProcessedTimestampInfo lastProcessedTimestamp = new LastProcessedTimestampInfo( 0L );
-            if ( infoFile.exists() )
+            try
             {
-               try
-               {
-                  lastProcessedTimestamp = getLastProcessedTimestampInfo();
-               } catch ( IllegalStateException allOk )
-               {
-               } catch ( Exception e )
-               {
-                  logger.error( "Error on reading last_processed_timestamp.info file.", e );
-               }
-            } else if ( !( infoFile.createNewFile() ) )
+               lastProcessedTimestamp = getLastProcessedTimestampInfo();
+            } catch ( IllegalStateException allOk )
             {
-               throw new IllegalStateException( "Can't create file of last processed entities info" );
+            } catch ( Exception e )
+            {
+               logger.error( "Error on reading last_processed_timestamp.info file.", e );
             }
-
-            boolean searchContinue = true;
-
-            int numberOfExportedEntities = 0;
-
-            while ( searchContinue )
-            {
-               final SearchHit[] entities = searchEntitiesAfterTimestamp( lastProcessedTimestamp, entitiesNumberForESrequest );
-
-               List<Element> forPersist = new ArrayList<>( entities.length );
-               for ( int i = 0; i < entities.length; i++ )
-               {
-
-                  forPersist.add( new Element( cacheIdGenerator.getAndIncrement(), entities[i].getSourceAsString() ) );
-
-                  if ( i == entities.length - 1 )
-                  {
-
-                     final String modifiedKey = "_modified";
-
-                     final Long modified = ( Long ) entities[i].getSource().get( modifiedKey );
-
-                     if ( !modified.equals( lastProcessedTimestamp.lastProcessedTimestamp ) )
-                     {
-                        lastProcessedTimestamp.ids = new HashSet<>();
-                     }
-
-                     lastProcessedTimestamp.lastProcessedTimestamp = modified;
-
-                     for ( int j = entities.length - 1; j >= 0 &&
-                             entities[j].getSource().get( modifiedKey ).equals( lastProcessedTimestamp.lastProcessedTimestamp ); j-- )
-                     {
-                        lastProcessedTimestamp.ids.add( entities[j].getId() );
-                     }
-
-                  }
-               }
-
-               caching.putAll( forPersist );
-
-               logger.info( "Exported " + ( numberOfExportedEntities += entities.length ) + " entities" );
-
-               searchContinue = entities.length == entitiesNumberForESrequest;
-            }
-
-            isExported.set( true );
-
-            logger.info( "Finished entities export from ES index." );
+         } else if ( !( infoFile.createNewFile() ) )
+         {
+            throw new IllegalStateException( "Can't create file of last processed entities info" );
          }
-      }
 
-      private SearchHit[] searchEntitiesAfterTimestamp( LastProcessedTimestampInfo info, final int maxEntitiesPerRequest )
-      {
+         long numberOfExportedEntities = 0;
+
          Client client = support.client();
-         String modified = "_modified";
 
-         final SearchRequestBuilder request = client.prepareSearch( support.index() );
+         QueryBuilder query = QueryBuilders
+                 .rangeQuery( "_modified" )
+                 .gte( lastProcessedTimestamp.lastProcessedTimestamp );
 
-         QueryBuilder query = QueryBuilders.rangeQuery( modified ).gte( info.lastProcessedTimestamp );
-
-         if ( info.ids.size() > 0 )
+         if ( lastProcessedTimestamp.ids.size() > 0 )
          {
             query = QueryBuilders
                     .filteredQuery( query,
-                            FilterBuilders.boolFilter().mustNot( FilterBuilders.termsFilter( "_identity", info.ids ) ) );
+                            FilterBuilders.boolFilter().mustNot( FilterBuilders.termsFilter( "_identity", lastProcessedTimestamp.ids ) ) );
          }
 
-         request.setQuery( query );
-         request.setSize( maxEntitiesPerRequest );
-         final FieldSortBuilder sortBuilder = new FieldSortBuilder( modified );
-         sortBuilder.order( SortOrder.ASC );
-         sortBuilder.ignoreUnmapped( true );
-         sortBuilder.missing( "_first" );
-         request.addSort( sortBuilder );
-         final SearchResponse response = request.execute().actionGet();
+         final long count = client
+                 .prepareCount( support.index() )
+                 .setQuery( query )
+                 .execute()
+                 .actionGet()
+                 .getCount();
 
-         return response.getHits().getHits();
+         if ( count != 0 )
+         {
+            logger.info( "Started entities export from index to cache." );
+
+            final int millis = 60000;
+            SearchResponse searchResponse = client.prepareSearch( support.index() )
+                    .addSort( "_modified", SortOrder.ASC )
+                    .setScroll( new TimeValue( millis ) )
+                    .setQuery( query )
+                    .setSize( 50 )
+                    .get();
+
+            SearchHit[] entities = searchResponse.getHits().getHits();
+
+            List<Element> forPersist = new ArrayList<>( 1000 );
+            do
+            {
+
+               for ( SearchHit searchHit : entities )
+               {
+                  forPersist.add( new Element( cacheIdGenerator.getAndIncrement(), searchHit.getSourceAsString() ) );
+               }
+
+               searchResponse = client
+                       .prepareSearchScroll(searchResponse.getScrollId())
+                       .setScroll(new TimeValue( millis ))
+                       .execute().actionGet();
+
+               entities = searchResponse.getHits().getHits();
+
+               if ( forPersist.size() == 1000 || entities.length == 0 )
+               {
+                  caching.putAll( forPersist );
+                  numberOfExportedEntities += forPersist.size();
+                  logger.info( String.format( "Exported %.2f%% (%d)  entities", numberOfExportedEntities * 100.0 / count, numberOfExportedEntities ) );
+                  forPersist.clear();
+               }
+
+            } while ( entities.length != 0 );
+
+            logger.info( "Finished entities export from index to cache." );
+         } else
+         {
+            logger.info( "Nothing to export from index to cache." );
+         }
+
+         isExported.set( true );
       }
 
       LastProcessedTimestampInfo getLastProcessedTimestampInfo() throws Exception
