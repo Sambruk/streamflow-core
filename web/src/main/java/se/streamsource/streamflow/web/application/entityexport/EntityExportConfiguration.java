@@ -31,9 +31,6 @@ public interface EntityExportConfiguration
 {
 
    @UseDefaults
-   Property<Integer> entitiesNumberForESrequest();
-
-   @UseDefaults
    Property<Integer> loggingStatisticsEntitiesCount();
 
    @UseDefaults
