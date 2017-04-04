@@ -25,6 +25,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
@@ -35,17 +36,16 @@ import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.property.PropertyType;
-import org.quartz.JobDetail;
-import org.quartz.Trigger;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
-import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
+import javax.sql.DataSource;
 import java.util.Collections;
-
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * JAVADOC
@@ -60,11 +60,16 @@ public class EntityStateChangeListener
 
    @Service
    EntityExportService entityExportService;
-   @Service
-   QuartzSchedulerService schedulerService;
 
-   private JobDetail entityExportJob;
-   private Trigger trigger;
+   @Structure
+   ModuleSPI moduleSPI;
+   @Structure
+   Module module;
+
+   @Service
+   ServiceReference<DataSource> dataSource;
+
+   Future<?> result;
 
    @Override
    public void notifyChanges( Iterable<EntityState> changedStates )
@@ -92,15 +97,15 @@ public class EntityStateChangeListener
                }
             }
 
-            if ( entityExportJob == null || trigger == null ) {
-               entityExportJob = newJob( EntityExportJob.class ).withIdentity( "entityexportjob", "entityexportgroup" ).build();
-               trigger = newTrigger().withIdentity( "entityexport", "entityexportgroup" ).startNow().build();
-               schedulerService.scheduleJob( entityExportJob, trigger );
-            }
-
-            if ( !schedulerService.isExecuting( entityExportJob.getKey() ) )
+            if (result == null || result.isDone())
             {
-              schedulerService.rescheduleJob( trigger.getKey(), trigger );
+               ExecutorService executorService = Executors.newSingleThreadExecutor();
+               EntityExportJob entityExportJob = new EntityExportJob()
+                       .setEntityExportService(entityExportService)
+                       .setModule(module)
+                       .setModuleSPI(moduleSPI)
+                       .setDataSource(dataSource);
+               result = executorService.submit(entityExportJob);
             }
 
          } catch ( Exception e )

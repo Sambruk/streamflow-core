@@ -58,7 +58,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Mixins({ EntityExportService.Mixin.class, EntityStateChangeListener.class })
 public interface EntityExportService
         extends StateChangeListener,
-        EntityExportJob,
         ServiceComposite,
         Activatable,
         Configuration<EntityExportConfiguration>
