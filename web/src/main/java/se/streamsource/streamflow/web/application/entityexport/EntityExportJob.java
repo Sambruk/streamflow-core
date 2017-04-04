@@ -20,6 +20,7 @@ import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -37,6 +38,7 @@ import java.util.Map;
  * JAVADOC
  */
 @Mixins(EntityExportJob.Mixin.class)
+@DisallowConcurrentExecution
 public interface EntityExportJob extends Job, TransientComposite
 {
 
