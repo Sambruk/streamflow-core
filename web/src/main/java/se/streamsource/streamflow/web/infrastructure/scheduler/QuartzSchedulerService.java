@@ -39,6 +39,8 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
 {
 
    Date scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException;
+
+   Date rescheduleJob(TriggerKey triggerKey, Trigger newTrigger) throws SchedulerException;
    
    boolean deleteJob(JobKey jobKey) throws SchedulerException;
 
@@ -76,6 +78,11 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
       public Date scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException
       {
          return scheduler.scheduleJob( jobDetail, trigger );
+      }
+
+      public Date rescheduleJob(TriggerKey triggerKey, Trigger newTrigger) throws SchedulerException
+      {
+         return scheduler.rescheduleJob( triggerKey, newTrigger );
       }
 
       public boolean deleteJob(JobKey jobKey) throws SchedulerException {
