@@ -384,14 +384,15 @@ public interface EntityExportService
 
             SearchHit[] entities = searchResponse.getHits().getHits();
 
-            List<Element> forPersist = new ArrayList<>( 1000 );
+            long startTime = System.currentTimeMillis();
             do
             {
 
                for ( SearchHit searchHit : entities )
                {
-                  forPersist.add( new Element( cacheIdGenerator.getAndIncrement(), searchHit.getSourceAsString() ) );
+                  caching.put( new Element( cacheIdGenerator.getAndIncrement(), searchHit.getSourceAsString() ) );
                }
+               numberOfExportedEntities += entities.length;
 
                searchResponse = client
                        .prepareSearchScroll(searchResponse.getScrollId())
@@ -399,13 +400,11 @@ public interface EntityExportService
                        .execute().actionGet();
 
                entities = searchResponse.getHits().getHits();
-
-               if ( forPersist.size() == 1000 || entities.length == 0 )
+               if ( numberOfExportedEntities % 1000 == 0 || entities.length == 0  )
                {
-                  caching.putAll( forPersist );
-                  numberOfExportedEntities += forPersist.size();
-                  logger.info( String.format( "Exported %.2f%% (%d)  entities", numberOfExportedEntities * 100.0 / count, numberOfExportedEntities ) );
-                  forPersist.clear();
+                  logger.info( String.format( "Exported %.2f%% (%d) entities with time %d ms",
+                          numberOfExportedEntities * 100.0 / count, numberOfExportedEntities, System.currentTimeMillis() - startTime ) );
+                  startTime = System.currentTimeMillis();
                }
 
             } while ( entities.length != 0 );
