@@ -378,7 +378,7 @@ public interface EntityExportService
                     .addSort( "_modified", SortOrder.ASC )
                     .setScroll( new TimeValue( millis ) )
                     .setQuery( query )
-                    .setSize( 50 )
+                    .setSize( 1000 )
                     .get();
 
             SearchHit[] entities = searchResponse.getHits().getHits();
