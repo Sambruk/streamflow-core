@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -154,6 +153,8 @@ public interface EntityExportService
          final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
          schemaInfoFileAbsPath = infoFile.getAbsolutePath();
 
+         Map<String, Set<String>> result = new HashMap<>();
+
          if ( !infoFile.exists() )
          {
             final File parentDirectory = infoFile.getParentFile();
@@ -164,20 +165,17 @@ public interface EntityExportService
 
             infoFile.createNewFile();
 
-            return new HashMap<>();
+            return result;
          }
 
+         final FileInputStream fis = new FileInputStream( infoFile );
 
-         try ( final FileInputStream fis = new FileInputStream( infoFile ) )
+         try ( final ObjectInputStream ois = new ObjectInputStream( fis ) )
          {
-            try ( final ObjectInputStream ois = new ObjectInputStream( fis ) )
-            {
-               return ( Map<String, Set<String>> ) ois.readObject();
-            }
-         } catch ( IOException e )
-         {
-            return new HashMap<>();
+            result = ( Map<String, Set<String>> ) ois.readObject();
          }
+
+         return result;
       }
 
       @Override
