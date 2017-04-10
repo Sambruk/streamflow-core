@@ -12,7 +12,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +74,7 @@ public class ValueExportHelper extends AbstractExportHelper
 
             final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
 
-            createCrossRefTableIfNotExists( tableName, tables, associationTable, detectSqlType( Integer.class ), detectSqlType( Integer.class ) );
+            createCrossRefTableIfNotExists( tableName, associationTable, detectSqlType( Integer.class ), detectSqlType( Integer.class ) );
 
             final String insertSubProperties = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
                     " (owner_id,link_id) VALUES (?,?)";

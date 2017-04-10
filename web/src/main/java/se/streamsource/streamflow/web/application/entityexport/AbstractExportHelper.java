@@ -24,6 +24,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -201,13 +202,12 @@ public abstract class AbstractExportHelper
    }
 
    void createCrossRefTableIfNotExists( String tableName,
-                                        Map<String, Set<String>> tableColumns,
                                         String associationTable,
                                         String ownerType,
                                         String linkType ) throws ClassNotFoundException, SQLException
    {
 
-      if ( tableColumns.get( tableName ) == null )
+      if ( tables.get( tableName ) == null )
       {
 
          final StringBuilder manyAssoc = new StringBuilder();
@@ -234,7 +234,7 @@ public abstract class AbstractExportHelper
          columns.add( "owner_id" );
          columns.add( "link_id" );
 
-         tableColumns.put( tableName, columns );
+         tables.put( tableName, columns );
 
          final int hashCodeOwner = ( tableName() + tableName + "owner_id" ).hashCode();
          manyAssoc
@@ -645,12 +645,10 @@ public abstract class AbstractExportHelper
 
    protected void saveTablesState() throws IOException
    {
-      try ( final FileOutputStream fos = new FileOutputStream( schemaInfoFileAbsPath ) )
+      final FileOutputStream fos = new FileOutputStream( schemaInfoFileAbsPath );
+      try ( final ObjectOutputStream oos = new ObjectOutputStream( fos ) )
       {
-         try ( final ObjectOutputStream oos = new ObjectOutputStream( fos ) )
-         {
-            oos.writeObject( tables );
-         }
+         oos.writeObject( new HashMap<>( tables ) );
       }
    }
 

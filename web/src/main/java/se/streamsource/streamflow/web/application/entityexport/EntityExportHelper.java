@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -120,7 +119,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
          final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( existsManyAssociation.qualifiedName().name() ) + "_cross_ref";
 
-         createCrossRefTableIfNotExists( tableName, tables, associationTable, stringSqlType( 255 ), stringSqlType( 255 ) );
+         createCrossRefTableIfNotExists( tableName, associationTable, stringSqlType( 255 ), stringSqlType( 255 ) );
 
          final String name = existsManyAssociation.qualifiedName().name();
          final JSONArray array = entity.getJSONArray( name );
@@ -225,7 +224,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
                      final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
 
-                     createCrossRefTableIfNotExists( tableName, tables, associationTable, stringSqlType( 255 ), detectSqlType( Integer.class ) );
+                     createCrossRefTableIfNotExists( tableName, associationTable, stringSqlType( 255 ), detectSqlType( Integer.class ) );
 
                      final String insertSubProperties = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
                              " (owner_id,link_id) VALUES (?,?)";
