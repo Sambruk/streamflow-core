@@ -43,11 +43,11 @@ public class EntityExportJob implements Runnable
    private ServiceReference<DataSource> dataSource;
 
    @Override
-   public void run() {
-      try ( final Connection connection = dataSource.get().getConnection() )
+   public void run()
+   {
+      while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
       {
-
-         while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
+         try ( final Connection connection = dataSource.get().getConnection() )
          {
             final String nextEntity = entityExportService.getNextEntity();
 
@@ -101,7 +101,7 @@ public class EntityExportJob implements Runnable
             entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
             entityExportHelper.setAllAssociations( entityType.associations() );
             entityExportHelper.setClassName( description );
-            entityExportHelper.setModule ( moduleSPI );
+            entityExportHelper.setModule( moduleSPI );
             entityExportHelper.setDbVendor( getDbVendor() );
             entityExportHelper.setTables( entityExportService.getTables() );
             entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
@@ -109,13 +109,12 @@ public class EntityExportJob implements Runnable
             entityExportService.setTables( entityExportHelper.help() );
 
             entityExportService.savedSuccess( entity );
-
+         } catch ( Exception e )
+         {
+            logger.error( "Unexpected error: ", e );
          }
-
-      } catch ( Exception e )
-      {
-         logger.error( "Unexpected error: ", e );
       }
+
 
    }
 
@@ -166,22 +165,26 @@ public class EntityExportJob implements Runnable
       return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
    }
 
-   public EntityExportJob setEntityExportService(EntityExportService entityExportService) {
+   public EntityExportJob setEntityExportService( EntityExportService entityExportService )
+   {
       this.entityExportService = entityExportService;
       return this;
    }
 
-   public EntityExportJob setModuleSPI(ModuleSPI moduleSPI) {
+   public EntityExportJob setModuleSPI( ModuleSPI moduleSPI )
+   {
       this.moduleSPI = moduleSPI;
       return this;
    }
 
-   public EntityExportJob setModule(Module module) {
+   public EntityExportJob setModule( Module module )
+   {
       this.module = module;
       return this;
    }
 
-   public EntityExportJob setDataSource(ServiceReference<DataSource> dataSource) {
+   public EntityExportJob setDataSource( ServiceReference<DataSource> dataSource )
+   {
       this.dataSource = dataSource;
       return this;
    }

@@ -33,14 +33,14 @@
             />
 
     <cache name="CASECOUNTS"
-           maxEntriesLocalHeap="100"
+           maxEntriesLocalHeap="1000"
            eternal="true"
            overflowToDisk="false"
            memoryStoreEvictionPolicy="LRU"
             />
 
     <cache name="VERIFIEDUSERS"
-           maxEntriesLocalHeap="100"
+           maxEntriesLocalHeap="1000"
            timeToIdleSeconds="3600"
            timeToLiveSeconds="3600"
            overflowToDisk="false"
@@ -53,8 +53,6 @@
            maxEntriesLocalDisk="2147483640"
            eternal="true"
            memoryStoreEvictionPolicy="LRU">
-        <cacheEventListenerFactory class="se.streamsource.streamflow.web.application.entityexport.TestCacheEventListenerFactory"
-                                   properties="" listenFor="local" />
         <persistence strategy="localTempSwap" synchronousWrites="false"/>
         <pinning store="inCache" />
     </cache>
