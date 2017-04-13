@@ -55,6 +55,7 @@ import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.contact.*;
 import se.streamsource.streamflow.web.application.entityexport.EntityExportConfiguration;
+import se.streamsource.streamflow.web.application.entityexport.EntityExportJob;
 import se.streamsource.streamflow.web.application.entityexport.EntityExportService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
@@ -225,7 +226,7 @@ public class DomainAssembler
                  .identifiedBy("entityexport").instantiateOnStartup().visibleIn(Visibility.application);
          ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
          config.entities(EntityExportConfiguration.class).visibleIn(Visibility.application);
-
+         module.transients(EntityExportJob.class).visibleIn(application);
       }
    }
 

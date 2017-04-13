@@ -4,6 +4,10 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
@@ -16,6 +20,10 @@ import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
@@ -29,163 +37,153 @@ import java.util.Map;
 /**
  * JAVADOC
  */
-public class EntityExportJob implements Runnable
+@Mixins(EntityExportJob.Mixin.class)
+@DisallowConcurrentExecution
+public interface EntityExportJob extends Job, TransientComposite
 {
 
-   private final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
-
-   private EntityExportService entityExportService;
-
-   private ModuleSPI moduleSPI;
-
-   private Module module;
-
-   private ServiceReference<DataSource> dataSource;
-
-   @Override
-   public void run()
+   abstract class Mixin
+           implements EntityExportJob
    {
-      while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
+
+      private final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
+
+      @Service
+      EntityExportService entityExportService;
+
+      @Structure
+      ModuleSPI moduleSPI;
+
+      @Structure
+      Module module;
+
+      @Service
+      ServiceReference<DataSource> dataSource;
+
+      @Override
+      public void execute( JobExecutionContext context ) throws JobExecutionException
       {
-         try ( final Connection connection = dataSource.get().getConnection() )
+         while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
          {
-            final String nextEntity = entityExportService.getNextEntity();
-
-            if ( nextEntity.isEmpty() )
+            try ( final Connection connection = dataSource.get().getConnection() )
             {
-               logger.info( "Entity doesn't exist in cache." );
-            }
+               final String nextEntity = entityExportService.getNextEntity();
 
-            final JSONObject entity = new JSONObject( nextEntity );
-
-            final String description = entity.optString( "_description" );
-
-
-            if ( description.isEmpty() )
-            {
-               throw new IllegalStateException( "JSON must include _description property." );
-            }
-
-            final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
-            final EntityType entityType = entityDescriptor.entityType();
-
-            final Iterable<PropertyType> existsProperties =
-                    getNotNullProperties( entity, entityType.properties() );
-            final Iterable<AssociationType> existsAssociations =
-                    getNotNullProperties( entity, entityType.associations() );
-            final Iterable<ManyAssociationType> existsManyAssociations =
-                    getNotNullProperties( entity, entityType.manyAssociations() );
-
-            Map<String, Object> subProps = new HashMap<>();
-
-            for ( PropertyType existsProperty : existsProperties )
-            {
-               final QualifiedName qualifiedName = existsProperty.qualifiedName();
-               final Object jsonStructure = entity.get( qualifiedName.name() );
-
-               if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
+               if ( nextEntity.isEmpty() )
                {
-                  subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
+                  logger.info( "Entity doesn't exist in cache." );
                }
-            }
 
-            final EntityExportHelper entityExportHelper = new EntityExportHelper();
+               final JSONObject entity = new JSONObject( nextEntity );
 
-            entityExportHelper.setExistsProperties( existsProperties );
-            entityExportHelper.setExistsAssociations( existsAssociations );
-            entityExportHelper.setExistsManyAssociations( existsManyAssociations );
-            entityExportHelper.setSubProps( subProps );
-            entityExportHelper.setConnection( connection );
-            entityExportHelper.setEntity( entity );
-            entityExportHelper.setAllProperties( entityType.properties() );
-            entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
-            entityExportHelper.setAllAssociations( entityType.associations() );
-            entityExportHelper.setClassName( description );
-            entityExportHelper.setModule( moduleSPI );
-            entityExportHelper.setDbVendor( getDbVendor() );
-            entityExportHelper.setTables( entityExportService.getTables() );
-            entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
-            entityExportHelper.setShowSql( entityExportService.configuration().showSql().get() );
-            entityExportService.setTables( entityExportHelper.help() );
-
-            entityExportService.savedSuccess( entity );
-         } catch ( Exception e )
-         {
-            logger.error( "Unexpected error: ", e );
-         }
-      }
+               final String description = entity.optString( "_description" );
 
 
-   }
+               if ( description.isEmpty() )
+               {
+                  throw new IllegalStateException( "JSON must include _description property." );
+               }
 
-   private DbVendor getDbVendor()
-   {
-      final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
-      final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
-      return DbVendor.from( dataSourceConfiguration.dbVendor().get() );
-   }
+               final EntityDescriptor entityDescriptor = moduleSPI.entityDescriptor( description );
+               final EntityType entityType = entityDescriptor.entityType();
 
-   private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
-   {
-      return Iterables.filter( new Specification<T>()
-      {
-         @Override
-         public boolean satisfiedBy( T item )
-         {
-            String name;
-            try
-            {
-               name = getQualifiedName( item );
+               final Iterable<PropertyType> existsProperties =
+                       getNotNullProperties( entity, entityType.properties() );
+               final Iterable<AssociationType> existsAssociations =
+                       getNotNullProperties( entity, entityType.associations() );
+               final Iterable<ManyAssociationType> existsManyAssociations =
+                       getNotNullProperties( entity, entityType.manyAssociations() );
+
+               Map<String, Object> subProps = new HashMap<>();
+
+               for ( PropertyType existsProperty : existsProperties )
+               {
+                  final QualifiedName qualifiedName = existsProperty.qualifiedName();
+                  final Object jsonStructure = entity.get( qualifiedName.name() );
+
+                  if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
+                  {
+                     subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, moduleSPI ) );
+                  }
+               }
+
+               final EntityExportHelper entityExportHelper = new EntityExportHelper();
+
+               entityExportHelper.setExistsProperties( existsProperties );
+               entityExportHelper.setExistsAssociations( existsAssociations );
+               entityExportHelper.setExistsManyAssociations( existsManyAssociations );
+               entityExportHelper.setSubProps( subProps );
+               entityExportHelper.setConnection( connection );
+               entityExportHelper.setEntity( entity );
+               entityExportHelper.setAllProperties( entityType.properties() );
+               entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
+               entityExportHelper.setAllAssociations( entityType.associations() );
+               entityExportHelper.setClassName( description );
+               entityExportHelper.setModule( moduleSPI );
+               entityExportHelper.setDbVendor( getDbVendor() );
+               entityExportHelper.setTables( entityExportService.getTables() );
+               entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
+               entityExportHelper.setShowSql( entityExportService.configuration().showSql().get() );
+               entityExportService.setTables( entityExportHelper.help() );
+
+               entityExportService.savedSuccess( entity );
             } catch ( Exception e )
             {
-               logger.error( "Error: ", e );
-               return false;
+               logger.error( "Unexpected error: ", e );
             }
-            final Object prop = entity.opt( name );
-            if ( prop == null || entity.isNull( name ) )
-            {
-               return false;
-            }
-            final String json = prop.toString();
-            return !jsonEmpty( json );
          }
 
-         private String getQualifiedName( T item )
-                 throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+
+      }
+
+      private DbVendor getDbVendor()
+      {
+         final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
+         final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
+         return DbVendor.from( dataSourceConfiguration.dbVendor().get() );
+      }
+
+      private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
+      {
+         return Iterables.filter( new Specification<T>()
          {
-            return ( ( QualifiedName ) MethodUtils.invokeExactMethod( item, "qualifiedName", null ) ).name();
-         }
+            @Override
+            public boolean satisfiedBy( T item )
+            {
+               String name;
+               try
+               {
+                  name = getQualifiedName( item );
+               } catch ( Exception e )
+               {
+                  logger.error( "Error: ", e );
+                  return false;
+               }
+               final Object prop = entity.opt( name );
+               if ( prop == null || entity.isNull( name ) )
+               {
+                  return false;
+               }
+               final String json = prop.toString();
+               return !jsonEmpty( json );
+            }
 
-      }, iterable );
+            private String getQualifiedName( T item )
+                    throws NoSuchMethodException, IllegalAccessException, InvocationTargetException
+            {
+               return ( ( QualifiedName ) MethodUtils.invokeExactMethod( item, "qualifiedName", null ) ).name();
+            }
+
+         }, iterable );
+
+      }
+
+      private boolean jsonEmpty( String json )
+      {
+         return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
+      }
 
    }
 
-   private boolean jsonEmpty( String json )
-   {
-      return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
-   }
 
-   public EntityExportJob setEntityExportService( EntityExportService entityExportService )
-   {
-      this.entityExportService = entityExportService;
-      return this;
-   }
-
-   public EntityExportJob setModuleSPI( ModuleSPI moduleSPI )
-   {
-      this.moduleSPI = moduleSPI;
-      return this;
-   }
-
-   public EntityExportJob setModule( Module module )
-   {
-      this.module = module;
-      return this;
-   }
-
-   public EntityExportJob setDataSource( ServiceReference<DataSource> dataSource )
-   {
-      this.dataSource = dataSource;
-      return this;
-   }
 }
