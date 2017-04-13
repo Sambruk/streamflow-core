@@ -89,7 +89,7 @@ public abstract class AbstractExportHelper
                            PreparedStatementValueBinder valueBinder
    ) throws SQLException, JSONException, ClassNotFoundException, IOException
    {
-      final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( name ) + "_coll";
+      final String tableName = tableName() + "_" + toSnakeCaseFromCamelCase( name ) + "_coll";
 
       final boolean isMap = value instanceof Map;
 
@@ -396,7 +396,7 @@ public abstract class AbstractExportHelper
          if ( ValueComposite.class.isAssignableFrom( type ) )
          {
 
-            final String reference = toSnackCaseFromCamelCase( type.getSimpleName() );
+            final String reference = toSnakeCaseFromCamelCase( type.getSimpleName() );
 
             createSubPropertyTableIfNotExists( reference );
 
@@ -567,7 +567,7 @@ public abstract class AbstractExportHelper
       return ClassUtils.getShortClassName( className );
    }
 
-   String toSnackCaseFromCamelCase( String str )
+   String toSnakeCaseFromCamelCase( String str )
    {
       StringBuilder stringBuilder = new StringBuilder();
 

@@ -73,7 +73,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    {
       for ( AssociationType association : entityType.associations() )
       {
-         final String associationName = toSnackCaseFromCamelCase( association.qualifiedName().name() );
+         final String associationName = toSnakeCaseFromCamelCase( association.qualifiedName().name() );
          String associationTable = null;
 
          final Class<?> clazz = Class.forName( association.type().name() );
@@ -83,7 +83,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          {
             if ( clazz.isAssignableFrom( info.getEntityClass() ) )
             {
-               associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
+               associationTable = toSnakeCaseFromCamelCase( info.getClassSimpleName() );
                i++;
             }
          }
@@ -166,14 +166,14 @@ public class SchemaCreatorHelper extends AbstractExportHelper
                final Class<?> clazz = Class.forName( property.type().type().name() );
                mainTableCreate
                        .append( " " )
-                       .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( property.qualifiedName().name() ) ) )
+                       .append( escapeSqlColumnOrTable( toSnakeCaseFromCamelCase( property.qualifiedName().name() ) ) )
                        .append( " " )
                        .append( detectSqlType( clazz ) )
                        .append( " NULL," )
                        .append( LINE_SEPARATOR );
 
                final Set<String> columns = tables.get( tableName() );
-               columns.add( toSnackCaseFromCamelCase( property.qualifiedName().name() ) );
+               columns.add( toSnakeCaseFromCamelCase( property.qualifiedName().name() ) );
             }
 
          }
@@ -183,7 +183,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
       for ( AssociationType association : entityType.associations() )
       {
-         final String associationName = toSnackCaseFromCamelCase( association.qualifiedName().name() );
+         final String associationName = toSnakeCaseFromCamelCase( association.qualifiedName().name() );
 
          mainTableCreate
                  .append( " " )
@@ -209,6 +209,6 @@ public class SchemaCreatorHelper extends AbstractExportHelper
    @Override
    protected String tableName()
    {
-      return toSnackCaseFromCamelCase( entityInfo.getClassSimpleName() );
+      return toSnakeCaseFromCamelCase( entityInfo.getClassSimpleName() );
    }
 }

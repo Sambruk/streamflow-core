@@ -40,7 +40,7 @@ public class ValueExportHelper extends AbstractExportHelper
 
       PreparedStatement preparedStatement = connection.prepareStatement( query, Statement.RETURN_GENERATED_KEYS );
 
-      final Map<QualifiedName, Boolean> collections = addArguments( properties, preparedStatement );
+      final Map<QualifiedName, Boolean> complexProps = addArguments( properties, preparedStatement );
 
       preparedStatement.executeUpdate();
 
@@ -48,19 +48,19 @@ public class ValueExportHelper extends AbstractExportHelper
       generatedKeys.next();
       final int id = generatedKeys.getInt( 1 );
 
-      saveSubProperties( collections, id );
+      saveSubProperties( complexProps, id );
 
       return new SingletonMap(id, tableName());
    }
 
-   private void saveSubProperties( Map<QualifiedName, Boolean> collections, int id ) throws Exception
+   private void saveSubProperties( Map<QualifiedName, Boolean> complexProps, int id ) throws Exception
    {
 
-      final Set<QualifiedName> qualifiedNames = collections.keySet();
+      final Set<QualifiedName> qualifiedNames = complexProps.keySet();
 
       for ( QualifiedName qualifiedName : qualifiedNames )
       {
-         final Boolean isValue = collections.get( qualifiedName );
+         final Boolean isValue = complexProps.get( qualifiedName );
 
          if ( isValue )
          {
@@ -70,7 +70,7 @@ public class ValueExportHelper extends AbstractExportHelper
                collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
             }
 
-            final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( qualifiedName.name() ) + "_cross_ref";
+            final String tableName = tableName() + "_" + toSnakeCaseFromCamelCase( qualifiedName.name() ) + "_cross_ref";
 
             final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
 
@@ -133,7 +133,7 @@ public class ValueExportHelper extends AbstractExportHelper
 
                      final SingletonMap singletonMap = processValueComposite( valueComposite );
 
-                     final String triggerStatement = addColumn( toSnackCaseFromCamelCase( property.qualifiedName().name() ), detectType( valueComposite ), statement );
+                     final String triggerStatement = addColumn( toSnakeCaseFromCamelCase( property.qualifiedName().name() ), detectType( valueComposite ), statement );
 
                      if ( !triggerStatement.isEmpty() )
                      {
@@ -211,7 +211,7 @@ public class ValueExportHelper extends AbstractExportHelper
                      continue;
                   }
 
-                  final String name = toSnackCaseFromCamelCase( property.qualifiedName().name() );
+                  final String name = toSnakeCaseFromCamelCase( property.qualifiedName().name() );
 
 
                   final String triggerStatement = addColumn( name, (Class<?>) property.type(), statement );
@@ -271,13 +271,13 @@ public class ValueExportHelper extends AbstractExportHelper
       //exclusions
       if ( FieldValue.class.isAssignableFrom( value.type() ) )
       {
-         return toSnackCaseFromCamelCase( FieldValue.class.getSimpleName() );
+         return toSnakeCaseFromCamelCase( FieldValue.class.getSimpleName() );
       } else if ( ActionValue.class.isAssignableFrom( value.type() ) )
       {
-         return toSnackCaseFromCamelCase( ActionValue.class.getSimpleName() );
+         return toSnakeCaseFromCamelCase( ActionValue.class.getSimpleName() );
       }
 
-      return toSnackCaseFromCamelCase( value.type().getSimpleName() );
+      return toSnakeCaseFromCamelCase( value.type().getSimpleName() );
    }
 
    // setters

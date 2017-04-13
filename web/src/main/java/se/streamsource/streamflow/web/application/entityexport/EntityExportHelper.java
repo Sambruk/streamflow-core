@@ -108,7 +108,7 @@ public class EntityExportHelper extends AbstractExportHelper
             {
                if ( i == 0 )
                {
-                  associationTable = toSnackCaseFromCamelCase( info.getClassSimpleName() );
+                  associationTable = toSnakeCaseFromCamelCase( info.getClassSimpleName() );
                } else
                {
                   associationTable = null;
@@ -117,7 +117,7 @@ public class EntityExportHelper extends AbstractExportHelper
             }
          }
 
-         final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( existsManyAssociation.qualifiedName().name() ) + "_cross_ref";
+         final String tableName = tableName() + "_" + toSnakeCaseFromCamelCase( existsManyAssociation.qualifiedName().name() ) + "_cross_ref";
 
          createCrossRefTableIfNotExists( tableName, associationTable, stringSqlType( 255 ), stringSqlType( 255 ) );
 
@@ -181,7 +181,7 @@ public class EntityExportHelper extends AbstractExportHelper
          if ( !name.equals( "identity" ) && subProps.get( name ) == null )
          {
             query
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
+                    .append( escapeSqlColumnOrTable( toSnakeCaseFromCamelCase( name ) ) )
                     .append( " = ?," );
          }
       }
@@ -208,61 +208,52 @@ public class EntityExportHelper extends AbstractExportHelper
             if ( value instanceof Collection || value instanceof Map )
             {
 
-               if ( !( value instanceof Map ) )
+               if ( value instanceof Collection
+                       && Iterables.first( ( Iterable<?> ) value ) instanceof ValueComposite )
                {
-                  final Object first = Iterables.first( ( Iterable<?> ) value );
-                  if ( first instanceof ValueComposite )
+                  List<SingletonMap> collectionOfValues = new ArrayList<>();
+                  for ( Object o : ( Collection<?> ) value )
+                  {
+                     collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
+                  }
+
+                  final String tableName = tableName() + "_" + toSnakeCaseFromCamelCase( key ) + "_cross_ref";
+
+                  final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
+
+                  createCrossRefTableIfNotExists( tableName, associationTable, stringSqlType( 255 ), detectSqlType( Integer.class ) );
+
+                  final String insertSubProperties = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
+                          " (owner_id,link_id) VALUES (?,?)";
+
+                  try ( final PreparedStatement preparedStatement = connection.prepareStatement( insertSubProperties ) )
                   {
 
-                     List<SingletonMap> collectionOfValues = new ArrayList<>();
-                     for ( Object o : ( Collection<?> ) value )
+                     for ( SingletonMap val : collectionOfValues )
                      {
-                        collectionOfValues.add( processValueComposite( ( ValueComposite ) o ) );
+                        preparedStatement.setString( 1, entity.getString( "identity" ) );
+                        preparedStatement.setInt( 2, ( Integer ) val.getKey() );
+                        preparedStatement.addBatch();
                      }
 
-                     final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( key ) + "_cross_ref";
-
-                     final String associationTable = ( String ) Iterables.first( collectionOfValues ).getValue();
-
-                     createCrossRefTableIfNotExists( tableName, associationTable, stringSqlType( 255 ), detectSqlType( Integer.class ) );
-
-                     final String insertSubProperties = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
-                             " (owner_id,link_id) VALUES (?,?)";
-
-                     try ( final PreparedStatement preparedStatement = connection.prepareStatement( insertSubProperties ) )
-                     {
-
-                        for ( SingletonMap val : collectionOfValues )
-                        {
-                           preparedStatement.setString( 1, entity.getString( "identity" ) );
-                           preparedStatement.setInt( 2, ( Integer ) val.getKey() );
-                           preparedStatement.addBatch();
-                        }
-
-                        preparedStatement.executeBatch();
-                     }
-
-                  } else
-                  {
-                     processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
+                     preparedStatement.executeBatch();
                   }
                } else
                {
                   processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
                }
-
             } else if ( value instanceof ValueComposite )
             {
 
                query
-                       .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
+                       .append( escapeSqlColumnOrTable( toSnakeCaseFromCamelCase( key ) ) )
                        .append( "=?," );
 
                final ValueComposite valueComposite = ( ValueComposite ) value;
 
                subProperties.add( processValueComposite( valueComposite ) );
 
-               final String triggerStatement = addColumn( toSnackCaseFromCamelCase( key ), detectType( valueComposite ), statement );
+               final String triggerStatement = addColumn( toSnakeCaseFromCamelCase( key ), detectType( valueComposite ), statement );
 
                if ( !triggerStatement.isEmpty() )
                {
@@ -302,7 +293,7 @@ public class EntityExportHelper extends AbstractExportHelper
          }
 
          checkEntityExists( jsonObject.optString( "_type", associationClass ), identity );
-         associations.put( toSnackCaseFromCamelCase( name ), identity );
+         associations.put( toSnakeCaseFromCamelCase( name ), identity );
       }
 
       if ( associations.size() > 0 )
@@ -312,7 +303,7 @@ public class EntityExportHelper extends AbstractExportHelper
          for ( String key : keys )
          {
             query
-                    .append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( key ) ) )
+                    .append( escapeSqlColumnOrTable( toSnakeCaseFromCamelCase( key ) ) )
                     .append( " = ?," );
          }
 
@@ -323,7 +314,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
    private void checkEntityExists( String type, String identity ) throws Exception
    {
-      final String tableName = toSnackCaseFromCamelCase( classSimpleName( type ) );
+      final String tableName = toSnakeCaseFromCamelCase( classSimpleName( type ) );
       try ( final ResultSet resultSet = selectFromWhereId( tableName, identity ) )
       {
          if ( !resultSet.next() )
@@ -352,10 +343,10 @@ public class EntityExportHelper extends AbstractExportHelper
             final String tableName;
             if ( ( ( CollectionType ) property.type() ).collectedType().isValue() )
             {
-               tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() ) + "_cross_ref";
+               tableName = tableName() + "_" + toSnakeCaseFromCamelCase( property.qualifiedName().name() ) + "_cross_ref";
             } else
             {
-               tableName = tableName() + "_" + toSnackCaseFromCamelCase( property.qualifiedName().name() ) + "_coll";
+               tableName = tableName() + "_" + toSnakeCaseFromCamelCase( property.qualifiedName().name() ) + "_coll";
             }
 
             if ( tables.containsKey( tableName ) )
@@ -374,7 +365,7 @@ public class EntityExportHelper extends AbstractExportHelper
       //Delete many associations
       for ( ManyAssociationType manyAssociation : allManyAssociations )
       {
-         final String tableName = tableName() + "_" + toSnackCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
+         final String tableName = tableName() + "_" + toSnakeCaseFromCamelCase( manyAssociation.qualifiedName().name() ) + "_cross_ref";
          if ( tables.containsKey( tableName ) )
          {
             final String delete = "DELETE FROM " + escapeSqlColumnOrTable( tableName ) + " WHERE owner_id = ?";
@@ -397,7 +388,7 @@ public class EntityExportHelper extends AbstractExportHelper
       for ( PropertyType property : allProperties )
       {
          final String name = property.qualifiedName().name();
-         final String columnName = toSnackCaseFromCamelCase( name );
+         final String columnName = toSnakeCaseFromCamelCase( name );
          if ( !name.equals( "identity" ) && columns.contains( columnName ) )
          {
             queryNullUpdate.append( escapeSqlColumnOrTable( columnName ) )
@@ -408,7 +399,7 @@ public class EntityExportHelper extends AbstractExportHelper
       for ( AssociationType association : allAssociations )
       {
          final String name = association.qualifiedName().name();
-         queryNullUpdate.append( escapeSqlColumnOrTable( toSnackCaseFromCamelCase( name ) ) )
+         queryNullUpdate.append( escapeSqlColumnOrTable( toSnakeCaseFromCamelCase( name ) ) )
                  .append( "=NULL," );
       }
 
@@ -465,7 +456,7 @@ public class EntityExportHelper extends AbstractExportHelper
    @Override
    protected String tableName()
    {
-      return toSnackCaseFromCamelCase( classSimpleName( className ) );
+      return toSnakeCaseFromCamelCase( classSimpleName( className ) );
    }
 
    //setters
