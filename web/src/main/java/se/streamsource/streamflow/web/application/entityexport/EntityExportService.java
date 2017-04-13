@@ -181,7 +181,11 @@ public interface EntityExportService
       @Override
       public synchronized void saveToCache( String transaction )
       {
-         caching.put( new Element( cacheIdGenerator.getAndIncrement(), transaction ) );
+         //Resolved possible NPE
+         if ( caching != null )
+         {
+            caching.put( new Element( cacheIdGenerator.getAndIncrement(), transaction ) );
+         }
       }
 
       @Override
