@@ -37,7 +37,7 @@ public abstract class AbstractExportHelper
 {
 
    public static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
-   protected final Logger logger = LoggerFactory.getLogger( this.getClass().getName() );
+   protected static final Logger logger = LoggerFactory.getLogger( EntityExportService.class.getName() );
 
    protected Connection connection;
    protected ModuleSPI module;

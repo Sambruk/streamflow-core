@@ -80,7 +80,7 @@ public interface EntityExportService
    abstract class Mixin
            implements EntityExportService
    {
-      private final Logger logger = LoggerFactory.getLogger( EntityExportService.class );
+      private static final Logger logger = LoggerFactory.getLogger( EntityExportService.class.getName() );
 
       private String infoFileAbsPath;
 
@@ -125,6 +125,7 @@ public interface EntityExportService
                  && thisConfig.configuration().enabled().get() )
          {
 
+            logger.info( "Started entity export" );
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
             caching.removeAll();
 
@@ -385,7 +386,9 @@ public interface EntityExportService
 
             SearchHit[] entities = searchResponse.getHits().getHits();
 
-            long startTime = System.currentTimeMillis();
+            final float step = 0.05f;
+            float partPercent = 0f;
+            long nextForLog = ( long ) (count * ( partPercent += step ) );
             do
             {
 
@@ -401,11 +404,11 @@ public interface EntityExportService
                        .execute().actionGet();
 
                entities = searchResponse.getHits().getHits();
-               if ( numberOfExportedEntities % 1000 == 0 || entities.length == 0  )
+               if ( numberOfExportedEntities >= nextForLog )
                {
-                  logger.info( String.format( "Exported %.2f%% (%d) entities with time %d ms",
-                          numberOfExportedEntities * 100.0 / count, numberOfExportedEntities, System.currentTimeMillis() - startTime ) );
-                  startTime = System.currentTimeMillis();
+                  logger.info( String.format( "Exported %f.2%% (%d) entities",
+                          numberOfExportedEntities * 100.0 / count, numberOfExportedEntities ) );
+                  nextForLog = ( long ) (count * ( partPercent += step ) );
                }
 
             } while ( entities.length != 0 );
