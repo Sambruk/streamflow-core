@@ -410,11 +410,15 @@ public class EntityExportHelper extends AbstractExportHelper
               .append( " = ?" )
               .toString();
 
-      try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
+      if ( allProperties.size() + allAssociations.size() > 1 )
       {
-         preparedStatement.setString( 1, identity );
-         preparedStatement.executeUpdate();
+         try ( final PreparedStatement preparedStatement = connection.prepareStatement( query ) )
+         {
+            preparedStatement.setString( 1, identity );
+            preparedStatement.executeUpdate();
+         }
       }
+
    }
 
    private void addArguments( PreparedStatement statement,

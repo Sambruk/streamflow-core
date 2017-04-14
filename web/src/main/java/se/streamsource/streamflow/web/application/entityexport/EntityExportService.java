@@ -406,7 +406,7 @@ public interface EntityExportService
                entities = searchResponse.getHits().getHits();
                if ( numberOfExportedEntities >= nextForLog )
                {
-                  logger.info( String.format( "Exported %f.2%% (%d) entities",
+                  logger.info( String.format( "Exported %.2f%% (%d) entities",
                           numberOfExportedEntities * 100.0 / count, numberOfExportedEntities ) );
                   nextForLog = ( long ) (count * ( partPercent += step ) );
                }
