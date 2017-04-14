@@ -149,7 +149,7 @@ public interface EntityExportService
 
       }
 
-      private Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException
+      private synchronized Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException
       {
          final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
          schemaInfoFileAbsPath = infoFile.getAbsolutePath();

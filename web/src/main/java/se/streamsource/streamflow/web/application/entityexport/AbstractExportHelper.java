@@ -643,17 +643,12 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected void saveTablesState() throws IOException
+   protected synchronized void saveTablesState() throws IOException
    {
       final FileOutputStream fos = new FileOutputStream( schemaInfoFileAbsPath );
-      final HashMap<String, Set<String>> tablesCopy = new HashMap<>();
-      for ( Map.Entry<String, Set<String>> table : tables.entrySet() )
-      {
-         tablesCopy.put( table.getKey(), new HashSet<>( table.getValue() ) );
-      }
       try ( final ObjectOutputStream oos = new ObjectOutputStream( fos ) )
       {
-         oos.writeObject( tablesCopy );
+         oos.writeObject( tables );
       }
    }
 
