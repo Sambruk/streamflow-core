@@ -649,7 +649,7 @@ public abstract class AbstractExportHelper
       final HashMap<String, Set<String>> tablesCopy = new HashMap<>();
       for ( Map.Entry<String, Set<String>> table : tables.entrySet() )
       {
-         tablesCopy.put( table.getKey(), new LinkedHashSet<>( table.getValue() ) );
+         tablesCopy.put( table.getKey(), new HashSet<>( table.getValue() ) );
       }
       try ( final ObjectOutputStream oos = new ObjectOutputStream( fos ) )
       {
