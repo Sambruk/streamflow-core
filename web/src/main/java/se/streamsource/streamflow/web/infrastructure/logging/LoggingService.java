@@ -67,7 +67,7 @@ public interface LoggingService
          final Logger entityExportLogger = Logger.getLogger( "se.streamsource.streamflow.web.application.entityexport.EntityExportService" );
          entityExportLogger.addAppender( new DailyRollingFileAppender(new PatternLayout("%d - %m%n"), entityExportLog.getAbsolutePath(), "'.'yyyy-ww" ));
          entityExportLogger.setAdditivity( false );
-         logger.info( "Logging command performance to:"+entityExportLog );
+         logger.info( "Logging entity export to:"+entityExportLog );
 
          // Access logging
          File accessLog = new File(fileConfig.logDirectory(), "access.log");
