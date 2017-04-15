@@ -18,6 +18,7 @@
  */
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.json.JSONException;
 import org.qi4j.runtime.types.CollectionType;
 import org.qi4j.runtime.types.MapType;
 import org.qi4j.spi.entity.EntityDescriptor;
@@ -87,8 +88,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
    }
 
-   private void createForeignKeys() throws ClassNotFoundException, SQLException, IOException
-   {
+   private void createForeignKeys() throws ClassNotFoundException, SQLException, IOException, JSONException {
       for ( AssociationType association : entityType.associations() )
       {
          final String associationName = toSnakeCaseFromCamelCase( association.qualifiedName().name() );

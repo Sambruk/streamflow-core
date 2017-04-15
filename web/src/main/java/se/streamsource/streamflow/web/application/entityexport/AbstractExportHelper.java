@@ -19,6 +19,7 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.collections.map.SingletonMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -31,9 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.administration.form.FieldValue;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -661,13 +661,17 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected synchronized void saveTablesState() throws IOException
+   protected synchronized void saveTablesState() throws IOException, JSONException
    {
-      final FileOutputStream fos = new FileOutputStream( schemaInfoFileAbsPath );
-      try ( final ObjectOutputStream oos = new ObjectOutputStream( fos ) )
-      {
-         oos.writeObject( tables );
+      JSONObject jsonObject = new JSONObject();
+      for (String tableName : tables.keySet()) {
+         jsonObject.put( tableName, tables.get( tableName ) );
       }
+      File file = new File( schemaInfoFileAbsPath );
+      File fileTemp = new File(schemaInfoFileAbsPath + ".temp" );
+      FileUtils.writeStringToFile(fileTemp, jsonObject.toString(), StandardCharsets.UTF_8.name());
+      file.delete();
+      fileTemp.renameTo(file);
    }
 
    //setters

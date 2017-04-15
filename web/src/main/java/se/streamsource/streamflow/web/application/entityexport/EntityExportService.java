@@ -19,6 +19,7 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import net.sf.ehcache.Element;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -28,6 +29,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -60,12 +63,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -167,8 +167,7 @@ public interface EntityExportService
 
       }
 
-      private synchronized Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException
-      {
+      private synchronized Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException, JSONException {
          final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
          schemaInfoFileAbsPath = infoFile.getAbsolutePath();
 
@@ -187,13 +186,22 @@ public interface EntityExportService
             return result;
          }
 
-         final FileInputStream fis = new FileInputStream( infoFile );
-
-         try ( final ObjectInputStream ois = new ObjectInputStream( fis ) )
-         {
-            result = ( Map<String, Set<String>> ) ois.readObject();
+         String fileContent = FileUtils.readFileToString( infoFile, StandardCharsets.UTF_8.name() );
+         if (fileContent.isEmpty()) {
+            return result;
          }
-
+         JSONObject jsonObject = new JSONObject( fileContent );
+         Iterator keys = jsonObject.keys();
+         while ( keys.hasNext() )
+         {
+            String tableName = (String) keys.next();
+            JSONArray jsonArray = jsonObject.getJSONArray( tableName );
+            Set<String> columns = new LinkedHashSet<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                columns.add( jsonArray.getString( i ) );
+            }
+            result.put( tableName, columns );
+         }
          return result;
       }
 
