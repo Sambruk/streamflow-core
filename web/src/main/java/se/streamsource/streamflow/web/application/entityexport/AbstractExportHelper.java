@@ -1,15 +1,14 @@
 /**
- *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- *
+ * <p>
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.gnu.org/licenses/agpl.txt
- *
+ * <p>
+ * http://www.gnu.org/licenses/agpl.txt
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -103,7 +102,7 @@ public abstract class AbstractExportHelper
    }
 
    void processCollection( String name,
-                                   Object value,
+                           Object value,
                            PreparedStatementValueBinder valueBinder
    ) throws SQLException, JSONException, ClassNotFoundException, IOException
    {
@@ -313,7 +312,7 @@ public abstract class AbstractExportHelper
                        "  BEGIN" + LINE_SEPARATOR +
                        "    IF @@ROWCOUNT = 0" + LINE_SEPARATOR +
                        "      RETURN" + LINE_SEPARATOR +
-                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)"  + LINE_SEPARATOR +
+                       "    DELETE FROM " + escapeSqlColumnOrTable( associationTable ) + " WHERE id IN (SELECT link_id FROM deleted)" + LINE_SEPARATOR +
                        "  END";
 
                try ( final Statement statement = connection.createStatement() )
@@ -325,7 +324,8 @@ public abstract class AbstractExportHelper
                {
                   logger.info( trigger );
                }
-            } else {
+            } else
+            {
 
                // TODO: 30.03.17
 
@@ -368,7 +368,7 @@ public abstract class AbstractExportHelper
 
             triggerStatementsPersisted.addAll( triggerStatements );
 
-            for ( String statement :triggerStatementsPersisted )
+            for ( String statement : triggerStatementsPersisted )
             {
                trigger.append( statement )
                        .append( LINE_SEPARATOR );
@@ -468,10 +468,10 @@ public abstract class AbstractExportHelper
    }
 
    void setSimpleType( final PreparedStatement statement,
-                                 final Class clazz,
-                                 final JSONObject jsonObj,
-                                 final String name,
-                                 final int i ) throws JSONException, SQLException
+                       final Class clazz,
+                       final JSONObject jsonObj,
+                       final String name,
+                       final int i ) throws JSONException, SQLException
    {
       if ( Boolean.class.equals( clazz ) )
       {
@@ -501,8 +501,8 @@ public abstract class AbstractExportHelper
    }
 
    void setSimpleType( final PreparedStatement statement,
-                                 Object value,
-                                 final int i ) throws JSONException, SQLException
+                       Object value,
+                       final int i ) throws JSONException, SQLException
    {
       final Class<?> clazz = value.getClass();
       if ( Boolean.class.equals( clazz ) )
@@ -630,7 +630,7 @@ public abstract class AbstractExportHelper
       } else if ( Double.class.equals( type ) )
       {
          return "DOUBLE";
-      } else if ( Date.class.equals( type ) || DateTime.class.equals( type ))
+      } else if ( Date.class.equals( type ) || DateTime.class.equals( type ) )
       {
          return "DATETIME";
       } else if ( type.isEnum() || EntityReference.class.equals( type ) )
@@ -661,17 +661,14 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected synchronized void saveTablesState() throws IOException, JSONException
+   protected void saveTablesState() throws IOException, JSONException
    {
       JSONObject jsonObject = new JSONObject();
-      for (String tableName : tables.keySet()) {
+      for ( String tableName : tables.keySet() )
+      {
          jsonObject.put( tableName, tables.get( tableName ) );
       }
-      File file = new File( schemaInfoFileAbsPath );
-      File fileTemp = new File(schemaInfoFileAbsPath + ".temp" );
-      FileUtils.writeStringToFile(fileTemp, jsonObject.toString(), StandardCharsets.UTF_8.name());
-      file.delete();
-      fileTemp.renameTo(file);
+      FileUtils.writeStringToFile( new File( schemaInfoFileAbsPath ), jsonObject.toString(), StandardCharsets.UTF_8.name() );
    }
 
    //setters

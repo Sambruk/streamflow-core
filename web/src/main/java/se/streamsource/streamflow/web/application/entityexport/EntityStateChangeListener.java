@@ -24,10 +24,7 @@ import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.structure.Module;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
@@ -37,19 +34,15 @@ import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.structure.ModuleSPI;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
 import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
-import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -71,8 +64,7 @@ public class EntityStateChangeListener
    @Service
    QuartzSchedulerService schedulerService;
 
-   private JobDetail entityExportJob;
-   private Trigger trigger;
+   private JobKey jobKey;
 
    @Override
    public void notifyChanges( Iterable<EntityState> changedStates )
@@ -100,15 +92,15 @@ public class EntityStateChangeListener
                }
             }
 
-            if ( entityExportJob == null || trigger == null ) {
-               entityExportJob = newJob( EntityExportJob.class ).withIdentity( "entityexportjob", "entityexportgroup" ).build();
-               trigger = newTrigger().withIdentity( "entityexport", "entityexportgroup" ).startNow().build();
-               schedulerService.scheduleJob( entityExportJob, trigger );
+            if ( jobKey == null ) {
+               final JobDetail entityExportJob = newJob( EntityExportJob.class ).withIdentity( "entityexportjob", "entityexportgroup" ).build();
+               schedulerService.addJob( entityExportJob );
+               jobKey = entityExportJob.getKey();
             }
 
-            if ( !schedulerService.isExecuting( entityExportJob.getKey() ) )
+            if ( !schedulerService.isExecuting( jobKey ) )
             {
-               schedulerService.rescheduleJob( trigger.getKey(), trigger );
+               schedulerService.triggerJob( jobKey );
             }
 
          } catch ( Exception e )
@@ -134,8 +126,7 @@ public class EntityStateChangeListener
     */
    public String toJSON( EntityState state )
    {
-      long start = System.nanoTime();
-      JSONObject json = null;
+      JSONObject json;
       try
       {
          json = new JSONObject();

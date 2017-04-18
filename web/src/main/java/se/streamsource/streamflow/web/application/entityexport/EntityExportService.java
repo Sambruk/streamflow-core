@@ -1,15 +1,14 @@
 /**
- *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- *
+ * <p>
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.gnu.org/licenses/agpl.txt
- *
+ * <p>
+ * http://www.gnu.org/licenses/agpl.txt
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -85,13 +84,14 @@ public interface EntityExportService
    void saveToCache( String transaction );
 
    String getNextEntity();
+
    String getSchemaInfoFileAbsPath();
 
    boolean hasNextEntity();
 
    void savedSuccess( JSONObject entity );
 
-   Map<String,Set<String>> getTables() throws IOException, ClassNotFoundException;
+   Map<String, Set<String>> getTables() throws IOException, ClassNotFoundException;
 
    void setTables( Map<String, Set<String>> tables );
 
@@ -150,7 +150,7 @@ public interface EntityExportService
             try
             {
 
-               tables =  readSchemaStateFromFile();
+               tables = readSchemaStateFromFile();
 
                try ( final Connection connection = dataSource.get().getConnection() )
                {
@@ -167,7 +167,8 @@ public interface EntityExportService
 
       }
 
-      private synchronized Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException, JSONException {
+      private Map<String, Set<String>> readSchemaStateFromFile() throws IOException, ClassNotFoundException, JSONException
+      {
          final File infoFile = new File( config.dataDirectory(), "entityexport/schema.info" );
          schemaInfoFileAbsPath = infoFile.getAbsolutePath();
 
@@ -187,18 +188,20 @@ public interface EntityExportService
          }
 
          String fileContent = FileUtils.readFileToString( infoFile, StandardCharsets.UTF_8.name() );
-         if (fileContent.isEmpty()) {
+         if ( fileContent.isEmpty() )
+         {
             return result;
          }
          JSONObject jsonObject = new JSONObject( fileContent );
          Iterator keys = jsonObject.keys();
          while ( keys.hasNext() )
          {
-            String tableName = (String) keys.next();
+            String tableName = ( String ) keys.next();
             JSONArray jsonArray = jsonObject.getJSONArray( tableName );
             Set<String> columns = new LinkedHashSet<>();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                columns.add( jsonArray.getString( i ) );
+            for ( int i = 0; i < jsonArray.length(); i++ )
+            {
+               columns.add( jsonArray.getString( i ) );
             }
             result.put( tableName, columns );
          }
@@ -414,7 +417,7 @@ public interface EntityExportService
 
             final float step = 0.05f;
             float partPercent = 0f;
-            long nextForLog = ( long ) (count * ( partPercent += step ) );
+            long nextForLog = ( long ) ( count * ( partPercent += step ) );
             do
             {
 
@@ -425,8 +428,8 @@ public interface EntityExportService
                numberOfExportedEntities += entities.length;
 
                searchResponse = client
-                       .prepareSearchScroll(searchResponse.getScrollId())
-                       .setScroll(new TimeValue( millis ))
+                       .prepareSearchScroll( searchResponse.getScrollId() )
+                       .setScroll( new TimeValue( millis ) )
                        .execute().actionGet();
 
                entities = searchResponse.getHits().getHits();
@@ -434,7 +437,7 @@ public interface EntityExportService
                {
                   logger.info( String.format( "Exported %.2f%% (%d) entities",
                           numberOfExportedEntities * 100.0 / count, numberOfExportedEntities ) );
-                  nextForLog = ( long ) (count * ( partPercent += step ) );
+                  nextForLog = ( long ) ( count * ( partPercent += step ) );
                }
 
             } while ( entities.length != 0 );

@@ -51,6 +51,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * JAVADOC
@@ -81,7 +82,9 @@ public interface EntityExportJob extends Job, TransientComposite
       @Override
       public void execute( JobExecutionContext context ) throws JobExecutionException
       {
-         while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
+         int limit = 5000;
+
+         while ( entityExportService.isExported() && entityExportService.hasNextEntity() && limit > 0  )
          {
             try ( final Connection connection = dataSource.get().getConnection() )
             {
@@ -149,6 +152,7 @@ public interface EntityExportJob extends Job, TransientComposite
             {
                logger.error( "Unexpected error: ", e );
             }
+            limit--;
          }
 
 
