@@ -93,7 +93,10 @@ public class EntityStateChangeListener
             }
 
             if ( jobKey == null ) {
-               final JobDetail entityExportJob = newJob( EntityExportJob.class ).withIdentity( "entityexportjob", "entityexportgroup" ).build();
+               final JobDetail entityExportJob = newJob( EntityExportJob.class )
+                       .storeDurably()
+                       .withIdentity( "entityexportjob", "entityexportgroup" )
+                       .build();
                schedulerService.addJob( entityExportJob );
                jobKey = entityExportJob.getKey();
             }
