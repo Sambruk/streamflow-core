@@ -993,37 +993,37 @@
                 </pluginManagement>
             </build>
         </profile>
-        <!--<profile>-->
-            <!--<id>dev-sign</id>-->
-            <!--<activation>-->
-                <!--<property>-->
-                    <!--<name>!sign</name>-->
-                <!--</property>-->
-            <!--</activation>-->
-            <!--<build>-->
-                <!--<pluginManagement>-->
-                    <!--<plugins>-->
-                        <!--&lt;!&ndash; WebStart config &ndash;&gt;-->
-                        <!--<plugin>-->
-                            <!--<groupId>org.codehaus.mojo</groupId>-->
-                            <!--<artifactId>webstart-maven-plugin</artifactId>-->
-                            <!--<configuration>-->
-                                <!--<sign>-->
-                                    <!--<keystore>${basedir}/src/main/jnlp/keystore</keystore>-->
-                                    <!--<keypass>secret</keypass>-->
-                                    <!--<storepass>secret</storepass>-->
-                                    <!--<alias>streamflowdev</alias>-->
-                                    <!--<validity>180</validity>-->
-                                    <!--<dnameCn>www.jayway.com</dnameCn>-->
-                                    <!--<dnameOu>Streamflow</dnameOu>-->
-                                    <!--<dnameO>Jayway Products AB</dnameO>-->
-                                    <!--<dnameC>Sweden</dnameC>-->
-                                <!--</sign>-->
-                            <!--</configuration>-->
-                        <!--</plugin>-->
-                    <!--</plugins>-->
-                <!--</pluginManagement>-->
-            <!--</build>-->
-        <!--</profile>-->
+        <profile>
+            <id>dev-sign</id>
+            <activation>
+                <property>
+                    <name>!sign</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <!-- WebStart config -->
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>webstart-maven-plugin</artifactId>
+                            <configuration>
+                                <sign>
+                                    <keystore>${basedir}/src/main/jnlp/keystore</keystore>
+                                    <keypass>secret</keypass>
+                                    <storepass>secret</storepass>
+                                    <alias>streamflowdev</alias>
+                                    <validity>180</validity>
+                                    <dnameCn>www.jayway.com</dnameCn>
+                                    <dnameOu>Streamflow</dnameOu>
+                                    <dnameO>Jayway Products AB</dnameO>
+                                    <dnameC>Sweden</dnameC>
+                                </sign>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
     </profiles>
 </project>
