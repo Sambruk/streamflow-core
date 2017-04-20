@@ -25,6 +25,8 @@ import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.property.PropertyType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -37,6 +39,7 @@ import java.util.Set;
  */
 public class SchemaCreatorHelper extends AbstractExportHelper
 {
+   private static final Logger logger = LoggerFactory.getLogger( SchemaCreatorHelper.class );
 
    private EntityType entityType;
    private EntityInfo entityInfo;

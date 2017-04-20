@@ -59,16 +59,6 @@ public interface LoggingService
          Logger.getLogger( "monitor.rest.command" ).addAppender( new DailyRollingFileAppender(new PatternLayout("%m%n"), restCommandLog.getAbsolutePath(), "'.'yyyy-ww" ));
          logger.info( "Logging command performance to:"+restCommandLog );
 
-         // Entity export
-         File entityExportDirectory = new File(fileConfig.logDirectory(), "entityexport");
-         entityExportDirectory.mkdirs();
-
-         File entityExportLog = new File(entityExportDirectory, "entityexport.log");
-         final Logger entityExportLogger = Logger.getLogger( "se.streamsource.streamflow.web.application.entityexport.EntityExportService" );
-         entityExportLogger.addAppender( new DailyRollingFileAppender(new PatternLayout("%d - %m%n"), entityExportLog.getAbsolutePath(), "'.'yyyy-ww" ));
-         entityExportLogger.setAdditivity( false );
-         logger.info( "Logging entity export to:"+entityExportLog );
-
          // Access logging
          File accessLog = new File(fileConfig.logDirectory(), "access.log");
          final Logger accessLogger = Logger.getLogger( "LogService" );

@@ -42,9 +42,11 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -64,7 +66,7 @@ public interface EntityExportJob extends Job, TransientComposite
            implements EntityExportJob
    {
 
-      private static final Logger logger = LoggerFactory.getLogger( EntityExportService.class.getName() );
+      private static final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
 
       @Service
       EntityExportService entityExportService;
@@ -78,10 +80,17 @@ public interface EntityExportJob extends Job, TransientComposite
       @Service
       ServiceReference<DataSource> dataSource;
 
+      @Service
+      QuartzSchedulerService schedulerService;
+
       @Override
       public void execute( JobExecutionContext context ) throws JobExecutionException
       {
-         while ( entityExportService.isExported() && entityExportService.hasNextEntity() )
+
+         final int limit = 1_000_000;
+         int counterLimit = 0;
+
+         while ( entityExportService.isExported() && entityExportService.hasNextEntity() && limit != counterLimit )
          {
             try ( final Connection connection = dataSource.get().getConnection() )
             {
@@ -145,6 +154,13 @@ public interface EntityExportJob extends Job, TransientComposite
                entityExportService.setTables( entityExportHelper.help() );
 
                entityExportService.savedSuccess( entity );
+
+               counterLimit++;
+               if ( counterLimit == limit )
+               {
+                  schedulerService.triggerJob( new JobKey( "entityexportjob", "entityexportgroup" ) );
+               }
+
             } catch ( Exception e )
             {
                logger.error( "Unexpected error: ", e );

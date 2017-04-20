@@ -53,7 +53,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class EntityStateChangeListener
         implements StateChangeListener
 {
-   private static final Logger logger = LoggerFactory.getLogger( EntityExportService.class.getName() );
+   private static final Logger logger = LoggerFactory.getLogger( EntityExportService.class );
 
    @This
    Configuration<EntityExportConfiguration> thisConfig;
