@@ -40,9 +40,11 @@ import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
+import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
@@ -53,6 +55,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * JAVADOC
@@ -158,7 +163,11 @@ public interface EntityExportJob extends Job, TransientComposite
                counterLimit++;
                if ( counterLimit == limit )
                {
-                  schedulerService.triggerJob( new JobKey( "entityexportjob", "entityexportgroup" ) );
+                  JobDetail entityExportJob = newJob( EntityExportJob.class )
+                          .withIdentity( "entityexportjob", "entityexportgroup" )
+                          .build();
+                  schedulerService.addJob( entityExportJob );
+                  schedulerService.triggerJob( entityExportJob.getKey() );
                }
 
             } catch ( Exception e )

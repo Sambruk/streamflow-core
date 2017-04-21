@@ -64,7 +64,7 @@ public class EntityStateChangeListener
    @Service
    QuartzSchedulerService schedulerService;
 
-   private JobKey jobKey;
+   private JobDetail entityExportJob;
 
    @Override
    public void notifyChanges( Iterable<EntityState> changedStates )
@@ -92,18 +92,16 @@ public class EntityStateChangeListener
                }
             }
 
-            if ( jobKey == null ) {
-               final JobDetail entityExportJob = newJob( EntityExportJob.class )
-                       .storeDurably()
+            if ( entityExportJob == null ) {
+               entityExportJob = newJob( EntityExportJob.class )
                        .withIdentity( "entityexportjob", "entityexportgroup" )
                        .build();
-               schedulerService.addJob( entityExportJob );
-               jobKey = entityExportJob.getKey();
             }
 
-            if ( !schedulerService.isExecuting( jobKey ) )
+            if ( !schedulerService.isExecuting( entityExportJob.getKey() ) )
             {
-               schedulerService.triggerJob( jobKey );
+               schedulerService.addJob( entityExportJob );
+               schedulerService.triggerJob( entityExportJob.getKey() );
             }
 
          } catch ( Exception e )
