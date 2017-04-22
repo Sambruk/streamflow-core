@@ -95,12 +95,16 @@ public interface EntityExportService
 
    void setTables( Map<String, Set<String>> tables );
 
+   DbVendor getDbVendor();
+
    abstract class Mixin
            implements EntityExportService
    {
       private static final Logger logger = LoggerFactory.getLogger( EntityExportService.class );
 
       private String infoFileAbsPath;
+
+      private DbVendor dbVendor;
 
       @This
       Configuration<EntityExportConfiguration> thisConfig;
@@ -156,6 +160,8 @@ public interface EntityExportService
                {
                   createBaseSchema( connection );
                }
+
+               dbVendor = _getDbVendor();
 
                export();
 
@@ -258,6 +264,17 @@ public interface EntityExportService
       public void setTables( Map<String, Set<String>> tables )
       {
          this.tables = tables;
+      }
+
+      @Override
+      public DbVendor getDbVendor() {
+         return dbVendor;
+      }
+
+      private DbVendor _getDbVendor() {
+         final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
+         final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
+         return DbVendor.from( dataSourceConfiguration.dbVendor().get() );
       }
 
       @Override

@@ -163,7 +163,6 @@ public class DomainAssembler
       external( layer.module( "External" ) );
       util( layer.module(  "Util" ) );
 
-      scheduler(layer.module("Scheduler"));
       entityExport(layer.module("Entity export"));
 
       // All values are public
@@ -212,11 +211,6 @@ public class DomainAssembler
 
     }
 
-   private void scheduler(ModuleAssembly module) throws AssemblyException
-   {
-      module.addServices(Qi4JQuartzJobFactory.class, QuartzSchedulerService.class).visibleIn(Visibility.application);
-   }
-
    private void entityExport(ModuleAssembly module) throws AssemblyException
    {
       Application.Mode mode = module.layer().application().mode();
@@ -226,7 +220,6 @@ public class DomainAssembler
                  .identifiedBy("entityexport").instantiateOnStartup().visibleIn(Visibility.application);
          ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
          config.entities(EntityExportConfiguration.class).visibleIn(Visibility.application);
-         module.transients(EntityExportJob.class).visibleIn(application);
       }
    }
 

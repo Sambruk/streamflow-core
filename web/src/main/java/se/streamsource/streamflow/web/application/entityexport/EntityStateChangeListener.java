@@ -24,7 +24,9 @@ import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
@@ -34,18 +36,15 @@ import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.property.PropertyType;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
-import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 
+import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collections;
-
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
+import java.util.concurrent.*;
 
 /**
  * JAVADOC
@@ -61,20 +60,25 @@ public class EntityStateChangeListener
    @Service
    EntityExportService entityExportService;
 
-   @Service
-   QuartzSchedulerService schedulerService;
+   @Structure
+   ModuleSPI moduleSPI;
 
-   private JobDetail entityExportJob;
+   @Service
+   ServiceReference<DataSource> dataSource;
+
+   private ExecutorService executor;
+   private Future<Integer> exportTask;
 
    @Override
    public void notifyChanges( Iterable<EntityState> changedStates )
    {
 
+
       if ( thisConfig.configuration().enabled().get() )
       {
-
          try
          {
+
             for ( EntityState changedState : changedStates )
             {
                if ( !changedState.status().equals( EntityStatus.LOADED ) ) {
@@ -92,16 +96,46 @@ public class EntityStateChangeListener
                }
             }
 
-            if ( entityExportJob == null ) {
-               entityExportJob = newJob( EntityExportJob.class )
-                       .withIdentity( "entityexportjob", "entityexportgroup" )
-                       .build();
+            if (executor == null)
+            {
+               executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+                  @Override
+                  public Thread newThread(Runnable r) {
+                     Thread thread = Executors.defaultThreadFactory().newThread(r);
+                     thread.setName(EntityExportJob.class.getSimpleName());
+                     thread.setPriority(Thread.NORM_PRIORITY - 1);
+                     thread.setDaemon(true);
+                     return thread;
+                  }
+               });
             }
 
-            if ( !schedulerService.isExecuting( entityExportJob.getKey() ) )
+
+            if (exportTask == null || exportTask.isDone())
             {
-               schedulerService.addJob( entityExportJob );
-               schedulerService.triggerJob( entityExportJob.getKey() );
+               exportTask = executor.submit(newEntityExportJob());
+
+               Runnable checker = new Runnable() {
+                  private EntityStateChangeListener entityStateChangeListener;
+
+                  @Override
+                  public void run() {
+                     try {
+                        if (exportTask.get() == EntityExportJob.EXPORT_LIMIT) {
+                           entityStateChangeListener.notifyChanges(new ArrayList<EntityState>());
+                        }
+                     } catch (Exception e) {
+                        logger.error("Unexpected error: ", e);
+                     }
+                  }
+
+                  Runnable setEntityStateChangeListener(EntityStateChangeListener entityStateChangeListener) {
+                     this.entityStateChangeListener = entityStateChangeListener;
+                     return this;
+                  }
+               }.setEntityStateChangeListener(this);
+
+               executor.submit(checker);
             }
 
          } catch ( Exception e )
@@ -110,6 +144,15 @@ public class EntityStateChangeListener
          }
       }
 
+   }
+
+   private EntityExportJob newEntityExportJob()
+   {
+      EntityExportJob entityExportJob = new EntityExportJob();
+      entityExportJob.setEntityExportService(entityExportService);
+      entityExportJob.setDataSource(dataSource);
+      entityExportJob.setModule(moduleSPI);
+      return entityExportJob;
    }
 
    /**
