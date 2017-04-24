@@ -26,21 +26,13 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.io.Sender;
-import org.qi4j.api.io.Transforms;
+import org.qi4j.api.io.*;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
-import se.streamsource.streamflow.api.administration.form.AttachmentFieldValue;
-import se.streamsource.streamflow.api.administration.form.DateFieldValue;
-import se.streamsource.streamflow.api.administration.form.FieldValue;
-import se.streamsource.streamflow.api.administration.form.GeoLocationFieldValue;
-import se.streamsource.streamflow.api.administration.form.LocationDTO;
+import se.streamsource.streamflow.api.administration.form.*;
 import se.streamsource.streamflow.api.workspace.cases.CaseOutputConfigDTO;
+import se.streamsource.streamflow.api.workspace.cases.caselog.CaseLogEntryTypes;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactAddressDTO;
 import se.streamsource.streamflow.api.workspace.cases.contact.ContactDTO;
 import se.streamsource.streamflow.api.workspace.cases.conversation.MessageType;
@@ -52,12 +44,7 @@ import se.streamsource.streamflow.web.domain.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.structure.SubmittedFieldValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -79,27 +66,17 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
 
-import static se.streamsource.streamflow.util.Strings.*;
+import static se.streamsource.streamflow.util.Strings.empty;
 
 /**
  * A specialisation of CaseOutput that is responsible for exporting a case in
@@ -244,7 +221,11 @@ public class CasePdfGenerator implements CaseOutput
       }
 
       // traverse structure
-      if (config.contacts().get())
+       if (config.notes().get()) {
+           generateCasenotes(cazeDescriptor.caselog());
+       }
+
+       if (config.contacts().get())
       {
          generateContacts( cazeDescriptor.contacts() );
       }
@@ -266,11 +247,11 @@ public class CasePdfGenerator implements CaseOutput
 
       if (config.caselog().get())
       {
-         generateCaselog(cazeDescriptor.caselog());
+          generateCaselog(cazeDescriptor.caselog(), !config.notes().get());
       }
    }
 
-   private void generateCaselog(Input<CaseLogEntryValue, RuntimeException> caselog) throws IOException
+    private void generateCaselog(Input<CaseLogEntryValue, RuntimeException> caselog, final boolean includeCaseNotes) throws IOException
    {
       // TODO This needs to be cleaned up. Translations should be in a better place!
       ResourceBundle bnd = ResourceBundle.getBundle( MessagesContext.class.getName(), locale );
@@ -289,16 +270,17 @@ public class CasePdfGenerator implements CaseOutput
 
             sender.sendTo(new Receiver<CaseLogEntryValue, IOException>()
             {
-               public void receive(CaseLogEntryValue entry) throws IOException
-               {
-                  UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-                  String label = uow.get( Describable.class, entry.createdBy().get().identity()).getDescription()
-                        + ", "
-                        + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format(
-                              entry.createdOn().get() ) + ": ";
+                public void receive(CaseLogEntryValue entry) throws IOException {
+                    if (includeCaseNotes || entry.entryType().get() != CaseLogEntryTypes.custom) {
+                        UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+                        String label = uow.get(Describable.class, entry.createdBy().get().identity()).getDescription()
+                                + ", "
+                                + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(
+                                entry.createdOn().get()) + ": ";
 
-                  document.print( label, valueFontBold ).print( Translator.translate( entry.message().get(), translations ), valueFont )
-                        .print("", valueFont);
+                        document.print(label, valueFontBold).print(Translator.translate(entry.message().get(), translations), valueFont)
+                                .print("", valueFont);
+                    }
                }
             });
          }
@@ -470,7 +452,7 @@ public class CasePdfGenerator implements CaseOutput
                   signature.signerName().get() + " (" + signature.signerId().get() + ")", valueFont,
                tabStop )  ;
          }
-         
+
          for (SubmittedPageValue submittedPageValue : formValue.pages().get())
          {
             if (!submittedPageValue.fields().get().isEmpty())
@@ -502,7 +484,7 @@ public class CasePdfGenerator implements CaseOutput
                      {
                         value = new SimpleDateFormat( bundle.getString( "date_format" ) ).format( DateFunctions
                               .fromString( submittedFieldValue.value().get() ) );
-                     } else if ( fieldValue instanceof GeoLocationFieldValue ) 
+                     } else if ( fieldValue instanceof GeoLocationFieldValue )
                      {
                         LocationDTO locationDTO = module.valueBuilderFactory().newValueFromJSON( LocationDTO.class, submittedFieldValue.value().get() );
                         value = locationDTO.street().get() + ", " + locationDTO.zipcode().get() + ", " + locationDTO.city().get();
@@ -580,7 +562,37 @@ public class CasePdfGenerator implements CaseOutput
       } ) );
    }
 
-   public PDDocument getPdf() throws IOException
+    private void generateCasenotes(Input<CaseLogEntryValue, RuntimeException> caselog) throws IOException {
+        ResourceBundle bnd = ResourceBundle.getBundle(MessagesContext.class.getName(), locale);
+        final Map<String, String> translations = new HashMap<String, String>();
+        for (String key : bnd.keySet()) {
+            translations.put(key, bnd.getString(key));
+        }
+
+        caselog.transferTo(new Output<CaseLogEntryValue, IOException>() {
+            public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends CaseLogEntryValue, SenderThrowableType> sender) throws IOException, SenderThrowableType {
+                document.changeColor(headingColor).println(bundle.getString("caseNotes"), valueFontBold)
+                        .changeColor(Color.BLACK);
+
+                sender.sendTo(new Receiver<CaseLogEntryValue, IOException>() {
+                    public void receive(CaseLogEntryValue entry) throws IOException {
+                        if (entry.entryType().get() == CaseLogEntryTypes.custom) {
+                            UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+                            String label = uow.get(Describable.class, entry.createdBy().get().identity()).getDescription()
+                                    + ", "
+                                    + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(
+                                    entry.createdOn().get()) + ": ";
+
+                            document.print(label, valueFontBold).print(Translator.translate(entry.message().get(), translations), valueFont)
+                                    .print("", valueFont);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public PDDocument getPdf() throws IOException
    {
       document.closeAndReturn();
       PDDocument generatedDoc = document.generateHeaderAndPageNumbers( headerFont, caseId, bundle.getString( "printDate" )
@@ -601,7 +613,7 @@ public class CasePdfGenerator implements CaseOutput
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             store.attachment(attachmentId).transferTo(Outputs.byteBuffer(baos));
-            
+
             Underlay underlay = new Underlay();
             generatedDoc = underlay.underlay(generatedDoc, new ByteArrayInputStream(baos.toByteArray()));
 
