@@ -42,7 +42,12 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- * JAVADOC
+ * Task for export from cache to SQL. It uses {@link EntityExportHelper} to achieve this goals.
+ * <br/>
+ * Main while loop is bounded with {@link #EXPORT_LIMIT} and connection created
+ * for every entity to prevent memory leak, detected in testing.
+ * <br/>
+ * {@link #EXPORT_LIMIT} is 1000 because tests shows this optimal value.
  */
 public class EntityExportJob implements Callable<Integer>
 {

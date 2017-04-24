@@ -45,20 +45,20 @@ import java.util.Set;
 /**
  * Implementation of {@link AbstractExportHelper} that exports 1 entity with values to database.
  * It supports all entities from {@link EntityInfo}.
- * <p/>
+ * <br/>
  * The main idea of export following: exists simple, complex property types of entity and collections of both.
  * One entity is mapped to one table in SQL (naming strategy is camel case to snack case).
- * <p/>
+ * <br/>
  * Simple types are native simple types ({@link Integer}, {@link Boolean}, {@link String} etc),
  * date types ({@link java.util.Date}, {@link org.joda.time.DateTime}), custom enums.
  * They are stored in the same table.
- * <p/>
+ * <br/>
  * Complex types are values. Value is an interface that extends {@link ValueComposite},
  * but not extends {@link org.qi4j.api.entity.Identity}. They are stored in the separate table.
  * They have relation on entity and auto generated id to help linking.
- * <p/>
+ * <br/>
  * Collection can be of both types. They are stored in the separate table with foreign key on entity.
- * <p/>
+ * <br/>
  * Value export is running through {@link AbstractExportHelper#processValueComposite(ValueComposite)}.
  *
  * @see ValueExportHelper

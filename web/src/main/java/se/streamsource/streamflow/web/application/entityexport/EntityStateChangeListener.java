@@ -47,7 +47,9 @@ import java.util.Collections;
 import java.util.concurrent.*;
 
 /**
- * JAVADOC
+ * Saved changed entity states to cache. Activates saving to SQL.
+ * @see StateChangeListener
+ * @see EntityExportJob
  */
 public class EntityStateChangeListener
         implements StateChangeListener

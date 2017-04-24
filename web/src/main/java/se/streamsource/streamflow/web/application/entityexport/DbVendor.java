@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.application.entityexport;
 
 /**
  * Uses to wrap string value with enum for appropriate value.
- * <p/>
+ * <br/>
  * Example of usage:
  * <code>
  *    <pre>
