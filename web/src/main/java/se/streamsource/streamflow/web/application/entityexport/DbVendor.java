@@ -19,7 +19,16 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 /**
- * Created by ruslan on 16.03.17.
+ * Uses to wrap string value with enum for appropriate value.
+ * <p/>
+ * Example of usage:
+ * <code>
+ *    <pre>
+ *    final DataSourceConfiguration dsConfig =...;
+ *    final DbVendor dbVendor = DbVendor.from( dsConfig.dbVendor().get() );
+ *    </pre>
+ * </code>
+ * @see se.streamsource.infrastructure.database.DataSourceConfiguration
  */
 public enum DbVendor
 {
@@ -29,16 +38,14 @@ public enum DbVendor
 
    public static DbVendor from( String dbVendor )
    {
-      if ( dbVendor == null )
+      if ( dbVendor != null )
       {
-         return mysql;
-      }
-
-      for ( DbVendor vendor : DbVendor.values() )
-      {
-         if ( dbVendor.toLowerCase().equals( vendor.toString() ) )
+         for ( DbVendor vendor : DbVendor.values() )
          {
-            return vendor;
+            if ( dbVendor.toLowerCase().equals( vendor.name() ) )
+            {
+               return vendor;
+            }
          }
       }
 
