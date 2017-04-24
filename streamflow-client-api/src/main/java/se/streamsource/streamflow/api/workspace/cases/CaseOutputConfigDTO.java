@@ -42,4 +42,7 @@ public interface CaseOutputConfigDTO
 
    @UseDefaults
    Property<Boolean> caselog();
+
+   @UseDefaults
+   Property<Boolean> notes();
 }
