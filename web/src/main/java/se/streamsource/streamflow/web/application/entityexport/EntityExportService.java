@@ -147,7 +147,6 @@ public interface EntityExportService
                  && thisConfig.configuration().enabled().get() )
          {
 
-            logger.info( "Started entity export" );
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
             caching.removeAll();
 
