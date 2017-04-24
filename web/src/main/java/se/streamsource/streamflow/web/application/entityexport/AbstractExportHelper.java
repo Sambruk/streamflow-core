@@ -42,14 +42,14 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by ruslan on 15.03.17.
+ * Abstract helper class which purpose to contain common util methods and fields
+ * for entity export strategy.
  */
 public abstract class AbstractExportHelper
 {

@@ -40,7 +40,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by ruslan on 06.03.17.
+ * Implementation of {@link AbstractExportHelper} that exports 1 value with values to database.
+ * It works almost the same way as {@link EntityExportHelper}.
+ * Sub values processes with this class also through {@link AbstractExportHelper#processValueComposite(ValueComposite)}.
  */
 public class ValueExportHelper extends AbstractExportHelper
 {
