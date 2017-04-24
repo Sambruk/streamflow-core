@@ -102,7 +102,6 @@ public class EntityStateChangeListener
                   @Override
                   public Thread newThread(Runnable r) {
                      Thread thread = Executors.defaultThreadFactory().newThread(r);
-                     thread.setName(EntityExportJob.class.getSimpleName());
                      thread.setPriority(Thread.NORM_PRIORITY - 1);
                      thread.setDaemon(true);
                      return thread;
