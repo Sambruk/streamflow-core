@@ -69,7 +69,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * JAVADOC
+ * Service encapsulates interaction with cache for entity export.
+ * It fires on startup (writes from index to cache)
+ * and helps to write to cache when application started.
+ * <br/>
+ * Search response sized with 1000 because tests shows this optimal value.
  */
 @Mixins({ EntityExportService.Mixin.class, EntityStateChangeListener.class })
 public interface EntityExportService
@@ -147,7 +151,6 @@ public interface EntityExportService
                  && thisConfig.configuration().enabled().get() )
          {
 
-            logger.info( "Started entity export" );
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
             caching.removeAll();
 

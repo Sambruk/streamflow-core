@@ -60,7 +60,9 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 
 /**
- * JAVADOC
+ * Contains all entities, used by streamflow-web. Wrap every entity with enum same name.
+ * <br/>
+ * Provides methods to access {@link Class} or name information of the certain entity.
  */
 public enum EntityInfo
 {

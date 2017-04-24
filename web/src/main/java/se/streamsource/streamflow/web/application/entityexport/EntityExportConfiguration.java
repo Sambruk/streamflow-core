@@ -24,7 +24,17 @@ import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Set up for entity export.
+ * <ul>
+ *    <li>
+ *       loggingStatisticsEntitiesCount - part of entities that will log every time;
+ *    </li>
+ *    <li>
+ *       showSql - log sql statements related to schema modification.
+ *    </li>
+ * </ul>
+ * @see ConfigurationComposite
+ * @see Enabled
  */
 public interface EntityExportConfiguration
         extends ConfigurationComposite, Enabled

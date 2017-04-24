@@ -35,7 +35,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by ruslan on 09.03.17.
+ * Implementation of {@link AbstractExportHelper} that helps create base schema on startup.
+ * Base schema is created from all entities, they are store in the {@link EntityInfo} enum.
  */
 public class SchemaCreatorHelper extends AbstractExportHelper
 {
