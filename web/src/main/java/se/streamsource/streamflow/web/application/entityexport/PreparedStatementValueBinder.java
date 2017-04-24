@@ -22,7 +22,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Created by ruslan on 27.03.17.
+ * Bind specific value with PreparedStatement setX method.
+ * Every implementation should override method {@link #bind(PreparedStatement, int)}
+ * @see PreparedStatement
  */
 abstract class PreparedStatementValueBinder<T>
 {

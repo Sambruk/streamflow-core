@@ -22,7 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Created by ruslan on 27.03.17.
+ * Implementation of {@link PreparedStatementValueBinder}
+ * for binding {@link PreparedStatement#setInt(int, int)} method.
  */
 public class PreparedStatementIntegerBinder extends PreparedStatementValueBinder<Integer>
 {
