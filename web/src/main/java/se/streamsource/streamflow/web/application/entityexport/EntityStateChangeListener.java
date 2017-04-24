@@ -99,9 +99,10 @@ public class EntityStateChangeListener
             if (executor == null)
             {
                executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+                  private ThreadFactory threadFactory = Executors.defaultThreadFactory();
                   @Override
                   public Thread newThread(Runnable r) {
-                     Thread thread = Executors.defaultThreadFactory().newThread(r);
+                     Thread thread = threadFactory.newThread(r);
                      thread.setPriority(Thread.NORM_PRIORITY - 1);
                      thread.setDaemon(true);
                      return thread;
