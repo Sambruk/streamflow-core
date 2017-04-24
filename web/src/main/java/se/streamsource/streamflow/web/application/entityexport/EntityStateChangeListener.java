@@ -121,7 +121,7 @@ public class EntityStateChangeListener
                   @Override
                   public void run() {
                      try {
-                        if (exportTask.get() == EntityExportJob.EXPORT_LIMIT) {
+                        if (EntityExportJob.EXPORT_LIMIT.equals( exportTask.get() )) {
                            entityStateChangeListener.notifyChanges(new ArrayList<EntityState>());
                         }
                      } catch (Exception e) {

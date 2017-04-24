@@ -47,7 +47,7 @@ import java.util.concurrent.Callable;
 public class EntityExportJob implements Callable<Integer>
 {
 
-   public static final int EXPORT_LIMIT = 1000;
+   public static final Integer EXPORT_LIMIT = 1000;
 
    private static final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
 
