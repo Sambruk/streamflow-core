@@ -1,15 +1,14 @@
 /**
- *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- *
+ * <p>
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.gnu.org/licenses/agpl.txt
- *
+ * <p>
+ * http://www.gnu.org/licenses/agpl.txt
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,13 +68,10 @@ public class EntityStateChangeListener
    ServiceReference<DataSource> dataSource;
 
    private ExecutorService executor;
-   private Future<Integer> exportTask;
 
    @Override
    public void notifyChanges( Iterable<EntityState> changedStates )
    {
-
-
       if ( thisConfig.configuration().enabled().get() )
       {
          try
@@ -83,7 +79,8 @@ public class EntityStateChangeListener
 
             for ( EntityState changedState : changedStates )
             {
-               if ( !changedState.status().equals( EntityStatus.LOADED ) ) {
+               if ( !changedState.status().equals( EntityStatus.LOADED ) )
+               {
                   if ( changedState.status().equals( EntityStatus.REMOVED ) )
                   {
                      final JSONObject object = new JSONObject();
@@ -98,46 +95,56 @@ public class EntityStateChangeListener
                }
             }
 
-            if (executor == null)
+            if ( executor == null )
             {
-               executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+               executor = Executors.newSingleThreadExecutor( new ThreadFactory()
+               {
                   private ThreadFactory threadFactory = Executors.defaultThreadFactory();
+
                   @Override
-                  public Thread newThread(Runnable r) {
-                     Thread thread = threadFactory.newThread(r);
-                     thread.setPriority(Thread.NORM_PRIORITY - 1);
-                     thread.setDaemon(true);
+                  public Thread newThread( Runnable r )
+                  {
+                     Thread thread = threadFactory.newThread( r );
+                     thread.setPriority( Thread.NORM_PRIORITY - 1 );
+                     thread.setDaemon( true );
                      return thread;
                   }
-               });
+               } );
             }
 
 
-            if (exportTask == null || exportTask.isDone())
+            if ( EntityExportJob.FINISHED.get() )
             {
-               exportTask = executor.submit(newEntityExportJob());
+               final Future<?> exportTask = executor.submit( newEntityExportJob() );
 
-               Runnable checker = new Runnable() {
+               final Runnable checker = new Runnable()
+               {
                   private EntityStateChangeListener entityStateChangeListener;
 
                   @Override
-                  public void run() {
-                     try {
-                        if (EntityExportJob.EXPORT_LIMIT.equals( exportTask.get() )) {
-                           entityStateChangeListener.notifyChanges(new ArrayList<EntityState>());
+                  public void run()
+                  {
+                     try
+                     {
+                        exportTask.get();
+                        if ( entityExportService.hasNextEntity() )
+                        {
+                           entityStateChangeListener.notifyChanges( new ArrayList<EntityState>() );
                         }
-                     } catch (Exception e) {
-                        logger.error("Unexpected error: ", e);
+                     } catch ( Exception e )
+                     {
+                        logger.error( "Unexpected error: ", e );
                      }
                   }
 
-                  Runnable setEntityStateChangeListener(EntityStateChangeListener entityStateChangeListener) {
+                  Runnable setEntityStateChangeListener( EntityStateChangeListener entityStateChangeListener )
+                  {
                      this.entityStateChangeListener = entityStateChangeListener;
                      return this;
                   }
-               }.setEntityStateChangeListener(this);
+               }.setEntityStateChangeListener( this );
 
-               executor.submit(checker);
+               executor.submit( checker );
             }
 
          } catch ( Exception e )
@@ -151,9 +158,9 @@ public class EntityStateChangeListener
    private EntityExportJob newEntityExportJob()
    {
       EntityExportJob entityExportJob = new EntityExportJob();
-      entityExportJob.setEntityExportService(entityExportService);
-      entityExportJob.setDataSource(dataSource);
-      entityExportJob.setModule(moduleSPI);
+      entityExportJob.setEntityExportService( entityExportService );
+      entityExportJob.setDataSource( dataSource );
+      entityExportJob.setModule( moduleSPI );
       return entityExportJob;
    }
 

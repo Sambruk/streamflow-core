@@ -1,15 +1,14 @@
 /**
- *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- *
+ * <p>
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.gnu.org/licenses/agpl.txt
- *
+ * <p>
+ * http://www.gnu.org/licenses/agpl.txt
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +38,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Task for export from cache to SQL. It uses {@link EntityExportHelper} to achieve this goals.
@@ -49,10 +48,11 @@ import java.util.concurrent.Callable;
  * <br/>
  * {@link #EXPORT_LIMIT} is 1000 because tests shows this optimal value.
  */
-public class EntityExportJob implements Callable<Integer>
+public class EntityExportJob implements Runnable
 {
 
    public static final Integer EXPORT_LIMIT = 1000;
+   public static final AtomicBoolean FINISHED = new AtomicBoolean( true );
 
    private static final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
 
@@ -63,7 +63,10 @@ public class EntityExportJob implements Callable<Integer>
    private ServiceReference<DataSource> dataSource;
 
    @Override
-   public Integer call() throws Exception {
+   public void run()
+   {
+
+      FINISHED.set( false );
 
       int counterLimit = 0;
       while ( entityExportService.isExported() && entityExportService.hasNextEntity() && EXPORT_LIMIT != counterLimit )
@@ -106,7 +109,7 @@ public class EntityExportJob implements Callable<Integer>
 
                if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
                {
-                  subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, module) );
+                  subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, module ) );
                }
             }
 
@@ -122,7 +125,7 @@ public class EntityExportJob implements Callable<Integer>
             entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
             entityExportHelper.setAllAssociations( entityType.associations() );
             entityExportHelper.setClassName( description );
-            entityExportHelper.setModule(module);
+            entityExportHelper.setModule( module );
             entityExportHelper.setDbVendor( entityExportService.getDbVendor() );
             entityExportHelper.setTables( entityExportService.getTables() );
             entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
@@ -135,14 +138,15 @@ public class EntityExportJob implements Callable<Integer>
 
          } catch ( Exception e )
          {
-            logger.error("Unexpected error: ", e);
+            logger.error( "Unexpected error: ", e );
          }
       }
 
-      return counterLimit;
+      FINISHED.set( true );
+
    }
 
-   private <T> Iterable<T> getNotNullProperties(final JSONObject entity, Iterable<T> iterable )
+   private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
    {
       return Iterables.filter( new Specification<T>()
       {
@@ -182,15 +186,18 @@ public class EntityExportJob implements Callable<Integer>
       return json.isEmpty() || json.equals( "{}" ) || json.equals( "[]" );
    }
 
-   public void setEntityExportService(EntityExportService entityExportService) {
+   public void setEntityExportService( EntityExportService entityExportService )
+   {
       this.entityExportService = entityExportService;
    }
 
-   public void setModule(ModuleSPI module) {
+   public void setModule( ModuleSPI module )
+   {
       this.module = module;
    }
 
-   public void setDataSource(ServiceReference<DataSource> dataSource) {
+   public void setDataSource( ServiceReference<DataSource> dataSource )
+   {
       this.dataSource = dataSource;
    }
 
