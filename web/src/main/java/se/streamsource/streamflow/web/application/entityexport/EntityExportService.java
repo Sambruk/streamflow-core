@@ -123,7 +123,6 @@ public interface EntityExportService
       //statistics
       private long statisticsStartExportTime;
       private int statisticsCounter = 1;
-      private long statisticsPackAmount = 0;
       private double totalExportTime = 0;
 
       @Service
@@ -243,7 +242,6 @@ public interface EntityExportService
          } else if ( loggingStatisticsEntitiesCount < 1 )
          {
             statisticsCounter = 1;
-            statisticsPackAmount = 0;
             totalExportTime = 0;
          }
 
@@ -320,13 +318,12 @@ public interface EntityExportService
                   {
                      final long currentTime = System.currentTimeMillis();
                      final long exportTime = currentTime - statisticsStartExportTime;
-                     totalExportTime += exportTime / loggingStatisticsEntitiesCount;
-                     statisticsPackAmount++;
+                     totalExportTime += exportTime;
 
                      String message =
                              String.format( "The average export time is %.3f ms of %d entities selection",
-                                     totalExportTime / statisticsPackAmount,
-                                     isLastProcessed ? loggingStatisticsEntitiesCount * ( statisticsPackAmount - 1 ) + statisticsCounter : loggingStatisticsEntitiesCount * statisticsPackAmount );
+                                     totalExportTime / currentId.get(),
+                                     currentId.get());
 
                      logger.info( message );
 
