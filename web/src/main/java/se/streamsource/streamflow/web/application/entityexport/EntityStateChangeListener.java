@@ -113,7 +113,7 @@ public class EntityStateChangeListener
             }
 
 
-            if ( EntityExportJob.FINISHED.get() )
+            if ( EntityExportJob.FINISHED.get() && entityExportService.hasNextEntity() )
             {
                final Future<?> exportTask = executor.submit( newEntityExportJob() );
 
