@@ -217,7 +217,7 @@ public class CasePdfGenerator implements CaseOutput
          {
             note = Translator.htmlToText( note );
          }
-         document.moveUpOneRow( valueFontBold ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
+         document.moveUpOneRow( valueFontBold ).print( "", valueFont ).print( bundle.getString( "note" ) + ":", valueFontBold ).print( note, valueFont ).print( "", valueFont );
       }
 
       // traverse structure
