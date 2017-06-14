@@ -39,13 +39,19 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
 {
 
    Date scheduleJob(JobDetail jobDetail, Trigger trigger) throws SchedulerException;
-   
+
    boolean deleteJob(JobKey jobKey) throws SchedulerException;
 
    boolean interruptJob( JobKey jobKey ) throws UnableToInterruptJobException;
 
    boolean isExecuting( JobKey jobKey ) throws SchedulerException;
-   
+
+   void addJob( JobDetail jobDetail )
+           throws SchedulerException;
+
+   void triggerJob( JobKey jobKey )
+           throws SchedulerException;
+
    abstract class Mixin implements QuartzSchedulerService, Activatable
    {
 
@@ -97,6 +103,18 @@ public interface QuartzSchedulerService extends ServiceComposite, Activatable
               }
           }
           return false;
+      }
+
+      @Override
+      public void addJob( JobDetail jobDetail ) throws SchedulerException
+      {
+         scheduler.addJob( jobDetail, true );
+      }
+
+      @Override
+      public void triggerJob( JobKey jobKey ) throws SchedulerException
+      {
+         scheduler.triggerJob( jobKey );
       }
    }
 }

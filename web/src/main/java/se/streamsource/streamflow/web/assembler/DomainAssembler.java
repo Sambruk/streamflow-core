@@ -54,6 +54,9 @@ import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.web.application.entityexport.EntityExportConfiguration;
+import se.streamsource.streamflow.web.application.entityexport.EntityExportJob;
+import se.streamsource.streamflow.web.application.entityexport.EntityExportService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.entity.caselog.CaseLogEntity;
@@ -109,6 +112,8 @@ import se.streamsource.streamflow.web.infrastructure.logging.LoggingService;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
+import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
+import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
@@ -158,6 +163,8 @@ public class DomainAssembler
       external( layer.module( "External" ) );
       util( layer.module(  "Util" ) );
 
+      entityExport(layer.module("Entity export"));
+
       // All values are public
       layer.values(Specifications.<Object>TRUE()).visibleIn(Visibility.application);
 
@@ -203,6 +210,18 @@ public class DomainAssembler
         }
 
     }
+
+   private void entityExport(ModuleAssembly module) throws AssemblyException
+   {
+      Application.Mode mode = module.layer().application().mode();
+      if (mode.equals(Application.Mode.production))
+      {
+         module.services(EntityExportService.class)
+                 .identifiedBy("entityexport").instantiateOnStartup().visibleIn(Visibility.application);
+         ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
+         config.entities(EntityExportConfiguration.class).visibleIn(Visibility.application);
+      }
+   }
 
     private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
     {

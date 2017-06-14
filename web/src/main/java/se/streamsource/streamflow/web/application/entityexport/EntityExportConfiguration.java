@@ -16,33 +16,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.api.workspace.cases;
+package se.streamsource.streamflow.web.application.entityexport;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
 
 /**
- * The configuration for a case visitor.
+ * Set up for entity export.
+ * <ul>
+ *    <li>
+ *       loggingStatisticsEntitiesCount - part of entities that will log every time;
+ *    </li>
+ *    <li>
+ *       showSql - log sql statements related to schema modification.
+ *    </li>
+ * </ul>
+ * @see ConfigurationComposite
+ * @see Enabled
  */
-public interface CaseOutputConfigDTO
-   extends ValueComposite
+public interface EntityExportConfiguration
+        extends ConfigurationComposite, Enabled
 {
-   @UseDefaults
-   Property<Boolean> contacts();
 
    @UseDefaults
-   Property<Boolean> conversations();
+   Property<Integer> loggingStatisticsEntitiesCount();
 
    @UseDefaults
-   Property<Boolean> submittedForms();
+   Property<Boolean> showSql();
 
-   @UseDefaults
-   Property<Boolean> attachments();
-
-   @UseDefaults
-   Property<Boolean> caselog();
-
-   @UseDefaults
-   Property<Boolean> notes();
 }

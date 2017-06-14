@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.28.3</version>
+    <version>1.29-beta2</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -47,14 +47,17 @@
             <name>MyGrid Repository</name>
             <url>http://www.mygrid.org.uk/maven/repository/</url>
         </repository>
-    </repositories>
-    <!-- <repositories>
+
         <repository>
-            <id>nexus</id>
-            <url>http://79.125.6.136/nexus/content/groups/public</url>
+            <id>JBoss 3rd-party</id>
+            <name>JBoss 3rd-party Repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
         </repository>
-    </repositories>
--->
+        <repository>
+            <id>Clojars</id>
+            <name>Clojars Repository</name>
+            <url>http://clojars.org/repo/</url>
+        </repository>
 	<!-- <repositories>
     	<repository>
       	  <id>streamflow-release</id>
@@ -103,7 +106,7 @@
         <connection>scm:git:https://github.com/jayway/streamflow-core.git</connection>
         <developerConnection>scm:git:https://github.com/jayway/streamflow-core.git
         </developerConnection>
-      <tag>HEAD</tag>
+      <tag>streamflow-1.29-beta2</tag>
   </scm>
 
     <!-- <distributionManagement>
@@ -223,6 +226,18 @@
                 <role>Developer</role>
             </roles>
             <timezone>UTC+1</timezone>
+        </developer>
+        <developer>
+            <id>ruslanpopenko</id>
+            <name>Ruslan Popenko</name>
+            <email>ruslanpopenko@ukr.net</email>
+            <url>http://imcode.com</url>
+            <organization>imCode</organization>
+            <organizationUrl>http://ubrainians.com</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+2</timezone>
         </developer>
     </developers>
 
@@ -805,6 +820,12 @@
                 <groupId>info.aduna.commons</groupId>
                 <artifactId>aduna-commons-collections</artifactId>
                 <version>2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>info.aduna</groupId>
+                <artifactId>aduna-iteration</artifactId>
+                <version>1.5</version>
             </dependency>
 
             <!-- Scheduler -->

@@ -16,16 +16,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.streamsource.streamflow.web.infrastructure.caching;
+package se.streamsource.streamflow.web.application.entityexport;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
- * These are the names of the caches being used in Streamflow. Reference this enum
- * when accessing caches so that we can easily do "Find usages" of each enum and find out
- * where they are being used in the code.
+ * Implementation of {@link PreparedStatementValueBinder}
+ * for binding {@link PreparedStatement#setInt(int, int)} method.
  */
-public enum Caches
+public class PreparedStatementIntegerBinder extends PreparedStatementValueBinder<Integer>
 {
-   CASECOUNTS,
-   VERIFIEDUSERS,
-   ENTITYSTATES
+   PreparedStatementIntegerBinder( Integer value, String sqlType )
+   {
+      super( value, sqlType );
+   }
+
+   @Override
+   void bind( PreparedStatement preparedStatement, int index ) throws SQLException
+   {
+      preparedStatement.setInt( index, value );
+   }
+
 }
