@@ -234,6 +234,18 @@
             </roles>
             <timezone>UTC+1</timezone>
         </developer>
+        <developer>
+            <id>ruslanpopenko</id>
+            <name>Ruslan Popenko</name>
+            <email>ruslanpopenko@ukr.net</email>
+            <url>http://imcode.com</url>
+            <organization>imCode</organization>
+            <organizationUrl>http://ubrainians.com</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+2</timezone>
+        </developer>
     </developers>
 
     <contributors>
