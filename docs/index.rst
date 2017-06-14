@@ -17,3 +17,4 @@ Contents
    :titlesonly:
 
    quick_start/index
+   release_notes/index
