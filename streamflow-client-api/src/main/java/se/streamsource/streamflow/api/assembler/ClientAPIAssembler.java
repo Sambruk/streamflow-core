@@ -98,6 +98,7 @@ import se.streamsource.streamflow.api.workspace.cases.general.CaseGeneralDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldValuesDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormSignatureDTO;
@@ -168,6 +169,7 @@ public class ClientAPIAssembler
               SubmittedFormsListDTO.class,
               SubmittedPageDTO.class,
               FieldValueDTO.class,
+              FieldValuesDTO.class,
               AttachmentFieldSubmission.class,
               AttachmentFieldDTO.class,
               FormSignatureDTO.class,
