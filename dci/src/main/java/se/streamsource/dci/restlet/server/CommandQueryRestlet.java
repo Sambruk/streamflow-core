@@ -67,7 +67,7 @@ public abstract class CommandQueryRestlet
    private Map<Class, Uniform> subResources = Collections.synchronizedMap(new HashMap<Class, Uniform>());
 
    @Override
-   public void handle(Request request, Response response)
+   public synchronized void handle(Request request, Response response)
    {
       super.handle(request, response);
 
