@@ -66,6 +66,7 @@ public abstract class CommandQueryRestlet
 
    private Map<Class, Uniform> subResources = Collections.synchronizedMap(new HashMap<Class, Uniform>());
 
+   // TODO: 23.06.17 Test performance effect of whole method synchronization
    @Override
    public synchronized void handle(Request request, Response response)
    {
