@@ -38,6 +38,7 @@ import se.streamsource.streamflow.api.workspace.cases.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldSubmissionPluginDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FieldValueDTO;
+import se.streamsource.streamflow.api.workspace.cases.general.FieldValuesDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.FormDraftSettingsDTO;
 import se.streamsource.streamflow.api.workspace.cases.general.PageSubmissionDTO;
@@ -135,6 +136,14 @@ public class CaseFormDraftContext implements DeleteContext, IndexContext<FormDra
    {
       FormDraft formDraft = role( FormDraft.class );
       formDraft.changeFieldValue( field.field().get(), field.value().get() );
+   }
+
+   public void updatefields(FieldValuesDTO fieldValues)
+   {
+      final FormDraft formDraft = role( FormDraft.class );
+      for ( final FieldValueDTO field : fieldValues.fieldValues().get() ) {
+         formDraft.changeFieldValue( field.field().get(), field.value().get() );
+      }
    }
 
    public void updateattachmentfield(AttachmentFieldDTO fieldAttachment)
