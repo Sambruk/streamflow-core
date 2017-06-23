@@ -22,10 +22,12 @@ import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.composite.Composite;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -68,7 +70,7 @@ public abstract class AbstractExportHelper
 
    protected abstract String tableName();
 
-   protected void createSubPropertyTableIfNotExists( String tableName ) throws SQLException, IOException
+   protected void createSubPropertyTableIfNotExists( final String tableName ) throws SQLException, IOException
    {
       if ( !tables.containsKey( tableName ) )
       {
@@ -102,9 +104,9 @@ public abstract class AbstractExportHelper
       }
    }
 
-   void processCollection( String name,
-                           Object value,
-                           PreparedStatementValueBinder valueBinder
+   void processCollection( final String name,
+                           final Object value,
+                           final PreparedStatementValueBinder valueBinder
    ) throws SQLException, JSONException, ClassNotFoundException, IOException
    {
       final String tableName = tableName() + "_" + toSnakeCaseFromCamelCase( name ) + "_coll";
@@ -143,7 +145,9 @@ public abstract class AbstractExportHelper
 
    }
 
-   void createCollectionTableIfNotExist( String tableName, boolean isMap, PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException, IOException
+   void createCollectionTableIfNotExist( final String tableName,
+                                         final boolean isMap,
+                                         final PreparedStatementValueBinder valueBinder ) throws SQLException, ClassNotFoundException, IOException
    {
 
       if ( !tables.containsKey( tableName ) )
@@ -219,10 +223,10 @@ public abstract class AbstractExportHelper
 
    }
 
-   void createCrossRefTableIfNotExists( String tableName,
-                                        String associationTable,
-                                        String ownerType,
-                                        String linkType ) throws ClassNotFoundException, SQLException
+   void createCrossRefTableIfNotExists( final String tableName,
+                                        final String associationTable,
+                                        final String ownerType,
+                                        final String linkType ) throws ClassNotFoundException, SQLException
    {
 
       if ( tables.get( tableName ) == null )
@@ -338,7 +342,7 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected void createTrigger( Set<String> triggerStatements ) throws SQLException, IOException
+   protected void createTrigger( final Set<String> triggerStatements ) throws SQLException, IOException
    {
       if ( !triggerStatements.isEmpty() )
       {
@@ -389,7 +393,9 @@ public abstract class AbstractExportHelper
       }
    }
 
-   protected String addColumn( String name, Class<?> type, Statement statement ) throws SQLException, IOException
+   protected String addColumn( final String name,
+                               final Class<?> type,
+                               final Statement statement ) throws SQLException, IOException
    {
       final Set<String> columns = tables.get( tableName() );
 
@@ -454,7 +460,7 @@ public abstract class AbstractExportHelper
    }
 
 
-   protected Class<?> detectType( ValueComposite valueComposite )
+   protected Class<?> detectType( final ValueComposite valueComposite )
    {
 
       final Class<? extends Composite> type = valueComposite.type();
@@ -474,65 +480,76 @@ public abstract class AbstractExportHelper
                        final String name,
                        final int i ) throws JSONException, SQLException
    {
+      final Object value;
       if ( Boolean.class.equals( clazz ) )
       {
-         statement.setBoolean( i, jsonObj.getBoolean( name ) );
+         value = jsonObj.getBoolean( name );
       } else if ( Integer.class.equals( clazz ) )
       {
-         statement.setInt( i, jsonObj.getInt( name ) );
+         value = jsonObj.getInt( name );
       } else if ( Long.class.equals( clazz ) )
       {
-         statement.setLong( i, jsonObj.getLong( name ) );
+         value = jsonObj.getLong( name );
       } else if ( Float.class.equals( clazz ) )
       {
-         statement.setFloat( i, ( float ) jsonObj.getDouble( name ) );
+         value = ( float ) jsonObj.getDouble( name );
       } else if ( Double.class.equals( clazz ) )
       {
-         statement.setDouble( i, jsonObj.getDouble( name ) );
-      } else if ( String.class.equals( clazz )
-              || clazz.isEnum()
-              || Date.class.equals( clazz )
-              || DateTime.class.equals( clazz ) )
+         value = jsonObj.getDouble( name );
+      } else if ( String.class.equals( clazz ) )
       {
-         statement.setString( i, jsonObj.getString( name ) );
+         value = jsonObj.getString( name );
+      } else if ( clazz.isEnum() )
+      {
+         value = Enum.valueOf( clazz, jsonObj.getString( name ) );
+      } else if ( Date.class.equals( clazz ) )
+      {
+         value = DateFunctions.fromString( jsonObj.getString( name ) );
+      } else if ( DateTime.class.equals( clazz ) )
+      {
+         value = new DateTime( jsonObj.getString( name ), DateTimeZone.UTC );
       } else
       {
          throw new IllegalArgumentException();
       }
+
+      setSimpleType(statement, value, i);
    }
 
    void setSimpleType( final PreparedStatement statement,
-                       Object value,
+                       final Object value,
                        final int i ) throws JSONException, SQLException
    {
-      final Class<?> clazz = value.getClass();
-      if ( Boolean.class.equals( clazz ) )
+      if ( value instanceof  Boolean )
       {
          statement.setBoolean( i, ( Boolean ) value );
-      } else if ( Integer.class.equals( clazz ) )
+      } else if ( value instanceof Integer )
       {
          statement.setInt( i, ( Integer ) value );
-      } else if ( Long.class.equals( clazz ) )
+      } else if ( value instanceof  Long )
       {
          statement.setLong( i, ( Long ) value );
-      } else if ( Float.class.equals( clazz ) )
+      } else if ( value instanceof Float )
       {
          statement.setFloat( i, ( Float ) value );
-      } else if ( Double.class.equals( clazz ) )
+      } else if ( value instanceof Double )
       {
          statement.setDouble( i, ( Double ) value );
-      } else if ( String.class.equals( clazz ) || clazz.isEnum() )
+      } else if ( value instanceof String )
       {
-         statement.setString( i, value.toString() );
-      } else if ( Date.class.equals( clazz ) )
+         statement.setString( i, ( String ) value);
+      } else if ( value instanceof Enum )
+      {
+         statement.setString( i, ( ( Enum ) value).name() );
+      } else if ( value instanceof Date )
       {
          final Date date = ( Date ) value;
          statement.setTimestamp( i, new Timestamp( date.getTime() ) );
-      } else if ( DateTime.class.equals( clazz ) )
+      } else if ( value instanceof DateTime )
       {
          final DateTime dateTime = ( DateTime ) value;
          statement.setTimestamp( i, new Timestamp( dateTime.getMillis() ) );
-      } else if ( EntityReference.class.equals( clazz ) )
+      } else if ( value instanceof EntityReference )
       {
          statement.setString( i, ( ( EntityReference ) value ).identity() );
       } else
@@ -541,7 +558,7 @@ public abstract class AbstractExportHelper
       }
    }
 
-   SingletonMap processValueComposite( ValueComposite value ) throws Exception
+   SingletonMap processValueComposite( final ValueComposite value ) throws Exception
    {
       final ValueExportHelper valueExportHelper = new ValueExportHelper();
       valueExportHelper.setValue( value );
@@ -554,9 +571,9 @@ public abstract class AbstractExportHelper
       return valueExportHelper.help();
    }
 
-   ResultSet selectFromWhereId( String tableName, String id ) throws SQLException, JSONException
+   ResultSet selectFromWhereId( final String tableName, final String id ) throws SQLException, JSONException
    {
-      String isExistQuery = "SELECT " + escapeSqlColumnOrTable( "identity" ) +
+      final String isExistQuery = "SELECT " + escapeSqlColumnOrTable( "identity" ) +
               " FROM " + escapeSqlColumnOrTable( tableName ) +
               " WHERE " + escapeSqlColumnOrTable( "identity" ) + " = ?";
 
@@ -566,7 +583,7 @@ public abstract class AbstractExportHelper
       return isExistPS.executeQuery();
    }
 
-   String escapeSqlColumnOrTable( String name )
+   String escapeSqlColumnOrTable( final String name )
    {
       switch ( dbVendor )
       {
@@ -581,17 +598,17 @@ public abstract class AbstractExportHelper
       }
    }
 
-   String classSimpleName( String className )
+   String classSimpleName( final String className )
    {
       return ClassUtils.getShortClassName( className );
    }
 
-   String toSnakeCaseFromCamelCase( String str )
+   String toSnakeCaseFromCamelCase( final String str )
    {
-      StringBuilder stringBuilder = new StringBuilder();
+      final StringBuilder stringBuilder = new StringBuilder();
 
       //out of naming rules
-      String x = str.replace( "DTO", "Dto" );
+      final String x = str.replace( "DTO", "Dto" );
 
       for ( int i = 0; i < x.length(); i++ )
       {
@@ -612,7 +629,7 @@ public abstract class AbstractExportHelper
       return stringBuilder.toString();
    }
 
-   String detectSqlType( Class type )
+   String detectSqlType( final Class type )
    {
 
       if ( Boolean.class.equals( type ) )
@@ -647,7 +664,7 @@ public abstract class AbstractExportHelper
 
    }
 
-   protected String stringSqlType( int length )
+   protected String stringSqlType( final int length )
    {
 
       final boolean isMax = length == Integer.MAX_VALUE;
