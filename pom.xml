@@ -58,6 +58,7 @@
             <name>Clojars Repository</name>
             <url>http://clojars.org/repo/</url>
         </repository>
+    </repositories>
 	<!-- <repositories>
     	<repository>
       	  <id>streamflow-release</id>
