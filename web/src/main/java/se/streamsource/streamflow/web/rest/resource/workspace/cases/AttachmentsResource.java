@@ -189,7 +189,7 @@ public class AttachmentsResource
                   Attachment attachment = context(AttachmentsContext.class).createAttachment( fi.getInputStream() );
 
                   // Set name
-                  attachment.changeName( fi.getName() );
+                  attachment.changeName(new String(fi.getName().getBytes("UTF-8")));
 
                   // Set modification date
                   attachment.changeModificationDate( new Date() );
