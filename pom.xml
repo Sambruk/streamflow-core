@@ -439,19 +439,19 @@
                             <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>check-headers ISO-8859-1</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>**/*.properties</include>
-                            </includes>
-                            <encoding>ISO-8859-1</encoding>
-                        </configuration>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>check-headers ISO-8859-1</id>-->
+                        <!--<phase>verify</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>format</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<includes>-->
+                                <!--<include>**/*.properties</include>-->
+                            <!--</includes>-->
+                            <!--<encoding>ISO-8859-1</encoding>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
         </plugins>
