@@ -58,7 +58,7 @@ public class EventPropertyChangeMixinTest
       new EntityTestAssembler().assemble( module );
    }
 
-   //@Test
+   @Test
    public void testEventMixin()
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
