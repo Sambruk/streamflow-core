@@ -70,7 +70,7 @@ public class EventPropertyChangeMixinTest
       uow.discard();
    }
 
-   interface TestDomain
+   public interface TestDomain
    {
       void changeFoo( String foo );
 
@@ -85,7 +85,7 @@ public class EventPropertyChangeMixinTest
 
    @Concerns(EventCreationConcern.class)
    @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
-   interface TestEntity
+   public interface TestEntity
          extends TestDomain, TestDomain.TestDomainState, EntityComposite
    {
    }
