@@ -70,7 +70,7 @@
                 <groupId>org.glassfish.maven.plugin</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <configuration>
-                    <user>admin</user>
+                    <user>${glassfish.user}</user>
                     <passwordFile>${basedir}/glassfish.properties</passwordFile>
                     <glassfishDirectory>${glassfish.directory}</glassfishDirectory>
                     <domainDirectory>${glassfish.directory}/glassfish/domains/</domainDirectory>
