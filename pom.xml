@@ -981,21 +981,27 @@
             </activation>
             <build>
                 <pluginManagement>
-                <plugins>
-                    <!-- WebStart config -->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>webstart-maven-plugin</artifactId>
-                        <configuration>
-                            <sign>
-                                <keystore>${keystore.path}</keystore>
-                                <keypass>${keystore.keypass}</keypass>
-                                <storepass>${keystore.keypass}</storepass>
-                                <alias>codesigncert</alias>
-                            </sign>
-                        </configuration>
-                    </plugin>
-                </plugins>
+                    <plugins>
+                        <!-- WebStart config -->
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>webstart-maven-plugin</artifactId>
+                            <configuration>
+                                <sign>
+                                    <keystore>${keystore.path}</keystore>
+                                    <keypass>${keystore.keypass}</keypass>
+                                    <storepass>${keystore.keypass}</storepass>
+                                    <alias>codesigncert</alias>
+                                </sign>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>properties-maven-plugin</artifactId>
+                            <version>1.0.0</version>
+                        </plugin>
+                    </plugins>
+
                 </pluginManagement>
             </build>
         </profile>
