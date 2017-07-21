@@ -81,7 +81,7 @@
                         </goals>
                         <configuration>
                             <files>
-                                <file>${basedir}/build.properties</file>
+                                <file>${basedir}/certificate.properties</file>
                             </files>
                         </configuration>
                     </execution>

@@ -15,5 +15,4 @@ webclient/dist/
 webclient/temp/
 webclient/app/design/
 **/*.iml
-webstart/build.properties
-dist/ear/glassfish.properties
+webstart/certificate.properties
