@@ -124,20 +124,20 @@
     </distributionManagement> -->
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <name>Cloudbees Release Repo</name>
-            <url>dav:https://repository-streamflow.forge.cloudbees.com/release/</url>
+            <id>imcode</id>
+            <name>imCode Internal Repository</name>
+            <url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>Cloudbees Snapshot Repo</name>
-            <url>dav:https://repository-streamflow.forge.cloudbees.com/snapshot/</url>
+            <id>imcode</id>
+            <name>imCode Internal Repository</name>
+            <url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
         </snapshotRepository>
     </distributionManagement>
 
     <issueManagement>
-        <system>JIRA</system>
-        <url>https://jira.waygroup.se/browse/STREAMFLOW</url>
+        <system>YouTrack</system>
+        <url>http://track.imcode.com/search/Streamflow-26</url>
     </issueManagement>
 
     <developers>
