@@ -184,6 +184,11 @@
         </dependency>
 
         <dependency>
+            <groupId>info.aduna</groupId>
+            <artifactId>aduna-iteration</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-model</artifactId>
         </dependency>

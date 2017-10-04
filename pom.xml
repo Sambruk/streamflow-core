@@ -47,6 +47,11 @@
             <name>MyGrid Repository</name>
             <url>http://www.mygrid.org.uk/maven/repository/</url>
         </repository>
+        <repository>
+            <id>JBoss 3rd-party</id>
+            <name>JBoss 3rd-party Repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
+        </repository>
     </repositories>
     <!-- <repositories>
         <repository>
@@ -805,6 +810,12 @@
                 <groupId>info.aduna.commons</groupId>
                 <artifactId>aduna-commons-collections</artifactId>
                 <version>2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>info.aduna</groupId>
+                <artifactId>aduna-iteration</artifactId>
+                <version>1.5</version>
             </dependency>
 
             <!-- Scheduler -->
