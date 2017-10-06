@@ -6,7 +6,6 @@
     <version>1.29-beta4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
         <version.qi4j-core>1.3-sf897</version.qi4j-core>
         <version.qi4j-lib>1.3-sf897</version.qi4j-lib>
@@ -16,10 +15,27 @@
         <version.jackson>1.4.3</version.jackson>
         <version.slf4j>1.6.4</version.slf4j>
         <application.header>Streamflow</application.header>
-        <!--  prevent javadoc error about platform depending build -->
+        <remote.repository.url>http://repo-streamflow.prod.imcode.com/repository</remote.repository.url>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <modules>
+        <module>dci</module>
+        <module>common</module>
+        <module>streamflow-surface-api</module>
+        <module>streamflow-client-api</module>
+        <module>infrastructure</module>
+        <module>fileconfig</module>
+        <module>client</module>
+        <module>serverplugin</module>
+        <module>web</module>
+        <module>webstart</module>
+        <module>war</module>
+        <module>referenceplugin</module>
+        <module>help</module>
+        <module>dist</module>
+        <module>statistics</module>
+    </modules>
 
     <repositories>
         <repository>
@@ -59,49 +75,6 @@
             <url>http://clojars.org/repo/</url>
         </repository>
     </repositories>
-	<!-- <repositories>
-    	<repository>
-      	  <id>streamflow-release</id>
-		  <name>Streamflow Release Repository</name>
-		  <url>https://repository-streamflow.forge.cloudbees.com/release/</url>
-		  <releases>
-			  <enabled>true</enabled>
-		  </releases>
-		  <snapshots>
-			  <enabled>false</enabled>
-		  </snapshots>
-		</repository>
-		<repository>
-			<id>streamflow-snapshot</id>
-			<name>Streamflow Release Repository</name>
-			<url>https://repository-streamflow.forge.cloudbees.com/snapshot/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories> -->
-
-    <!-- <modules>
-        <module>dci</module>
-        <module>common</module>
-        <module>streamflow-surface-api</module>
-        <module>streamflow-client-api</module>
-        <module>infrastructure</module>
-        <module>fileconfig</module>
-        <module>client</module>
-        <module>webclient</module>
-        <module>serverplugin</module>
-        <module>web</module>
-        <module>webstart</module>
-        <module>war</module>
-        <module>referenceplugin</module>
-        <module>help</module>
-        <module>dist</module>
-        <module>statistics</module>
-    </modules> -->
 
     <scm>
         <connection>scm:git:https://github.com/jayway/streamflow-core.git</connection>
@@ -110,28 +83,16 @@
       <tag>HEAD</tag>
   </scm>
 
-    <!-- <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>Waybuild Release Repo</name>
-            <url>http://79.125.6.136/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Waybuild Snapshot Repo</name>
-            <url>http://79.125.6.136/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement> -->
     <distributionManagement>
         <repository>
-            <id>imcode</id>
-            <name>imCode Internal Repository</name>
-            <url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+            <id>repo-streamflow</id>
+            <name>Streamflow pre releases repository</name>
+            <url>${remote.repository.url}/pre-releases</url>
         </repository>
         <snapshotRepository>
-            <id>imcode</id>
-            <name>imCode Internal Repository</name>
-            <url>sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2</url>
+            <id>repo-streamflow</id>
+            <name>Streamflow snapshots repository</name>
+            <url>${remote.repository.url}/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -439,19 +400,38 @@
                             <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
-                    <!--<execution>-->
-                        <!--<id>check-headers ISO-8859-1</id>-->
-                        <!--<phase>verify</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>format</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<includes>-->
-                                <!--<include>**/*.properties</include>-->
-                            <!--</includes>-->
-                            <!--<encoding>ISO-8859-1</encoding>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="pre-release">
+                                    <contains string="${project.version}" substring="alpha" />
+                                </condition>
+                                <condition property="pre-release">
+                                    <contains string="${project.version}" substring="beta" />
+                                </condition>
+                                <condition property="pre-release">
+                                    <contains string="${project.version}" substring="RC" />
+                                </condition>
+                                <condition property="distributionManagement.repository.url"
+                                           value="${remote.repository.url}/pre-releases">
+                                    <isset property="isPreRelease" />
+                                </condition>
+
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -875,64 +855,24 @@
 
     <profiles>
         <profile>
-            <id>modules</id>
+            <id>release</id>
             <activation>
                 <property>
-                    <name>!web-client</name>
+                    <name>release</name>
                 </property>
             </activation>
-            <modules>
-                <module>dci</module>
-                <module>common</module>
-                <module>streamflow-surface-api</module>
-                <module>streamflow-client-api</module>
-                <module>infrastructure</module>
-                <module>fileconfig</module>
-                <module>client</module>
-                <!-- <module>webclient</module> -->
-                <module>serverplugin</module>
-                <module>web</module>
-                <module>webstart</module>
-                <module>war</module>
-                <module>referenceplugin</module>
-                <module>help</module>
-                <module>dist</module>
-                <module>statistics</module>
-            </modules>
+            <distributionManagement>
+                <repository>
+                    <id>repo-streamflow</id>
+                    <name>Streamflow pre releases repository</name>
+                    <url>${remote.repository.url}/releases</url>
+                </repository>
+            </distributionManagement>
         </profile>
         <profile>
-            <id>web-client</id>
+            <id>process-remote-resources</id>
             <activation>
-                <property>
-                    <name>web-client</name>
-                </property>
-            </activation>
-            <modules>
-                <module>dci</module>
-                <module>common</module>
-                <module>streamflow-surface-api</module>
-                <module>streamflow-client-api</module>
-                <module>infrastructure</module>
-                <module>fileconfig</module>
-                <module>client</module>
-                <module>webclient</module>
-                <module>serverplugin</module>
-                <module>web</module>
-                <module>webstart</module>
-                <module>war</module>
-                <module>referenceplugin</module>
-                <module>help</module>
-                <module>dist</module>
-                <module>statistics</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>pre-release</id>
-            <activation>
-                <property>
-                    <name>pre-release</name>
-                </property>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <build>
                 <plugins>
