@@ -402,38 +402,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <exportAntProperties>true</exportAntProperties>
-                            <target>
-                                <condition property="pre-release">
-                                    <contains string="${project.version}" substring="alpha" />
-                                </condition>
-                                <condition property="pre-release">
-                                    <contains string="${project.version}" substring="beta" />
-                                </condition>
-                                <condition property="pre-release">
-                                    <contains string="${project.version}" substring="RC" />
-                                </condition>
-                                <condition property="distributionManagement.repository.url"
-                                           value="${remote.repository.url}/pre-releases">
-                                    <isset property="isPreRelease" />
-                                </condition>
-
-
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
