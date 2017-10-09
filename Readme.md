@@ -36,7 +36,7 @@ You should pre release `stable` version (`alpha`, `beta`, `M`, `RC`).
 
 3. To `/releases` repository. You should have tested release `stable` version:
 
-`mvn clean deploy -P sign release`
+`mvn clean deploy -P sign,release`
 
 
 
