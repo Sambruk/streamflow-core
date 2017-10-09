@@ -31,10 +31,10 @@ or if you want to define custom `settings.xml`:
 
     ...settings.xml there is a path to settings.xml file.
     
-2. To `/pre-releases` repository the same way as for `/snapshort`. 
-You should you have pre release `stable` version (`alpha`, `beta`, `M`, `RC`).
+2. To `/pre-releases` repository the same way as for `/snapshots`. 
+You should pre release `stable` version (`alpha`, `beta`, `M`, `RC`).
 
-3. To `/releases` repository:
+3. To `/releases` repository. You should have tested release `stable` version:
 
 `mvn clean deploy -P sign release`
 
