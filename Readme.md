@@ -8,7 +8,7 @@ Build
 
 `mvn clean install`
 
-2. Dev env with sign 
+2. Dev env with sign (You should have certificate file).
 
 `mvn clean install -P sign`
 
