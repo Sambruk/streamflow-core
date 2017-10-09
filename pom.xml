@@ -40,7 +40,7 @@
     <repositories>
         <repository>
             <id>streamflow</id>
-            <name>Streamflow Release Repository</name>
+            <name>Streamflow releases repository</name>
             <url>${remote.repository.url}/releases/</url>
         </repository>
 
