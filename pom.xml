@@ -39,19 +39,17 @@
 
     <repositories>
         <repository>
+            <id>streamflow</id>
+            <name>Streamflow Release Repository</name>
+            <url>${remote.repository.url}/releases/</url>
+        </repository>
+
+        <repository>
             <id>maven-restlet</id>
             <name>Public online Restlet repository</name>
             <url>http://maven.restlet.org</url>
         </repository>
-        <repository>
-            <id>nexus</id>
-            <url>http://79.125.6.136/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>releases</id>
-            <name>Cloudbees Release Repo</name>
-            <url>http://repository-streamflow.forge.cloudbees.com/release/</url>
-        </repository>
+
         <!--Unchecked repo only for cardme -->
         <repository>
             <id>basex</id>
