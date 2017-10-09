@@ -830,7 +830,7 @@
             <distributionManagement>
                 <repository>
                     <id>repo-streamflow</id>
-                    <name>Streamflow pre releases repository</name>
+                    <name>Streamflow releases repository</name>
                     <url>${remote.repository.url}/releases</url>
                 </repository>
             </distributionManagement>
