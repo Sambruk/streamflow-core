@@ -8,19 +8,19 @@ Backup is made with the help of `VisualVM <https://visualvm.github.io>`_.
 
 Let's describe this step by step.
 
-1. Open VisualVM and click MBeans tab. There open path **Qi4j/StreamflowServer/Manager**.
+#. Open VisualVM and click MBeans tab. There open path **Qi4j/StreamflowServer/Manager**.
 
 .. image:: https://raw.githubusercontent.com/jayway/streamflow-core/develop/docs/quick_start/images/manager_location.png
     :align: center
     :width: 100%
 
-2. Then click at *Operations* tab. There should **backup** button. Click on it.
+#. Then click at *Operations* tab. There should **backup** button. Click on it.
 
 .. image:: https://raw.githubusercontent.com/jayway/streamflow-core/develop/docs/quick_start/images/backup.png
     :align: center
     :width: 100%
 
-3. Where is placed backup read at `Where is data?`_
+#. Where is placed backup read at `Where is data?`_
 
 
 Where is data?
@@ -31,3 +31,8 @@ Backup placed at **{StreamflowServer}/data/backup** folder.
 .. important::
     If you have necessary data at this location,
     you need it move to another folder, otherwise data will be lost.
+
+.. important::
+    To perform complete backup recommended just to copy entire data folder in order to fix make easy revert.
+    For *Windows* is **C:\Windows\System32\config\systemprofile\Application Data\StreamflowServer**
+    For *Linux* is **<User_home>/.StreamFlowServer**

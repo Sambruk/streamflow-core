@@ -1,8 +1,8 @@
 Environment setup
-============
+=================
 
 Windows Server 2012 R2 + Java 7 + Glassfish 3.1.2.2
---------------
+---------------------------------------------------
 
 #. Download latest jdk 7 from official Oracle site. For now can be accessed from Oracle archive http://www.oracle.com/technetwork/java/javase/archive-139210.html
 #. Install downloaded file

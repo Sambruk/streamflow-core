@@ -5,5 +5,7 @@
    :titlesonly:
 
    environment_setup
-   installation
    backup_data
+   installation
+   uninstallation
+   building
