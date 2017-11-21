@@ -4,6 +4,6 @@
 .. toctree::
    :titlesonly:
 
-   installation
    environment_setup
+   installation
    backup_data
