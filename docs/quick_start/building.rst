@@ -1,103 +1,55 @@
-Installation
-============
+Build
+=====
 
+For development purposes
+------------------------
 
-#. Checkout
-#. Comment all content in methods assemble and testEventMixin at **EventPropertyChangeMixinTest.java**
-#. Change IOException to Exception at line *109* at file **KnowledgebaseService.java**
-#. Add folowing line at **velocity.properties** file under line *118*
-	.. code-block:: properties
+#. To install to local maven repository and build war/ear files
 
-		velocimacro.library =
+	.. code-block:: terminal
 
-#. Modify root **pom.xml** file:
-	* Add under line *22*
-	.. code-block:: maven
+		mvn clean install
 
-	    <repositories>
-		<repository>
-		    <id>maven-restlet</id>
-		    <name>Public online Restlet repository</name>
-		    <url>http://maven.restlet.org</url>
-		</repository>
-		<repository>
-		    <id>nexus</id>
-		    <url>http://79.125.6.136/nexus/content/groups/public</url>
-		</repository>
-		<repository>
-            	    <id>releases</id>
-            	    <name>Cloudbees Release Repo</name>
-            	    <url>http://repository-streamflow.forge.cloudbees.com/release/</url>
-        	</repository>
-		<!--Unchecked repo only for cardme -->
-		<repository>
-		    <id>basex</id>
-		    <name>BaseX Maven Repository</name>
-		    <url>http://files.basex.org/maven</url>
-		</repository>
-	    </repositories>
+#. To install to local maven repository and prepare war/ear files with proper signing by owned certificate (You should have certificate file).
 
+	.. code-block:: terminal
 
-	* Add folowing dependency under line *825*. Before lines
-	.. code-block:: maven
+		mvn clean install -P sign
 
-	       	</dependencies>
-	   </dependencyManagement>
+	.. note::
+		For sign you need define properties in the `webstart/certificate.properties`.
 
-	This:
-    .. code-block:: maven
+For production and proper releases
+------
 
-		<dependency>
-        	        <groupId>org.codehaus.mojo</groupId>
-        	        <artifactId>keytool-api-1.7</artifactId>
-        	        <version>1.5</version>
-        	</dependency>
+1. To **/snapshots** repository. You should have **SNAPSHOT** version:
 
-#. Modify **/web/pom.xml**:
-	* Change:
-	.. code-block:: maven
+	.. code-block:: terminal
 
-		<dependency>
-		    <groupId>cardme</groupId>
-		    <artifactId>cardme</artifactId>
-		    <version>0.2.6</version>
-		</dependency>
+		mvn clean deploy -P sign
 
-		To:
-	.. code-block:: maven
+	or if you want to define custom *settings.xml*:
 
-		<dependency>
-		    <groupId>org.deepfs.external</groupId>
-		    <artifactId>cardme</artifactId>
-		    <version>0.2.6</version>
-		</dependency>
+	.. code-block:: terminal
 
-#. Modify **/webstart/pom.xml**:
-	* Change version of *webstart-maven-plugin* to **1.0-beta-6** at line *22*
-	* Add folowing dependecies under line *22*:
-		.. code-block:: maven
+		mvn -s ../setings.xml clean deploy -P sign
 
-			<dependencies>
-		            <dependency>
-		                <groupId>org.codehaus.mojo</groupId>
-		                <artifactId>webstart-pack200-impl</artifactId>
-		                <version>1.0-beta-6</version>
-		            </dependency>
-		            <dependency>
-		                <groupId>org.codehaus.mojo</groupId>
-		                <artifactId>keytool-api-1.7</artifactId>
-		                <version>1.4</version>
-		            </dependency>
-		        </dependencies>
+	.. note::
+		...settings.xml there is a path to settings.xml file.
 
-#. Run mvn clean package for *streamflow-core* **pom.xml**
-#. Check if exist folowing folders **.StreamflowServer***
-#. Get **streamflow-web-1.28-SNAPSHOT.war** from *streamflow-core/web/target/* folder and rename it to **streamflow.war**
-#. Now u can deploy it
+2. To **/pre-releases** repository the same way as for **/snapshots**.
+You should pre release `stable` version (`alpha`, `beta`, `M`, `RC`).
+
+3. To **/releases** repository. You should have tested release **stable** version:
+
+	.. code-block:: terminal
+
+		mvn clean deploy -P sign,release
+
 
 .. important::
+	Be sure that there are no **.StreamflowServer*** folders before deploying, in another case you will get lock error, in case of them remove and restart server.
 
-    Be sure that there are no **.StreamflowServer*** folders before deploying, in another case you will get lock error, in case of them remove and restart server.
 
 .. note::
-    After deploying all urls are works but they dont include streamflow root path. They must look like * /streamflow/workspace/ instead of * /workspace/
+	After deploying all urls are works but they dont include streamflow root path. They must look like * /streamflow/workspace/ instead of * /workspace/
