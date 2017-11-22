@@ -22,36 +22,34 @@ import org.elasticsearch.action.count.CountRequestBuilder;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.AndFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.composite.Composite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.grammar.*;
-import org.qi4j.api.specification.Specification;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.query.EntityFinderException;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueryDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -73,6 +71,9 @@ public interface ElasticSearchFinder
 
         private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchFinder.class);
 
+        private static final int REQUEST_SIZE_THRESHOLD = 1000;
+        private static final long SCROLL_KEEP_ALIVE = TimeUnit.MINUTES.toMillis(1);
+
         @This
         private ElasticSearchSupport support;
 
@@ -85,8 +86,11 @@ public interface ElasticSearchFinder
                                                        Integer firstResult, Integer maxResults )
                 throws EntityFinderException
         {
+            final int size = maxResults == null ? Integer.MAX_VALUE : maxResults;
+
             // Prepare request
-            SearchRequestBuilder request = support.client().prepareSearch( support.index() );
+            final Client client = support.client();
+            SearchRequestBuilder request = client.prepareSearch( support.index() );
 
             AndFilterBuilder filterBuilder = baseFilters( resultType );
             //QueryBuilder queryBuilder = processWhereSpecification( filterBuilder, whereClause );
@@ -97,11 +101,18 @@ public interface ElasticSearchFinder
             if ( firstResult != null ) {
                 request.setFrom( firstResult );
             }
-            if ( maxResults != null ) {
-                request.setSize( maxResults );
-            } else {
-                request.setSize( Integer.MAX_VALUE ); // TODO Use scrolls?
+
+            boolean useScroll = size > REQUEST_SIZE_THRESHOLD;
+
+            if (useScroll)
+            {
+                request.setSize( REQUEST_SIZE_THRESHOLD )
+                    .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) );
+            } else
+            {
+                request.setSize( size );
             }
+
             if ( orderBySegments != null ) {
                 for ( OrderBy order : orderBySegments ) {
                     FieldSortBuilder sortBuilder = new FieldSortBuilder(order.propertyReference().propertyName());
@@ -117,6 +128,22 @@ public interface ElasticSearchFinder
 
             // Execute
             SearchResponse response = request.execute().actionGet();
+            SearchHit[] hits = response.getHits().getHits();
+            final List<SearchHit> result = new ArrayList<>(Arrays.asList(hits));
+            if (useScroll) {
+                do
+                {
+                    response = client
+                            .prepareSearchScroll( response.getScrollId() )
+                            .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
+                            .execute()
+                            .actionGet();
+
+                    hits = response.getHits().getHits();
+
+                    result.addAll(Arrays.asList(hits));
+                } while (hits.length != 0);
+            }
 
             return Iterables.map(new Function<SearchHit, EntityReference>() {
 
@@ -124,7 +151,7 @@ public interface ElasticSearchFinder
                     return EntityReference.parseEntityReference(from.id());
                 }
 
-            }, response.getHits());
+            }, result);
         }
 
 
