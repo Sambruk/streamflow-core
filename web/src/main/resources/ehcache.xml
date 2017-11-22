@@ -32,13 +32,6 @@
             statistics="false"
             />
 
-    <cache name="CASECOUNTS"
-           maxEntriesLocalHeap="1000"
-           eternal="true"
-           overflowToDisk="false"
-           memoryStoreEvictionPolicy="LRU"
-            />
-
     <cache name="VERIFIEDUSERS"
            maxEntriesLocalHeap="1000"
            timeToIdleSeconds="3600"
@@ -48,8 +41,18 @@
             />
 
     <diskStore path="java.io.tmpdir/StreamflowServer/cache"/>
+
     <cache name="ENTITYSTATES"
            maxEntriesLocalHeap="1000"
+           maxEntriesLocalDisk="2147483640"
+           eternal="true"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap" synchronousWrites="false"/>
+        <pinning store="inCache" />
+    </cache>
+
+    <cache name="CASECOUNTS"
+           maxEntriesLocalHeap="2000"
            maxEntriesLocalDisk="2147483640"
            eternal="true"
            memoryStoreEvictionPolicy="LRU">

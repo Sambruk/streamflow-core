@@ -72,7 +72,7 @@ public class HistoryCleanup
                Query<CaseEntity> query = queryBuilder.where( and(
                      isNotNull( templateFor( History.Data.class ).history() ),
                      isNotNull( templateFor( CaseLoggable.Data.class ).caselog() ) ) )
-                     .newQuery( findOldHistoryCases ).maxResults( 1000 );
+                     .newQuery( findOldHistoryCases ).maxResults( Integer.MAX_VALUE );
 
                remaining = historyToDeleteCount = query.count();
 

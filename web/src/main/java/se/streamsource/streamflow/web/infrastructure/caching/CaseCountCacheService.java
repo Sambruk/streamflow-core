@@ -80,7 +80,7 @@ public interface CaseCountCacheService
                  eq(templateFor(Status.Data.class).status(), CaseStates.OPEN),
                  eq( templateFor(Removable.Data.class).removed(), Boolean.FALSE )
          ));
-         for (Case caze : queryBuilder.newQuery( uow ).maxResults( 1000 ))
+         for (Case caze : queryBuilder.newQuery( uow ).maxResults( Integer.MAX_VALUE ))
          {
             if( caze == null )
             {
@@ -125,7 +125,7 @@ public interface CaseCountCacheService
          queryBuilder = queryBuilder.where(
                QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.DRAFT ));
 
-         for (Case caze : queryBuilder.newQuery( uow ).maxResults( 1000 ))
+         for (Case caze : queryBuilder.newQuery( uow ).maxResults( Integer.MAX_VALUE ))
          {
             CaseEntity aCase = (CaseEntity) caze;
             if( aCase.createdBy().get() instanceof EndUser )
