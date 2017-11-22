@@ -1,0 +1,5 @@
+Administration
+==============
+
+.. toctree::
+:titlesonly:

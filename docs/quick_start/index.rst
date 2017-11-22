@@ -4,6 +4,9 @@
 .. toctree::
    :titlesonly:
 
-   installation
    environment_setup
    backup_data
+   restore_data
+   installation
+   uninstallation
+   building

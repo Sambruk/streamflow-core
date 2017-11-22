@@ -17,5 +17,5 @@ Contents
    :titlesonly:
 
    quick_start/index
-   quick_start/environment_setup
    release_notes/index
+   administration/index
