@@ -70,6 +70,7 @@ import se.streamsource.streamflow.web.application.archival.ArchivalStartJob;
 import se.streamsource.streamflow.web.application.defaults.AvailabilityService;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationJob;
 import se.streamsource.streamflow.web.application.dueon.DueOnNotificationService;
+import se.streamsource.streamflow.web.application.entityexport.EntityStateChangeListener;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
@@ -229,6 +230,8 @@ public interface ManagerComposite
 
       public void reindex() throws Exception
       {
+         EntityStateChangeListener.disable();
+
          DateTime startDateTime = new DateTime( );
          logger.info( "Starting reindex at " + startDateTime.toString() );
 
@@ -253,6 +256,8 @@ public interface ManagerComposite
          }
 
          logger.info( "Reindexing done in " + PeriodFormat.getDefault().print( new Duration( startDateTime, new DateTime( ) ).toPeriod() ) );
+
+         EntityStateChangeListener.enable();
       }
 
       public String exportDatabase(boolean compress) throws IOException

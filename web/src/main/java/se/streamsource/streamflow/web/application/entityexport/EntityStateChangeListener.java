@@ -45,6 +45,7 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Saved changed entity states to cache. Activates saving to SQL.
@@ -68,12 +69,22 @@ public class EntityStateChangeListener
    @Service
    ServiceReference<DataSource> dataSource;
 
+   private static final AtomicBoolean enabled = new AtomicBoolean(true);
+
+   public static void enable() {
+      enabled.set(true);
+   }
+
+   public static void disable() {
+      enabled.set(false);
+   }
+
    private ExecutorService executor;
 
    @Override
    public void notifyChanges( Iterable<EntityState> changedStates )
    {
-      if ( thisConfig.configuration().enabled().get() )
+      if ( thisConfig.configuration().enabled().get() && enabled.get() )
       {
          try
          {
