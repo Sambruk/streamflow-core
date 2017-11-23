@@ -149,6 +149,16 @@ Glassfish setup
 
 #. Choose *Create server domain* and after input needed values
 #. Also choose *Create Operating System service for domain*
+
+    .. note::
+        You can add system service later manually. To do that go to **%Glassfish home directory%\bin** and then run asadmin.exe and execute following command
+
+        .. code-block:: console
+
+            create-service --name %Your service name%
+
+        Also you can check additional options at https://docs.oracle.com/cd/E19798-01/821-1758/create-service-1/index.html
+
 #. Go inside to following location under installation folder. **glassfish/domains/%Domain name%/config/** and change **domain.xml** file and add following lines
     .. code-block:: xml
 
@@ -158,5 +168,192 @@ Glassfish setup
    to java-config section  (There are two of them) you can find iy quickly by huge amount of other jvm-options
 
 
+#.If SSL was configured tell Glassfish that Apache acts as a SSL-terminating proxy server.
+
+    In the Admin Console go to
+    Network Config - Network Listeners - http-listener-1 - Tab HTTP
+    Enable Auth Pass Through
+
+Ubuntu + Java 7 + Tomcat
+------------------------
+
+Java setup
+^^^^^^^^^^
+Install Java
+    .. code-block:: terminal
+
+        sudo add-apt-repository ppa:webupd8team/java
+        sudo apt-get update
+        sudo apt-get install oracle-java7-installer
+        sudo apt-get install oracle-java7-set-default
+
+Apache setup
+^^^^^^^^^^^^
+#. Install apache
+    .. code-block:: terminal
+
+        sudo apt-get install apache2
+
+        a2enmod proxy
+        a2enmod proxy_http
+
+#. Edit default site configuration to enable proxy located at file **/etc/apache2/sites-available/default
+There should be following content
+
+    .. code-block:: xml
+
+        NameVirtualHost *:80
+        <VirtualHost *:80>
+                ServerAdmin support@streamsource.se
+
+                DocumentRoot /var/www
+                <Directory />
+                        Options FollowSymLinks
+                        AllowOverride None
+                </Directory>
+                <Directory /var/www/>
+                        Options Indexes FollowSymLinks MultiViews
+                        AllowOverride None
+                        Order allow,deny
+                        allow from all
+                </Directory>
+
+                ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+                <Directory "/usr/lib/cgi-bin">
+                        AllowOverride None
+                        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                        Order allow,deny
+                        Allow from all
+                </Directory>
+
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+
+                # Possible values include: debug, info, notice, warn, error, crit,
+                # alert, emerg.
+                LogLevel warn
+
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+            Alias /doc/ "/usr/share/doc/"
+            <Directory "/usr/share/doc/">
+                Options Indexes MultiViews FollowSymLinks
+                AllowOverride None
+                Order deny,allow
+                Deny from all
+                Allow from 127.0.0.0/255.0.0.0 ::1/128
+            </Directory>
+
+           ProxyRequests Off
+           ProxyPreserveHost On
+           ProxyVia On
+
+           # Let apache correctly rewrite redirect
+
+           ProxyPass / http://localhost:8080/
+           ProxyPass /streamflow/ http://localhost:8080/streamflow/
+           ProxyPass /surface/ http://localhost:8080/surface/
+           ProxyPassReverse / http://localhost:8080/
+           ProxyPassReverse /streamflow/ http://localhost:8080/streamflow/
+           ProxyPassReverse /surface/ http://localhost:8080/surface/
+
+           # don't lose time with IP address lookups
+           HostnameLookups Off
+
+        </VirtualHost>
+
+#. And change **/etc/apache2/ports.conf**. Comment out following lines
+
+    .. code-block:: configuration
+
+        #NameVirtualHost *:80
 
 
+
+#. Configure SSL if needed
+    .. note::
+        Ubuntu - check that ssl-cert - OpenSSL wrapper is already installed
+        For Development or Test servers create a self signed certificate
+
+    .. code-block:: terminal
+
+        sudo mkdir /etc/apache2/ssl
+        sudo make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
+
+    Enable SSL on apache2
+
+    .. code-block:: terminal
+
+        sudo a2enmod ssl
+        sudo a2enmod rewrite
+        sudo a2enmod headers
+
+        sudo /etc/init.d/apache2 force-reload
+
+    Copy default virtual host config
+
+    .. code-block:: terminal
+
+        sudo cp /etc/apache2/sites-available/default /etc/apache2/sites-available/ssl
+
+    Edit the new file by replacing the content with:
+
+    .. code-block:: configuration
+        NameVirtualHost *:443
+        <VirtualHost *:443>
+           ServerAdmin support@streamsource.se
+           ServerName test.sf.streamsource.se
+
+           # if not specified, the global error log is used
+           ErrorLog ${APACHE_LOG_DIR}/error.log
+           CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+           # Avoid open your server to proxying
+           ProxyRequests Off
+           #ProxyPreserveHost On
+           ProxyVia On
+
+           # SSL
+           SSLEngine on
+           SSLProxyEngine On
+           SSLCertificateFile /etc/apache2/ssl/apache.pem
+
+           # Let apache correctly rewrite redirect
+
+           ProxyPass / http://localhost:8080/
+           #ProxyPass /streamflow/ http://localhost:8080/streamflow/
+           #ProxyPass /surface/ http://localhost:8080/surface/
+           #ProxyPass /client/ http://localhost:8080/client/
+           #ProxyPassReverse / http://localhost:8080/
+           #ProxyPassReverse /streamflow/ http://localhost:8080/streamflow/
+           #ProxyPassReverse /surface/ http://localhost:8080/surface/
+           #ProxyPassReverse /client/ http://localhost:8080/client/
+
+           # don't lose time with IP address lookups
+           HostnameLookups Off
+
+          ProxyPreserveHost     on
+          RewriteEngine         on
+
+          RequestHeader Set Proxy-keysize 512
+          RequestHeader Set Proxy-ip %{REMOTE_ADDR}e
+          RequestHeader Set Host test.sf.streamsource.se
+
+          RewriteRule ^/streamflow$ /streamflow/ [R,L]
+          RewriteRule ^/streamflow/(.*) http://localhost:8080/streamflow/$1 [P,L]
+
+          RewriteRule ^/client$ /client/ [R,L]
+          RewriteRule ^/client/(.*) http://localhost:8080/client/$1 [P,L]
+
+          RewriteRule ^/surface$ /surface/ [R,L]
+          RewriteRule ^/surface/(.*) http://localhost:8080/surface/$1 [P,L]
+
+           # configures the footer on server-generated documents
+           #ServerSignature On
+        </VirtualHost>
+
+    Enable the new site with
+
+    .. code-block:: terminal
+        sudo a2ensite ssl
+        sudo /etc/init.d/apache2 reload
+        sudo service apache2 restart
