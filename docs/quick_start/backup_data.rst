@@ -34,5 +34,5 @@ Backup placed at **{StreamflowServer}/data/backup** folder.
 
 .. important::
     To perform complete backup recommended just to copy entire data folder in order to fix make easy revert.
-    For *Windows* is **C:\Windows\System32\config\systemprofile\Application Data\StreamflowServer**
+    For *Windows* is **C:\Users\<user>\AppData\Roaming\StreamflowServer\**
     For *Linux* is **<User_home>/.StreamFlowServer**
