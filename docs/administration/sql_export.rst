@@ -68,8 +68,10 @@ On application startup:
     0. Reader gets information from last_processed_entities.info file where placed info about last SQL transfer.
     1. According to previous step reader gets JSON entities states from index.
     2. Reader writes entity sates (JSON string) to cache. In cache reader stores object as value with id number. Objects are sorted by modified property, so we need to generate ids started from 1 with increment. Every time of app restart, numbering will be started from 1.
-	    After all entities will be processed, application will start.
-	    Application started:
+
+       After all entities will be processed, application will start.
+
+       Application started:
     3. Trigger of entity state change is listening changes and writing their to cache.
     4. Listener  of entity state change triggers save save to db process.
     5. Starting of entity transfer.
