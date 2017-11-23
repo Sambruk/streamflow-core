@@ -187,51 +187,50 @@ Setting Parameters in the tab Attributes
 
 enabled
 """""""
-boolean
-If the service is on or off.
+    boolean
+    If the service is on or off.
 
 modulo
 """"""
-Integer
-Number of cases to be filed / deleted at a time before the service is paused.
+    Integer
+    Number of cases to be filed / deleted at a time before the service is paused.
 
 sleepInMillis
 """""""""""""
-Long
-How long in milliseconds the service should pause after each activation.
+    Long
+    How long in milliseconds the service should pause after each activation.
 
 startSchedule
 """""""""""""
-String
-Scheduling of service startup inspired by cron , eg 0 0 9 ** ( every day at 9 am )
-http://www.quartz-scheduler.org/documentation/quartz-2.1.x/tutorials/tutorial-lesson-06
+    String
+    Scheduling of service startup inspired by cron , eg 0 0 9 ** ( every day at 9 am )
+    http://www.quartz-scheduler.org/documentation/quartz-2.1.x/tutorials/tutorial-lesson-06
 
 startScheduledArchival
 """"""""""""""""""""""
-boolean
-Archive automatically or only manually.
+    boolean
+    Archive automatically or only manually.
 
 stopSchedule
 """"""""""""
-String
-Scheduling of service stop. For format, see startSchedule.
+    String
+    Scheduling of service stop. For format, see startSchedule.
 
 Attributes
 ^^^^^^^^^^
 enabled(boolean)
 """"""""""""""""
-Tells whether the archival service is enabled or not.
+    Tells whether the archival service is enabled or not.
 
 archiveDaily(boolean)
 """""""""""""""""""""
-Tells whether the archival service performs an automatic case archival once a day or not.
+    Tells whether the archival service performs an automatic case archival once a day or not.
 
 Operations
 ^^^^^^^^^^
 restart
 """""""
-
-Restarts the service.
+    Restarts the service.
 
 Remove Attachments Configuration
 --------------------------------
@@ -246,17 +245,17 @@ Attributes
 ^^^^^^^^^^
 enabled(boolean)
 """"""""""""""""
-Tells whether the remove attachments service is enabled or not.
+    Tells whether the remove attachments service is enabled or not.
 
 lastEventDate(long)
 """""""""""""""""""
-Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
+    Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
 
 Operations
 ^^^^^^^^^^
 restart
 """""""
-Restarts the service.
+    Restarts the service.
 
 Knowledge Base Configuration
 ----------------------------
@@ -271,23 +270,21 @@ Attributes
 ^^^^^^^^^^
 caseTypeTemplate(String)
 """"""""""""""""""""""""
-An Url pointing out the wiki template for case types in the external wiki.
+    An Url pointing out the wiki template for case types in the external wiki.
 
 enabled(boolean)
 """"""""""""""""
-
-Telling whether this service is enabled or not.
+    Telling whether this service is enabled or not.
 
 labelTemplate(String)
 """""""""""""""""""""
-
-An Url pointing out the wiki template for labels in the external wiki.
+    An Url pointing out the wiki template for labels in the external wiki.
 
 Operations
 ^^^^^^^^^^
 restart
 """""""
-Restarts the service.
+    Restarts the service.
 
 Create Case From Email Configuration
 ------------------------------------
@@ -302,441 +299,597 @@ Attributes
 ^^^^^^^^^^
 enabled(boolean)
 """"""""""""""""
-Tells whether the create case from email service is enabled or not.
-If disabled, the client application will not show the email access point tab in the administration window.
+    Tells whether the create case from email service is enabled or not.
+    If disabled, the client application will not show the email access point tab in the administration window.
 
 lastEventDate(long)
 """""""""""""""""""
-Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
+    Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
 
 Operations
+^^^^^^^^^^
 restart
-
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Receive Email Configuration
-
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service receives emails from a certain mailbox and persists the data as an application event that can be consumed by other services like CreateCaseFromEmailService or ConversationReplyService.
 We recommend to use IMAP as your protocol of choice.
 
 Attributes
+^^^^^^^^^^
 *archiveFolder( String )
-The name of the archive folder where processed mails from the inbox are copied to.
+""""""""""""""""""""""""
+    The name of the archive folder where processed mails from the inbox are copied to.
 
 debug( boolean )
-Tells whether debug information from the java mail api should be printed to the log.
+""""""""""""""""
+    Tells whether debug information from the java mail api should be printed to the log.
 
 deleteMailOnInboxClose( boolean )
-Tells whether mails flagged as deleted are removed on close of the inbox. This property must be set to true in a IMAP setup!
+"""""""""""""""""""""""""""""""""
+    Tells whether mails flagged as deleted are removed on close of the inbox. This property must be set to true in a IMAP setup!
 
 enabled( boolean )
-Tells whether this service is enabled or not.
+""""""""""""""""""
+    Tells whether this service is enabled or not.
 
 host( String )
-The mail host name.
+""""""""""""""
+    The mail host name.
 
 password( String )
-The password of the mailbox.
+""""""""""""""""""
+    The password of the mailbox.
 
 port( String )
-The port of the mail host used for receiving mail.
+""""""""""""""
+    The port of the mail host used for receiving mail.
 
 protocol( String )
-The protocol used by the mail host. Preferably imap
+""""""""""""""""""
+    The protocol used by the mail host. Preferably imap
 
 sleepPeriod( Integer )
-The sleep period in minutes between retrieval calls to the mail host.
+""""""""""""""""""""""
+    The sleep period in minutes between retrieval calls to the mail host.
 
 useSSL( boolean )
-Tells whether to use SSL encryption or not.
+"""""""""""""""""
+    Tells whether to use SSL encryption or not.
 
 useTSL( boolean )
-Tells whether to use TSL encryption or not.
+"""""""""""""""""
+    Tells whether to use TSL encryption or not.
 
 user( String )
-The mailbox user.
+""""""""""""""
+    The mailbox user.
 
 Operations
+^^^^^^^^^^
 restart
-
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Send Mail Configuration
-
+-----------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service reacts on application events of type sentMail and triggers the creation and sending of a mail with appropriate content.
 
 Attributes
+^^^^^^^^^^
 debug( boolean )
-Tells whether debug information from the java mail api should be printed to the log.
+""""""""""""""""
+    Tells whether debug information from the java mail api should be printed to the log.
 
 enabled( boolean )
-Tells whether this service is enabled or not.
+""""""""""""""""""
+    Tells whether this service is enabled or not.
 
 from( String )
-The sender address.
+""""""""""""""
+    The sender address.
 
 host( String )
-The mail host.
+""""""""""""""
+    The mail host.
 
 lastEventDate( long )
-The timestamp when the last application event was processed.
+"""""""""""""""""""""
+    The timestamp when the last application event was processed.
 
 password( String )
-The mailbox password.
+""""""""""""""""""
+    The mailbox password.
 
 port( String )
-The mail host port for sending mail.
+""""""""""""""
+    The mail host port for sending mail.
 
 useSSL( boolean )
-Tells whether to use SSL encryption or not.
+"""""""""""""""""
+    Tells whether to use SSL encryption or not.
 
 useTSL( boolean )
-Tells whether to use TSL encryption or not.
+"""""""""""""""""
+    Tells whether to use TSL encryption or not.
 
 user( String )
-The mailbox user.
+""""""""""""""
+    The mailbox user.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Startup Migration Configuration
-
+-------------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service handles database migrations on server startup if necessary.
 If the system has a Streamflow assembly version with a higher version than lastStartupVersion the migration rules between lastStartupVersion and the new Streamflow assembly version will be executed and the lastStartupVersion will be changed to the new Streamflow assembly version.
 
 Attributes
+^^^^^^^^^^
 lastStartupVersion( String )
-The last Streamflow assembly version streamflow was started with.
+""""""""""""""""""""""""""""
+    The last Streamflow assembly version streamflow was started with.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Generate Pdf Configuration
-
+--------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service aids the system while generating pdf files from cases or forms.
 
 Attributes
+^^^^^^^^^^
 footerMargin( float )
-The footer margin of the pdf file as a float.
+"""""""""""""""""""""
+    The footer margin of the pdf file as a float.
 
 headerMargin( float )
-The header margin of the pdf file as a float.
+"""""""""""""""""""""
+    The header margin of the pdf file as a float.
 
 language( String )
-The locale language preferred for pdf generation if there is no request locale available.
-If none provided server system default is taken.
+""""""""""""""""""
+    The locale language preferred for pdf generation if there is no request locale available.
+    If none provided server system default is taken.
 
 leftMargin( float)
-The left margin of the pdf file as a float.
+""""""""""""""""""
+    The left margin of the pdf file as a float.
 
 rightMargin( float )
-The right margin of the pdf file as a float.
+""""""""""""""""""""
+    The right margin of the pdf file as a float.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Authentication Configuration
-
+----------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service, if enabled, does user authentication checks against an external system via a streamflow plugin, LDAP plugin for example.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether the authentication service is enabled or not.
+""""""""""""""""""
+    Tells whether the authentication service is enabled or not.
 
 url( String )
-The url to the plugin implementation of the external authentication system.
+"""""""""""""
+    The url to the plugin implementation of the external authentication system.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Statistics Configuration
-
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service tracks the event stream for events related to organizational structure, case type, label and case status changes and persists these changes into a statistic data store.
 
 Attributes
+^^^^^^^^^^
 enabled(boolean)
-Tells whether the statistics service is enabled or not.
+""""""""""""""""
+    Tells whether the statistics service is enabled or not.
 
 lastEventDate( long )
-Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
+"""""""""""""""""""""
+    Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Streamflow Datasource Configuration
-
-
+-----------------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 Data source configuration for Streamflow statistics database.
 
+
 Attributes
+^^^^^^^^^^
 dbVendor( String )
-The database driver used.
+""""""""""""""""""
+    The database driver used.
 
 enabled( boolean )
-Tells whether the data source is enabled or not.
+""""""""""""""""""
+    Tells whether the data source is enabled or not.
 
 password( String )
-The database user password.
+""""""""""""""""""
+    The database user password.
 
 properties( String )
-Database connection properties if necessary.
+""""""""""""""""""""
+    Database connection properties if necessary.
 
 url( String )
-The database url.
+"""""""""""""
+    The database url.
 
 username( String )
-The database user to connect with.
+""""""""""""""""""
+    The database user to connect with.
 
 Examples
+^^^^^^^^
+MySQL as the database server for statistics
+"""""""""""""""""""""""""""""""""""""""""""
 
-MySQL as the database server for statistics.
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
+
+    **dbVendor** mysql
+
+    **driver** com.mysql.jdbc.Driver
+
+    **enabled** true
+
+    **password** streamflow
+
+    **properties**
+
+    **url** jdbc:mysql://<hostname>:3306/streamflow
+
+    **username** streamflow
 
 
+Microsoft SQL Server as the database server for statistics
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-dbVendor
-mysql
+    **dbVendor** mssql
 
-driver
-com.mysql.jdbc.Driver
+    **enabled** true
 
-enabled
-true
+    **password** streamflow
 
-password
-streamflow
+    **properties**
 
-properties
+    **driver** com.microsoft.sqlserver.jdbc.SQLServerDataSource
 
-url
-jdbc:mysql://<hostname>:3306/streamflow
+    **url** jdbc:sqlserver://<hostname>:1433;databaseName=<databasename>
 
-username
-streamflow
+    **username** streamflow
 
-–
-Microsoft SQL Server as the database server for statistics.
-
-dbVendor
-mssql
-
-enabled
-true
-
-password
-streamflow
-
-properties
-
-driver
-com.microsoft.sqlserver.jdbc.SQLServerDataSource
-
-url
-jdbc:sqlserver://<hostname>:1433;databaseName=<databasename>
-
-username
-streamflow
-
-<hostname> is the machine on which the database server is installed. 1433 is the standard port, but could be different.
-<databasename> is the name of the database, normally streamflow.
-username is normally streamflow, but password may be something else, as set up when the database och user was created during installation.
+.. note::
+    <hostname> is the machine on which the database server is installed. 1433 is the standard port, but could be different.
+    <databasename> is the name of the database, normally streamflow.
+    username is normally streamflow, but password may be something else, as set up when the database och user was created during installation.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Entity Data Store Configuration
+-------------------------------
 !visualvm_jdbmdatastore_config.gif|align=left,width=640
 
 This service handles the Jdbm entity data store for streamflow. This is the main persistence source in Streamflow. All entities are stored here.
 
 Attributes
+^^^^^^^^^^
 autoCommit( boolean )
-RecordManager option to automatically commit data after each operation.
+"""""""""""""""""""""
+    RecordManager option to automatically commit data after each operation.
 
 disableTransactions( boolean )
-RecordManager option to disable transaction (to increase performance at the cost of potential data loss).
+""""""""""""""""""""""""""""""
+    RecordManager option to disable transaction (to increase performance at the cost of potential data loss).
 
 file( String )
-The absolute path to the database file for the Jdbm store.
+""""""""""""""
+    The absolute path to the database file for the Jdbm store.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Contact Lookup Configuration
-
-
+----------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 This service connects Streamflowto a contact plugin implementation.
 
 Attributes
+^^^^^^^^^^
 enables( boolean )
-Tells whether the service is enabled or not. If not enabled the contact lookup button in contacts view in the client application will not be visible.
+""""""""""""""""""
+    Tells whether the service is enabled or not. If not enabled the contact lookup button in contacts view in the client application will not be visible.
 
 url( String )
-The url to the contact plugin implementation
+"""""""""""""
+    The url to the contact plugin implementation
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Kartago Integration Configuration
-
+---------------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether this service is enabled or not.
+""""""""""""""""""
+    Tells whether this service is enabled or not.
 
 installpath( String )
-The command line arguments used by the client to start the external program.
+"""""""""""""""""""""
+    The command line arguments used by the client to start the external program.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Street Lookup Config
-
+--------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This plugin integration makes it possible to do searches for street information from the contact view or form fields with a data type suitable for street name searches. The data is fetched from a plugin implementation and put in a Apache Solr Core index locally in Streamflow for fast free text searches. The index will by default reload once a week.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether this service is enabled or not. The search functionality in the client application is not available if not enabled.
+""""""""""""""""""
+    Tells whether this service is enabled or not. The search functionality in the client application is not available if not enabled.
 
 forceReload( boolean )
-Option whether to reload the Apache Solr Core index from the street plugin implementation.
+""""""""""""""""""""""
+    Option whether to reload the Apache Solr Core index from the street plugin implementation.
 
 lastLoaded( long )
-Shows the timestamp in milliseconds when the index was reloaded last time.
+""""""""""""""""""
+    Shows the timestamp in milliseconds when the index was reloaded last time.
 
 limit( Integer )
-Limits the search results to the given number of elements. -1 means no limit.
+""""""""""""""""
+    Limits the search results to the given number of elements. -1 means no limit.
 
 loadFrequence( long )
-The frequency in which the index is reloaded, the predefined value is one week in milliseconds.
+"""""""""""""""""""""
+    The frequency in which the index is reloaded, the predefined value is one week in milliseconds.
 
 *minkeywordlength( Integer )
-The minimal keyword length needed to trigger a search.
+""""""""""""""""""""""""""""
+    The minimal keyword length needed to trigger a search.
 
 url( String )
-Url to the street lookup plugin implementation used.
+"""""""""""""
+    Url to the street lookup plugin implementation used.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Instant Messaging Configuration
-
+-------------------------------
+.. image:: images/visual_vm_1_3_6.gif
+:align: center
+    :width: 100%
 
 Stramflow is able to participate and respond to an instant messaging chat to report system status in runtime. To check for available commands type help into your chat window.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether the service is enabled or not.
+""""""""""""""""""
+    Tells whether the service is enabled or not.
 
 password( String )
-The password for the instant messaging user.
+""""""""""""""""""
+    The password for the instant messaging user.
 
 server( String )
-The instant messaging server.
+""""""""""""""""
+    The instant messaging server.
 
 user( String )
-The instant messaging user.
+""""""""""""""
+    The instant messaging user.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 JMX Connector Configuration
-
+---------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 The JMX connector service makes it easier to connect to the MBean Manager through a firewall since all rmi trafik is routed through the same socket.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether the service is enabled or not.
+""""""""""""""""""
+    Tells whether the service is enabled or not.
 
 *port( Integer )
-The port number the MBean server is listening on.
+""""""""""""""""
+    The port number the MBean server is listening on.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Update Migration Configuration
-
+------------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 During server startup the system is checking if the assembly version is higher than last startup version and executes all update rules where the version is between latest startup version and new assembly version. The new assembly version is set to lastStartupVersion when done.
 
 Attributes
+^^^^^^^^^^
 lastStartupVersion( String )
-The latest Streamflow assembly version the server was started with.
+""""""""""""""""""""""""""""
+    The latest Streamflow assembly version the server was started with.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Conversation Response Config
-
+----------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 This service is listening to the application event stream and creates conversation responses from received emails that are part of a Streamflow conversation.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether this service is enabled or not.
+""""""""""""""""""
+    Tells whether this service is enabled or not.
 
 lastEventDate( long )
-The timestamp in milliseconds of the last event processed.
+"""""""""""""""""""""
+    The timestamp in milliseconds of the last event processed.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Filter Configuration
-
-
+--------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 This service applies filters on Inboxes. Listens for DomainEvents and when filter rules pass, then actions are applied.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether this service is enabled or not.
+""""""""""""""""""
+    Tells whether this service is enabled or not.
 
 lastEventDate( long )
-The timestamp in milliseconds of the last event processed.
+"""""""""""""""""""""
+    The timestamp in milliseconds of the last event processed.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 Notification Configuration
-
-
+--------------------------
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 Send and receive notifications. This service listens for domain events, and on "receivedMessage" it will send a notification to the provided recipient.
 
 Attributes
+^^^^^^^^^^
 enabled( boolean )
-Tells whether this service is enabled or not.
+""""""""""""""""""
+    Tells whether this service is enabled or not.
 
 lastEventDate( long )
-The timestamp in milliseconds of the last event processed.
+"""""""""""""""""""""
+    The timestamp in milliseconds of the last event processed.
 
 Operations
+^^^^^^^^^^
 restart
-Restarts the service.
+"""""""
+    Restarts the service.
 
 The log files
+=============
 On the server there are a number of log files, including the one that begin with " streamflow ... " , see below. The streamflow log file can be investigated to see the outcome of the operations. The last activity is at the end of the file. Activities are time stamped.
-
+.. image:: images/visual_vm_1_3_6.gif
+    :align: center
+    :width: 100%
 
 
 
