@@ -298,6 +298,7 @@ There should be following content
     Edit the new file by replacing the content with:
 
     .. code-block:: configuration
+
         NameVirtualHost *:443
         <VirtualHost *:443>
            ServerAdmin support@streamsource.se
@@ -354,6 +355,92 @@ There should be following content
     Enable the new site with
 
     .. code-block:: terminal
+
         sudo a2ensite ssl
         sudo /etc/init.d/apache2 reload
         sudo service apache2 restart
+
+
+Tomcat setup
+^^^^^^^^^^^^
+
+#. Install tomcat
+
+    .. code-block:: terminal
+
+        sudo apt-get install tomcat8 tomcat8-admin
+
+#. Edit default tomcat startup script located at **/etc/default/tomcat8** and disable java security
+
+    .. code-block:: config
+
+        TOMCAT8_SECURITY=no
+
+
+#. Edit Tomcat **/etc/tomcat8/server.xml** in order to enable the AJP connector. Define AJP connector for communication between Tomcat and Apache:
+
+    .. code-block:: xml
+
+        <!-- Define an AJP 1.3 Connector on port 8009 -->
+        <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+
+#. Edit the **/etc/tomcat6/tomcat-users.xml** file in order to enable the manager user and add the manager user:
+
+    .. code-block:: xml
+
+        <tomcat-users>
+            <role rolename="manager"/>
+            <user username="streamflow" password="j0hnd0e" roles="manager"/>
+        </tomcat-users>
+
+#. Make tomcat6 owner of the files:
+    .. code-block:: terminal
+        chown -R tomcat8:tomcat8 ~tomcat8
+
+#. Restart tomcat:
+    .. code-block:: terminal
+
+        service tomcat8 restart
+
+#. Configure ajp-proxy for Apache and Tomcat
+    .. code-block:: terminal
+
+        a2enmod proxy_ajp
+
+#. Edit proxy configuration at **/etc/apache2/mods-enabled/proxy.conf**. The file should look like this:
+
+    .. code-block:: configuration
+
+        <IfModule mod_proxy.c>
+                #turning ProxyRequests on and allowing proxying from all may allow
+                #spammers to use your proxy to send email.
+
+                ProxyRequests Off
+            ProxyPreserveHost On
+
+                <Proxy *>
+                        AddDefaultCharset off
+                        Order deny,allow
+                        #Deny from all
+                        #Allow from .example.com
+                </Proxy>
+
+                # Enable/disable the handling of HTTP/1.1 "Via:" headers.
+                # ("Full" adds the server version; "Block" removes all outgoing Via: headers)
+                # Set to one of: Off | On | Full | Block
+
+                ProxyVia On
+            ProxyPass /streamflow/ ajp://localhost:8009/streamflow/
+            ProxyPass /manager/ ajp://localhost:8009/manager/
+            ProxyPassReverse /streamflow/ ajp://localhost:8009/streamflow/
+            ProxyPassReverse /manager/ ajp://localhost:8009/manager/
+
+            RedirectMatch ^/streamflow$ /streamflow/
+            RedirectMatch ^/manager$ /manager/
+        </IfModule>
+
+#. Restart Apache:
+
+    .. code-block:: terminal
+
+        service apache2 restart1
