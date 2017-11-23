@@ -176,7 +176,6 @@ Setting Parameters in the tab Attributes
 
 enabled - ``boolean``
 """""""""""""""""""""
-    boolean
     If the service is on or off.
 
 modulo - ``Integer``
@@ -602,8 +601,8 @@ Microsoft SQL Server as the database server for statistics
     **username** streamflow
 
 .. note::
-    <hostname> is the machine on which the database server is installed. 1433 is the standard port, but could be different.
-    <databasename> is the name of the database, normally streamflow.
+    *<hostname>* is the machine on which the database server is installed. *1433* is the standard port, but could be different.
+    *<databasename>* is the name of the database, normally streamflow.
     username is normally streamflow, but password may be something else, as set up when the database och user was created during installation.
 
 Operations
@@ -704,7 +703,7 @@ forceReload - ``boolean``
     Option whether to reload the Apache Solr Core index from the street plugin implementation.
 
 lastLoaded - ``long``
-""""""""""""""""""
+"""""""""""""""""""""
     Shows the timestamp in milliseconds when the index was reloaded last time.
 
 limit - ``Integer``
@@ -834,7 +833,7 @@ Filter Configuration
 .. image:: images/visualvm_filter_config.gif
     :align: center
     :width: 100%
-This service applies filters on Inboxes. Listens for DomainEvents and when filter rules pass, then actions are applied.
+This service applies filters on Inboxes. Listens for *DomainEvents* and when filter rules pass, then actions are applied.
 
 Attributes
 ^^^^^^^^^^
@@ -857,7 +856,7 @@ Notification Configuration
 .. image:: images/visualvm_notification_config.gif
     :align: center
     :width: 100%
-Send and receive notifications. This service listens for domain events, and on "receivedMessage" it will send a notification to the provided recipient.
+Send and receive notifications. This service listens for domain events, and on *receivedMessage* it will send a notification to the provided recipient.
 
 Attributes
 ^^^^^^^^^^
@@ -880,7 +879,7 @@ restart
 The log files
 *************
 
-On the server there are a number of log files, including the one that begin with " streamflow ... " , see below. The streamflow log file can be investigated to see the outcome of the operations. The last activity is at the end of the file. Activities are time stamped.
+On the server there are a number of log files, including the one that begin with **streamflow** , see below. The streamflow log file can be investigated to see the outcome of the operations. The last activity is at the end of the file. Activities are time stamped.
 
 .. image:: images/streamflow_server_log_files.gif
     :align: center
