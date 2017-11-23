@@ -6,57 +6,47 @@ Streamflow Service Configuration
 
 VisualVM - Getting started
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-VisualVM is a managing and profiling tool included in the Java JDK installation and can be found under the installation folder in the bin directory. The simplest is to run the application on the server itself , but with the right settings of firewall etc , you can use from a client computer.
+    VisualVM is a managing and profiling tool included in the Java JDK installation and can be found under the installation folder in the bin directory. The simplest is to run the application on the server itself , but with the right settings of firewall etc , you can use from a client computer.
 
-Streamflow is utilizing this tool for managing services and configurations.
+    Streamflow is utilizing this tool for managing services and configurations.
 
-The executable file is **JAVA_HOME/bin/jvisualvm(.exe)** or ypu can download it from https://visualvm.github.io/download.html
+    The executable file is **JAVA_HOME/bin/jvisualvm(.exe)** or ypu can download it from https://visualvm.github.io/download.html
 
-If you run on the server and the OS is Windows then VisualVM needs to run as Administrator. VisualVM should have rights to view Java processes that belong to the system profile . Initially, you also need to install VisualVm - MBeans plugin available under Tools / Plugin.
+    If you run on the server and the OS is Windows then VisualVM needs to run as Administrator. VisualVM should have rights to view Java processes that belong to the system profile . Initially, you also need to install VisualVm - MBeans plugin available under Tools / Plugin.
 
-Under *"Local"* you need to add a JMX connection that goes against **localhost:1099**with the administrator user.
+    Under *"Local"* you need to add a JMX connection that goes against **localhost:1099**with the administrator user.
 
-.. image:: images/visual_vm_1_3_6.gif
-    :align: center
-    :width: 100%
+    .. image:: images/visual_vm_1_3_6.gif
+        :align: center
+        :width: 100%
 
-Service Configuration is made on **MBeans** tab under **Qi4j/StreamflowServer/**
+    Service Configuration is made on **MBeans** tab under **Qi4j/StreamflowServer/**
 
+    On the first start we need to install the *MBean* plugin to be able to manage *Streamflow*.
+    Choose Tools - Plugin on the menu bar and on the tab **Available Plugins -> VisualVM-MBeans -> Install**. Follow the install wizard.
 
-
-On the first start we need to install the *MBean* plugin to be able to manage *Streamflow*.
-Choose Tools - Plugin on the menu bar and on the tab **Available Plugins -> VisualVM-MBeans -> Install**. Follow the install wizard.
-
-.. image:: images/visualvm_plugin.gif
-    :align: center
-    :width: 100%
-
+    .. image:: images/visualvm_plugin.gif
+        :align: center
+        :width: 100%
 
 Connect Streamflow locally on your server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Right click on Local node in the tree and add a new JMX connection.
     Provide **localhost:1099** as address and the streamflow administrator user and password.
 
-.. image:: images/visualvm_remotehost.gif
-    :align: center
-    :width: 100%
-
+    .. image:: images/visualvm_remotehost.gif
+        :align: center
+        :width: 100%
 
 Connect Streamflow remotely from your PC
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Right click on Remote node and add a new Remote host.
 
-.. image:: images/visualvm_remotejmx.gif
-    :align: center
-    :width: 100%
-
-
+    .. image:: images/visualvm_remotejmx.gif
+        :align: center
+        :width: 100%
 
     Right click on the new remote host and add a new JMX connection.
-
-
-
-
 
 Manage Streamflow
 *****************
@@ -64,13 +54,13 @@ Manage Streamflow
     Change to the the MBeans tab and select/open the Qi4j tree node.
     All Qi4j applications running in this java process ( JVM ) will show up under the Qi4j node.
 
-
-.. image:: images/visualvm_mbeans.gif
-    :align: center
-    :width: 100%
+    .. image:: images/visualvm_mbeans.gif
+        :align: center
+        :width: 100%
 
 
 StreamflowServer
+****************
 
 Main functions
 ==============
@@ -150,9 +140,8 @@ databaseSize
 """"""""""""
     Returns the amount of objects located in the Jdbm store.
 
-Service Configurations
-""""""""""""""""""""""
-In general services have to be restarted in order to be able to pick up configuration changes!
+.. important::
+    In general services have to be restarted in order to be able to pick up configuration changes!
 
 Archival Configuration
 ----------------------
@@ -173,8 +162,8 @@ This service is used in archival/removal of cases, ie archiving of files to pdf 
 
 In Streamflows administration interface an administrator can specified for each case type and for each label the following:
 
-    *. Specify whether a case with a certain case type or label will be archived after a given number of days
-    *. Set what action to be taken, a) the saving of the case to file (pdf) and then removal of the case from Streamflow , or b) Only the removal of the case.
+    * Specify whether a case with a certain case type or label will be archived after a given number of days
+    * Set what action to be taken, a) the saving of the case to file (pdf) and then removal of the case from Streamflow , or b) Only the removal of the case.
 
 Background: Some cases are only interesting from a statistical standpoint, but can regularly removed from the Streamflow database Jdbm. One example can be if incoming calls to the contact center are labelled with a label "Connected call", and the label is used to remove cases in the Archival Service. One can set up cases with label "Connected call" shall be removed after an example 3 days.
 
@@ -185,45 +174,41 @@ Possibly it may in some cases be necessary with a re-indexing to optimise the in
 Setting Parameters in the tab Attributes
 ----------------------------------------
 
-enabled
-"""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     boolean
     If the service is on or off.
 
-modulo
-""""""
-    Integer
+modulo - ``Integer``
+""""""""""""""""""""
     Number of cases to be filed / deleted at a time before the service is paused.
 
-sleepInMillis
-"""""""""""""
-    Long
+sleepInMillis - ``Long``
+""""""""""""""""""""""""
     How long in milliseconds the service should pause after each activation.
 
-startSchedule
-"""""""""""""
+startSchedule - ``String``
+""""""""""""""""""""""""""
     String
     Scheduling of service startup inspired by cron , eg 0 0 9 ** ( every day at 9 am )
     http://www.quartz-scheduler.org/documentation/quartz-2.1.x/tutorials/tutorial-lesson-06
 
-startScheduledArchival
-""""""""""""""""""""""
-    boolean
+startScheduledArchival - ``boolean``
+""""""""""""""""""""""""""""""""""""
     Archive automatically or only manually.
 
-stopSchedule
-""""""""""""
-    String
+stopSchedule - ``String``
+"""""""""""""""""""""""""
     Scheduling of service stop. For format, see startSchedule.
 
 Attributes
 ^^^^^^^^^^
-enabled(boolean)
-""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the archival service is enabled or not.
 
-archiveDaily(boolean)
-"""""""""""""""""""""
+archiveDaily - ``boolean``
+""""""""""""""""""""""""""
     Tells whether the archival service performs an automatic case archival once a day or not.
 
 Operations
@@ -243,12 +228,12 @@ If the service is disabled over a period of time it will replay all events, sinc
 
 Attributes
 ^^^^^^^^^^
-enabled(boolean)
-""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the remove attachments service is enabled or not.
 
-lastEventDate(long)
-"""""""""""""""""""
+lastEventDate - ``long``
+""""""""""""""""""""""""
     Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
 
 Operations
@@ -268,16 +253,16 @@ The knowledge base service integrates an external knowledge base in form of a wi
 
 Attributes
 ^^^^^^^^^^
-caseTypeTemplate(String)
-""""""""""""""""""""""""
+caseTypeTemplate - ``String``
+"""""""""""""""""""""""""""""
     An Url pointing out the wiki template for case types in the external wiki.
 
-enabled(boolean)
-""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Telling whether this service is enabled or not.
 
-labelTemplate(String)
-"""""""""""""""""""""
+labelTemplate - ``String``
+""""""""""""""""""""""""""
     An Url pointing out the wiki template for labels in the external wiki.
 
 Operations
@@ -297,13 +282,13 @@ This service walks through all receivedEmail application events and creates case
 
 Attributes
 ^^^^^^^^^^
-enabled(boolean)
-""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the create case from email service is enabled or not.
     If disabled, the client application will not show the email access point tab in the administration window.
 
-lastEventDate(long)
-"""""""""""""""""""
+lastEventDate - ``long``
+""""""""""""""""""""""""
     Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
 
 Operations
@@ -313,6 +298,8 @@ restart
     Restarts the service.
 
 Receive Email Configuration
+---------------------------
+
 .. image:: images/visualvm_receivemail_config.gif
     :align: center
     :width: 100%
@@ -322,52 +309,52 @@ We recommend to use IMAP as your protocol of choice.
 
 Attributes
 ^^^^^^^^^^
-*archiveFolder( String )
-""""""""""""""""""""""""
+*archiveFolder - ``String``
+"""""""""""""""""""""""""""
     The name of the archive folder where processed mails from the inbox are copied to.
 
-debug( boolean )
-""""""""""""""""
+debug - ``boolean``
+"""""""""""""""""""
     Tells whether debug information from the java mail api should be printed to the log.
 
-deleteMailOnInboxClose( boolean )
-"""""""""""""""""""""""""""""""""
+deleteMailOnInboxClose - ``boolean``
+""""""""""""""""""""""""""""""""""""
     Tells whether mails flagged as deleted are removed on close of the inbox. This property must be set to true in a IMAP setup!
 
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not.
 
-host( String )
-""""""""""""""
+host - ``String``
+"""""""""""""""""
     The mail host name.
 
-password( String )
-""""""""""""""""""
+password - ``String``
+"""""""""""""""""""""
     The password of the mailbox.
 
-port( String )
-""""""""""""""
+port - ``String``
+"""""""""""""""""
     The port of the mail host used for receiving mail.
 
-protocol( String )
-""""""""""""""""""
+protocol - ``String``
+"""""""""""""""""""""
     The protocol used by the mail host. Preferably imap
 
-sleepPeriod( Integer )
-""""""""""""""""""""""
+sleepPeriod - ``Integer``
+"""""""""""""""""""""""""
     The sleep period in minutes between retrieval calls to the mail host.
 
-useSSL( boolean )
-"""""""""""""""""
+useSSL - ``boolean``
+""""""""""""""""""""
     Tells whether to use SSL encryption or not.
 
-useTSL( boolean )
-"""""""""""""""""
+useTSL - ``boolean``
+""""""""""""""""""""
     Tells whether to use TSL encryption or not.
 
-user( String )
-""""""""""""""
+user - ``String``
+"""""""""""""""""
     The mailbox user.
 
 Operations
@@ -386,44 +373,44 @@ This service reacts on application events of type sentMail and triggers the crea
 
 Attributes
 ^^^^^^^^^^
-debug( boolean )
-""""""""""""""""
+debug - ``boolean``
+"""""""""""""""""""
     Tells whether debug information from the java mail api should be printed to the log.
 
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not.
 
-from( String )
-""""""""""""""
+from - ``String``
+"""""""""""""""""
     The sender address.
 
-host( String )
-""""""""""""""
+host - ``String``
+"""""""""""""""""
     The mail host.
 
 lastEventDate( long )
 """""""""""""""""""""
     The timestamp when the last application event was processed.
 
-password( String )
-""""""""""""""""""
+password - ``String``
+"""""""""""""""""""""
     The mailbox password.
 
-port( String )
-""""""""""""""
+port - ``String``
+"""""""""""""""""
     The mail host port for sending mail.
 
-useSSL( boolean )
-"""""""""""""""""
+useSSL - ``boolean``
+""""""""""""""""""""
     Tells whether to use SSL encryption or not.
 
-useTSL( boolean )
-"""""""""""""""""
+useTSL - ``boolean``
+""""""""""""""""""""
     Tells whether to use TSL encryption or not.
 
-user( String )
-""""""""""""""
+user - ``String``
+"""""""""""""""""
     The mailbox user.
 
 Operations
@@ -443,8 +430,8 @@ If the system has a Streamflow assembly version with a higher version than lastS
 
 Attributes
 ^^^^^^^^^^
-lastStartupVersion( String )
-""""""""""""""""""""""""""""
+lastStartupVersion - ``String``
+"""""""""""""""""""""""""""""""
     The last Streamflow assembly version streamflow was started with.
 
 Operations
@@ -471,8 +458,8 @@ headerMargin( float )
 """""""""""""""""""""
     The header margin of the pdf file as a float.
 
-language( String )
-""""""""""""""""""
+language - ``String``
+"""""""""""""""""""""
     The locale language preferred for pdf generation if there is no request locale available.
     If none provided server system default is taken.
 
@@ -500,12 +487,12 @@ This service, if enabled, does user authentication checks against an external sy
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the authentication service is enabled or not.
 
-url( String )
-"""""""""""""
+url - ``String``
+""""""""""""""""
     The url to the plugin implementation of the external authentication system.
 
 Operations
@@ -515,6 +502,8 @@ restart
     Restarts the service.
 
 Statistics Configuration
+------------------------
+
 .. image:: images/visualvm_statistics_config.gif
     :align: center
     :width: 100%
@@ -523,12 +512,12 @@ This service tracks the event stream for events related to organizational struct
 
 Attributes
 ^^^^^^^^^^
-enabled(boolean)
-""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the statistics service is enabled or not.
 
-lastEventDate( long )
-"""""""""""""""""""""
+lastEventDate - ``long``
+""""""""""""""""""""""""
     Holds the point in time ( linux epoch in milliseconds ) when the last event was processed.
 
 Operations
@@ -547,28 +536,28 @@ Data source configuration for Streamflow statistics database.
 
 Attributes
 ^^^^^^^^^^
-dbVendor( String )
-""""""""""""""""""
+dbVendor - ``String``
+"""""""""""""""""""""
     The database driver used.
 
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the data source is enabled or not.
 
-password( String )
-""""""""""""""""""
+password - ``String``
+"""""""""""""""""""""
     The database user password.
 
-properties( String )
-""""""""""""""""""""
+properties - ``String``
+"""""""""""""""""""""""
     Database connection properties if necessary.
 
-url( String )
-"""""""""""""
+url - ``String``
+""""""""""""""""
     The database url.
 
-username( String )
-""""""""""""""""""
+username - ``String``
+"""""""""""""""""""""
     The database user to connect with.
 
 Examples
@@ -576,9 +565,9 @@ Examples
 MySQL as the database server for statistics
 """""""""""""""""""""""""""""""""""""""""""
 
-.. image:: images/visual_vm_data_source_attributes.gif
-    :align: center
-    :width: 100%
+    .. image:: images/visual_vm_data_source_attributes.gif
+        :align: center
+        :width: 100%
 
     **dbVendor** mysql
 
@@ -625,22 +614,24 @@ restart
 
 Entity Data Store Configuration
 -------------------------------
-!visualvm_jdbmdatastore_config.gif|align=left,width=640
+.. image:: images/visualvm_jdbmdatastore_config.jpeg
+    :align: center
+    :width: 100%
 
 This service handles the Jdbm entity data store for streamflow. This is the main persistence source in Streamflow. All entities are stored here.
 
 Attributes
 ^^^^^^^^^^
-autoCommit( boolean )
-"""""""""""""""""""""
+autoCommit - ``boolean``
+""""""""""""""""""""""""
     RecordManager option to automatically commit data after each operation.
 
-disableTransactions( boolean )
-""""""""""""""""""""""""""""""
+disableTransactions - ``boolean``
+"""""""""""""""""""""""""""""""""
     RecordManager option to disable transaction (to increase performance at the cost of potential data loss).
 
-file( String )
-""""""""""""""
+file - ``String``
+"""""""""""""""""
     The absolute path to the database file for the Jdbm store.
 
 Operations
@@ -658,12 +649,12 @@ This service connects Streamflowto a contact plugin implementation.
 
 Attributes
 ^^^^^^^^^^
-enables( boolean )
-""""""""""""""""""
+enables - ``boolean``
+"""""""""""""""""""""
     Tells whether the service is enabled or not. If not enabled the contact lookup button in contacts view in the client application will not be visible.
 
-url( String )
-"""""""""""""
+url - ``String``
+""""""""""""""""
     The url to the contact plugin implementation
 
 Operations
@@ -680,12 +671,12 @@ Kartago Integration Configuration
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not.
 
-installpath( String )
-"""""""""""""""""""""
+installpath - ``String``
+""""""""""""""""""""""""
     The command line arguments used by the client to start the external program.
 
 Operations
@@ -704,32 +695,32 @@ This plugin integration makes it possible to do searches for street information 
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not. The search functionality in the client application is not available if not enabled.
 
-forceReload( boolean )
-""""""""""""""""""""""
+forceReload - ``boolean``
+"""""""""""""""""""""""""
     Option whether to reload the Apache Solr Core index from the street plugin implementation.
 
-lastLoaded( long )
+lastLoaded - ``long``
 """"""""""""""""""
     Shows the timestamp in milliseconds when the index was reloaded last time.
 
-limit( Integer )
-""""""""""""""""
+limit - ``Integer``
+"""""""""""""""""""
     Limits the search results to the given number of elements. -1 means no limit.
 
-loadFrequence( long )
-"""""""""""""""""""""
+loadFrequence - ``long``
+""""""""""""""""""""""""
     The frequency in which the index is reloaded, the predefined value is one week in milliseconds.
 
-*minkeywordlength( Integer )
-""""""""""""""""""""""""""""
+*minkeywordlength - ``Integer``
+"""""""""""""""""""""""""""""""
     The minimal keyword length needed to trigger a search.
 
-url( String )
-"""""""""""""
+url - ``String``
+""""""""""""""""
     Url to the street lookup plugin implementation used.
 
 Operations
@@ -748,20 +739,20 @@ Stramflow is able to participate and respond to an instant messaging chat to rep
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the service is enabled or not.
 
-password( String )
-""""""""""""""""""
+password - ``String``
+"""""""""""""""""""""
     The password for the instant messaging user.
 
-server( String )
-""""""""""""""""
+server - ``String``
+"""""""""""""""""""
     The instant messaging server.
 
-user( String )
-""""""""""""""
+user - ``String``
+"""""""""""""""""
     The instant messaging user.
 
 Operations
@@ -780,12 +771,12 @@ The JMX connector service makes it easier to connect to the MBean Manager throug
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether the service is enabled or not.
 
-*port( Integer )
-""""""""""""""""
+*port - ``Integer``
+"""""""""""""""""""
     The port number the MBean server is listening on.
 
 Operations
@@ -804,8 +795,8 @@ During server startup the system is checking if the assembly version is higher t
 
 Attributes
 ^^^^^^^^^^
-lastStartupVersion( String )
-""""""""""""""""""""""""""""
+lastStartupVersion - ``String``
+"""""""""""""""""""""""""""""""
     The latest Streamflow assembly version the server was started with.
 
 Operations
@@ -824,12 +815,12 @@ This service is listening to the application event stream and creates conversati
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not.
 
-lastEventDate( long )
-"""""""""""""""""""""
+lastEventDate - ``long``
+""""""""""""""""""""""""
     The timestamp in milliseconds of the last event processed.
 
 Operations
@@ -847,12 +838,12 @@ This service applies filters on Inboxes. Listens for DomainEvents and when filte
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not.
 
-lastEventDate( long )
-"""""""""""""""""""""
+lastEventDate - ``long``
+""""""""""""""""""""""""
     The timestamp in milliseconds of the last event processed.
 
 Operations
@@ -870,12 +861,12 @@ Send and receive notifications. This service listens for domain events, and on "
 
 Attributes
 ^^^^^^^^^^
-enabled( boolean )
-""""""""""""""""""
+enabled - ``boolean``
+"""""""""""""""""""""
     Tells whether this service is enabled or not.
 
-lastEventDate( long )
-"""""""""""""""""""""
+lastEventDate - ``long``
+""""""""""""""""""""""""
     The timestamp in milliseconds of the last event processed.
 
 Operations
@@ -884,9 +875,13 @@ restart
 """""""
     Restarts the service.
 
+
+
 The log files
-=============
+*************
+
 On the server there are a number of log files, including the one that begin with " streamflow ... " , see below. The streamflow log file can be investigated to see the outcome of the operations. The last activity is at the end of the file. Activities are time stamped.
+
 .. image:: images/streamflow_server_log_files.gif
     :align: center
     :width: 100%
