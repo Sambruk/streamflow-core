@@ -13,5 +13,5 @@ Restore data
     :align: center
     :width: 100%
 
-.. note::
-   Or you can jsut fully replace **{StreamflowServer} folder
+.. hint::
+   Or you can jsut fully replace **{StreamflowServer}** folder and reload server
