@@ -2,4 +2,7 @@ Administration
 ==============
 
 .. toctree::
-:titlesonly:
+    :titlesonly:
+
+    manager
+    sql_export
