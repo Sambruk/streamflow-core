@@ -10,7 +10,7 @@ VisualVM - Getting started
 
     Streamflow is utilizing this tool for managing services and configurations.
 
-    The executable file is **JAVA_HOME/bin/jvisualvm(.exe)** or ypu can download it from https://visualvm.github.io/download.html
+    The executable file is **JAVA_HOME/bin/jvisualvm(.exe)** or you can download it from https://visualvm.github.io/download.html
 
     If you run on the server and the OS is Windows then VisualVM needs to run as Administrator. VisualVM should have rights to view Java processes that belong to the system profile . Initially, you also need to install VisualVm - MBeans plugin available under Tools / Plugin.
 
@@ -78,7 +78,7 @@ backup
 """"""
     If no initial event backup file exists a new event backup file is created otherwise a event diff file spanning from the last created event backup file or event backup diff file until the backup timestamp is created.
 
-    This call makes also a backup copy of the Jdbm entity store in form of a g-ziped JSON file if there is no such file for the date when the method was called.
+    This call makes also a backup copy of the Jdbm entity store in form of a g-zipped JSON file if there is no such file for the date when the method was called.
 
     A good practice is to do a backup of the data store at least after each successful Streamflow version upgrade since restore might not work properly over database version boundaries if there where structural changes involved between versions.
 
@@ -151,7 +151,7 @@ Archival Configuration
     :align: center
     :width: 100%
 
-The archival service handles when and how cases are archived and removed or only removed from the system. The main configuration of this behavior is administrated inside the Streamflow administration GUI where you can set max age for cases of a certain case type or lable before they are retired.
+The archival service handles when and how cases are archived and removed or only removed from the system. The main configuration of this behavior is administrated inside the Streamflow administration GUI where you can set max age for cases of a certain case type or label before they are retired.
 
 Archive Call Service
 --------------------
@@ -767,7 +767,7 @@ JMX Connector Configuration
     :align: center
     :width: 100%
 
-The JMX connector service makes it easier to connect to the MBean Manager through a firewall since all rmi trafik is routed through the same socket.
+The JMX connector service makes it easier to connect to the MBean Manager through a firewall since all rmi traffic is routed through the same socket.
 
 Attributes
 ^^^^^^^^^^
