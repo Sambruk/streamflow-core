@@ -27,7 +27,7 @@ Service Configuration is made on **MBeans** tab under **Qi4j/StreamflowServer/**
 On the first start we need to install the *MBean* plugin to be able to manage *Streamflow*.
 Choose Tools - Plugin on the menu bar and on the tab **Available Plugins -> VisualVM-MBeans -> Install**. Follow the install wizard.
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_plugin.gif
     :align: center
     :width: 100%
 
@@ -37,7 +37,7 @@ Connect Streamflow locally on your server
     Right click on Local node in the tree and add a new JMX connection.
     Provide **localhost:1099** as address and the streamflow administrator user and password.
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_remotehost.gif
     :align: center
     :width: 100%
 
@@ -46,7 +46,7 @@ Connect Streamflow remotely from your PC
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Right click on Remote node and add a new Remote host.
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_remotejmx.gif
     :align: center
     :width: 100%
 
@@ -65,7 +65,7 @@ Manage Streamflow
     All Qi4j applications running in this java process ( JVM ) will show up under the Qi4j node.
 
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_mbeans.gif
     :align: center
     :width: 100%
 
@@ -76,7 +76,7 @@ Main functions
 ==============
     In the tree find the node Qi4j/StreamflowServer/Manager and choose the tab Operations.
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visual_vm_operations.gif
     :align: center
     :width: 100%
 
@@ -158,7 +158,7 @@ Archival Configuration
 ----------------------
 
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visual_vm_archival_config.gif
     :align: center
     :width: 100%
 
@@ -234,7 +234,7 @@ restart
 
 Remove Attachments Configuration
 --------------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_removeattachments_config.gif
     :align: center
     :width: 100%
 The remove attachments service takes care of synchronising the removal of attached files from the attachment store corresponding to removed attachment entities. This is accomplished with help of application events related to attachment entity removal. If this service receives an event of a certain kind ( removedAttachment ) it will remove the appropriate attached files from the attachment store.
@@ -260,7 +260,7 @@ restart
 Knowledge Base Configuration
 ----------------------------
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_knowledgebase_config.gif
     :align: center
     :width: 100%
 
@@ -289,7 +289,7 @@ restart
 Create Case From Email Configuration
 ------------------------------------
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_createcasefromemail_config.gif
     :align: center
     :width: 100%
 
@@ -313,7 +313,7 @@ restart
     Restarts the service.
 
 Receive Email Configuration
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_receivemail_config.gif
     :align: center
     :width: 100%
 
@@ -378,7 +378,7 @@ restart
 
 Send Mail Configuration
 -----------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_sendmail_config.gif
     :align: center
     :width: 100%
 
@@ -434,7 +434,7 @@ restart
 
 Startup Migration Configuration
 -------------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_startupmigration_config.gif
     :align: center
     :width: 100%
 
@@ -455,7 +455,7 @@ restart
 
 Generate Pdf Configuration
 --------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_generatepdf_config.gif
     :align: center
     :width: 100%
 
@@ -492,7 +492,7 @@ restart
 
 Authentication Configuration
 ----------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_authentication_config.gif
     :align: center
     :width: 100%
 
@@ -515,7 +515,7 @@ restart
     Restarts the service.
 
 Statistics Configuration
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_statistics_config.gif
     :align: center
     :width: 100%
 
@@ -539,7 +539,7 @@ restart
 
 Streamflow Datasource Configuration
 -----------------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_streamflowds_config.gif
     :align: center
     :width: 100%
 Data source configuration for Streamflow statistics database.
@@ -576,7 +576,7 @@ Examples
 MySQL as the database server for statistics
 """""""""""""""""""""""""""""""""""""""""""
 
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visual_vm_data_source_attributes.gif
     :align: center
     :width: 100%
 
@@ -651,7 +651,7 @@ restart
 
 Contact Lookup Configuration
 ----------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_contactlookup_config.gif
     :align: center
     :width: 100%
 This service connects Streamflowto a contact plugin implementation.
@@ -674,7 +674,7 @@ restart
 
 Kartago Integration Configuration
 ---------------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_kartagomap_config.gif
     :align: center
     :width: 100%
 
@@ -696,7 +696,7 @@ restart
 
 Street Lookup Config
 --------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_streetlookup_config.gif
     :align: center
     :width: 100%
 
@@ -740,8 +740,8 @@ restart
 
 Instant Messaging Configuration
 -------------------------------
-.. image:: images/visual_vm_1_3_6.gif
-:align: center
+.. image:: images/visualvm_imadmin_config.gif
+    :align: center
     :width: 100%
 
 Stramflow is able to participate and respond to an instant messaging chat to report system status in runtime. To check for available commands type help into your chat window.
@@ -772,7 +772,7 @@ restart
 
 JMX Connector Configuration
 ---------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_jmxconnector_config.gif
     :align: center
     :width: 100%
 
@@ -796,7 +796,7 @@ restart
 
 Update Migration Configuration
 ------------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_update_config.gif
     :align: center
     :width: 100%
 
@@ -816,7 +816,7 @@ restart
 
 Conversation Response Config
 ----------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_conversationresponse_config.gif
     :align: center
     :width: 100%
 
@@ -840,7 +840,7 @@ restart
 
 Filter Configuration
 --------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_filter_config.gif
     :align: center
     :width: 100%
 This service applies filters on Inboxes. Listens for DomainEvents and when filter rules pass, then actions are applied.
@@ -863,7 +863,7 @@ restart
 
 Notification Configuration
 --------------------------
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/visualvm_notification_config.gif
     :align: center
     :width: 100%
 Send and receive notifications. This service listens for domain events, and on "receivedMessage" it will send a notification to the provided recipient.
@@ -887,6 +887,6 @@ restart
 The log files
 =============
 On the server there are a number of log files, including the one that begin with " streamflow ... " , see below. The streamflow log file can be investigated to see the outcome of the operations. The last activity is at the end of the file. Activities are time stamped.
-.. image:: images/visual_vm_1_3_6.gif
+.. image:: images/streamflow_server_log_files.gif
     :align: center
     :width: 100%
