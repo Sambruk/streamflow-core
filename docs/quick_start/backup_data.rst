@@ -26,7 +26,7 @@ Let's describe this step by step.
 Where is data?
 --------------
 
-Backup placed at **{StreamflowServer}/data/backup** folder.
+Backup placed at **`{StreamflowServer}/data/backup`** folder.
 
 .. important::
     If you have necessary data at this location,
@@ -34,5 +34,10 @@ Backup placed at **{StreamflowServer}/data/backup** folder.
 
 .. important::
     To perform complete backup recommended just to copy entire data folder in order to fix make easy revert.
-    For *Windows* is **C:\Users\<user>\AppData\Roaming\StreamflowServer\**
+
+    For *`Windows`* is
+        If launched directly: **`C:\Users\<user>\\AppData\\Roaming\\StreamflowServer\\`**
+
+        If launched as service: **`C:\Windows\\System32\\config\\systemprofile\\Application Data\\StreamflowServer`**
+
     For *Linux* is **<User_home>/.StreamFlowServer**
