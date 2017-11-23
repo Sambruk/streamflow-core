@@ -890,34 +890,3 @@ On the server there are a number of log files, including the one that begin with
 .. image:: images/visual_vm_1_3_6.gif
     :align: center
     :width: 100%
-
-
-
-Browse Space
-- Pages
-- News
-- Labels
-- Attachments
-- Bookmarks
-- Mail
-- Advanced
-- Activity
-Explore Confluence
-- Popular Labels
-- Notation Guide
-Your Account
-Hillar Loor, imcode
-
-- Your Space
-- History
-- Preferences
-- Log Out
-Other Features
-Edit in WordAdd this page to your favourites listWatch this page
-View a printable version of the current page.
-Export Page as PDF
-Add Content
-- Add Page
-- Add News
-- Add Comment
-- Add Attachment
