@@ -19,3 +19,4 @@ Contents
    quick_start/index
    release_notes/index
    administration/index
+   development/index

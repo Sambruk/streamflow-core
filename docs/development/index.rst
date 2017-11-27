@@ -1,0 +1,7 @@
+﻿Development
+===========
+
+.. toctree::
+   :titlesonly:
+
+   architecture
