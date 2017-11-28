@@ -5,5 +5,6 @@
    :titlesonly:
 
    architecture
-   cheatsheet
    bdd_guidline
+   build_release
+   cheatsheet

@@ -79,6 +79,12 @@ The client is responsible for firing off commands as REST calls as a response to
     * The view is typically responsible for checking that the event has the id corresponding to the view, and then delegates to the model which checks that an event that causes it to refresh has been called. This gives a combination of id+eventtype checking which properly filters what should cause a refresh.
 * When filtering events, make sure to use the util classes Iterables, Events and Specifications as much as possible. The helper methods there should be all you need.
 
+Code branches and CVS(GitHub)
+*****************************
+About general branching model you can look at good example here http://nvie.com/posts/a-successful-git-branching-model/
+Also there some useful stuff can be found at :doc:`build_release`
+
+
 Resources and contexts on the server
 ************************************
 The server-side REST API is implemented using resources and DCI contexts. The resources (subclasses of CommandQueryResource) are responsible for parsing the path of the URL, and maps objects into a RoleMap. Once an interaction (i.e. the last segment in a path, e.g. "/dostuff) is found the corresponding method is located in the context of the last resource. If the interaction is valid (i.e. no interaction constraint annotations fail), then the request will be parsed according to the interaction parameter type, and then invoked. The result is converted to HTML or JSON and then returned as response.

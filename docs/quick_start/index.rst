@@ -9,4 +9,3 @@
    restore_data
    installation
    uninstallation
-   building
