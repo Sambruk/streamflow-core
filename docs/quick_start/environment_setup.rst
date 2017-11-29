@@ -174,6 +174,16 @@ Glassfish setup
     Network Config - Network Listeners - http-listener-1 - Tab HTTP
     Enable Auth Pass Through
 
+.. important::
+    In order to fix possible *connections reset* and *500* especially for webclient it's recommended to increase **max-thread-pool** size for http
+    In case of Glassfish it can be made by next param
+        .. code-block:: xml
+
+            <thread-pool name="http-thread-pool" max-thread-pool-size="200"/>
+
+    Put needed value (Maybe it should be lower than 200)
+
+
 Ubuntu + Java 7 + Tomcat
 ------------------------
 
@@ -198,7 +208,7 @@ Apache setup
         a2enmod proxy_http
 
 #. Edit default site configuration to enable proxy located at file **/etc/apache2/sites-available/default
-There should be following content
+    There should be following content
 
     .. code-block:: xml
 
@@ -395,6 +405,7 @@ Tomcat setup
 
 #. Make tomcat6 owner of the files:
     .. code-block:: terminal
+
         chown -R tomcat8:tomcat8 ~tomcat8
 
 #. Restart tomcat:
@@ -444,3 +455,17 @@ Tomcat setup
     .. code-block:: terminal
 
         service apache2 restart1
+
+
+.. important::
+    In order to fix possible *connections reset* and *500* especially for webclient it's recommended to increase **max-thread-pool** size for http
+    In case of Tomcat it can be made by next param
+        .. code-block:: xml
+
+            <connector connectiontimeout="20000"
+                       maxthreads="200"
+                       port="8080"
+                       protocol="HTTP/1.1"
+                       redirectport="8443" />
+
+    Put needed value (Maybe it should be lower than 200)
