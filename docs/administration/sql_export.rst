@@ -78,3 +78,22 @@ On application startup:
     6. Get object from cache.
     7. Map JSON to Hibernate entities. Persist to SQL server. Get information about persisted objects.
     8. Write information to last_processed_entities.info file.
+
+Enable and configure at VisualVM
+--------------------------------
+
+#. Setup datasource
+
+    Example for Microsoft SQL server:
+
+    .. image:: images/visualvm_datasource.png
+        :align: center
+        :width: 100%
+
+#. Enable entity export
+
+    Settings located under StreamflowServer -> Domain
+
+    .. image:: images/visaulvm_entity_export.png
+        :align: center
+        :width: 100%
