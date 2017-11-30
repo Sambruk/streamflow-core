@@ -90,6 +90,9 @@ Enable and configure at VisualVM
         :align: center
         :width: 100%
 
+    .. note::
+        Don't forget to create scheme at DB
+
 #. Enable entity export
 
     Settings located under StreamflowServer -> Domain
@@ -97,3 +100,18 @@ Enable and configure at VisualVM
     .. image:: images/visaulvm_entity_export.png
         :align: center
         :width: 100%
+
+Pitfalls
+--------
+* In order to completely reset SQL export required following steps:
+
+    #. Remove folder **{StreamflowServer}/data/entityexport** at SF data folder
+    #. Recreate DB scheme which was used before
+
+* Unexpected interruption
+
+    * If server was stopped/restarted or disabled by some pig at server room feel free to start again and export will go further.
+    * If still not running as expected perform reset procedure described above.
+
+.. important::
+    Don't remove folder **{StreamflowServer}/data/entityexport** without need to perform reset. It's needed for correct work of entity export.
