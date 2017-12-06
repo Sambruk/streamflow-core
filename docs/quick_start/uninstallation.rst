@@ -14,7 +14,7 @@ Glassfish
 Tomcat
 ******
 #. Go to management tool of Tomcat by default *http://localhost:8080/manager/html*
-#. Then click the box in front of **streamflow-{module}-x.x** and press **Undeploy** from the right of needed application. A dialog box opens where you must confirm that you want to uninstall ("Undeploy") application.
+#. Find the application named **streamflow-{module}-x.x** in the list. Press **Undeploy** button to the right of application. A dialog box opens where you need to confirm that you want to uninstall (undeploy) the application.
     .. hint::
         Actual streamflow module names are:
             * streamflow-statistic-x.x
