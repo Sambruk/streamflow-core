@@ -28,6 +28,7 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,6 +66,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -116,6 +118,9 @@ public interface EntityExportService
       private AtomicLong cacheIdGenerator = new AtomicLong( 1 );
       private AtomicLong currentId = new AtomicLong( 1 );
       private AtomicBoolean isExported = new AtomicBoolean( false );
+
+      private static final int REQUEST_SIZE_THRESHOLD = 1000;
+      private static final long SCROLL_KEEP_ALIVE = TimeUnit.MINUTES.toMillis(1);
 
       private String schemaInfoFileAbsPath;
       private Map<String, Set<String>> tables;
@@ -422,15 +427,14 @@ public interface EntityExportService
          {
             logger.info( "Started entities export from index to cache." );
 
-            final int millis = 60000;
             SearchResponse searchResponse = client.prepareSearch( support.index() )
                     .addSort( "_modified", SortOrder.ASC )
-                    .setScroll( new TimeValue( millis ) )
+                    .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
                     .setQuery( query )
-                    .setSize( 1000 )
+                    .setSize( REQUEST_SIZE_THRESHOLD )
                     .get();
 
-            SearchHit[] entities = searchResponse.getHits().getHits();
+            SearchHits entities = searchResponse.getHits();
 
             final float step = 0.05f;
             float partPercent = 0f;
@@ -442,14 +446,14 @@ public interface EntityExportService
                {
                   caching.put( new Element( cacheIdGenerator.getAndIncrement(), searchHit.getSourceAsString() ) );
                }
-               numberOfExportedEntities += entities.length;
+               numberOfExportedEntities += entities.totalHits();
 
                searchResponse = client
                        .prepareSearchScroll( searchResponse.getScrollId() )
-                       .setScroll( new TimeValue( millis ) )
+                       .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
                        .execute().actionGet();
 
-               entities = searchResponse.getHits().getHits();
+               entities = searchResponse.getHits();
                if ( numberOfExportedEntities >= nextForLog )
                {
                   logger.info( String.format( "Exported %.2f%% (%d) entities",
@@ -457,7 +461,7 @@ public interface EntityExportService
                   nextForLog = ( long ) ( count * ( partPercent += step ) );
                }
 
-            } while ( entities.length != 0 );
+            } while ( entities.totalHits() != 0 );
 
             logger.info( "Finished entities export from index to cache." );
          } else

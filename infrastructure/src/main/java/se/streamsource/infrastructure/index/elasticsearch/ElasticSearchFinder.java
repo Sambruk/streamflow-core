@@ -27,6 +27,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.qi4j.api.common.Optional;
@@ -128,8 +129,8 @@ public interface ElasticSearchFinder
 
             // Execute
             SearchResponse response = request.execute().actionGet();
-            SearchHit[] hits = response.getHits().getHits();
-            final List<SearchHit> result = new ArrayList<>(Arrays.asList(hits));
+            SearchHits hits = response.getHits();
+            final List<SearchHit> result = new ArrayList<>(Arrays.asList(hits.getHits()));
             if (useScroll) {
                 do
                 {
@@ -139,10 +140,10 @@ public interface ElasticSearchFinder
                             .execute()
                             .actionGet();
 
-                    hits = response.getHits().getHits();
+                    hits = response.getHits();
 
-                    result.addAll(Arrays.asList(hits));
-                } while (hits.length != 0);
+                    result.addAll(Arrays.asList(hits.getHits()));
+                } while (hits.totalHits() != 0);
             }
 
             return Iterables.map(new Function<SearchHit, EntityReference>() {
