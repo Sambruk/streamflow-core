@@ -143,7 +143,7 @@ public interface ElasticSearchFinder
                     hits = response.getHits();
 
                     result.addAll(Arrays.asList(hits.getHits()));
-                } while (hits.totalHits() != 0);
+                } while ( hits.getHits().length != 0 );
             }
 
             return Iterables.map(new Function<SearchHit, EntityReference>() {

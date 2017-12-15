@@ -55,7 +55,6 @@ import se.streamsource.streamflow.server.plugin.address.StreetList;
 import se.streamsource.streamflow.server.plugin.address.StreetValue;
 import se.streamsource.streamflow.server.plugin.contact.*;
 import se.streamsource.streamflow.web.application.entityexport.EntityExportConfiguration;
-import se.streamsource.streamflow.web.application.entityexport.EntityExportJob;
 import se.streamsource.streamflow.web.application.entityexport.EntityExportService;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
@@ -96,6 +95,7 @@ import se.streamsource.streamflow.web.domain.structure.note.NoteValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.domain.util.FormVisibilityRuleValidator;
+import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
@@ -112,8 +112,6 @@ import se.streamsource.streamflow.web.infrastructure.logging.LoggingService;
 import se.streamsource.streamflow.web.infrastructure.plugin.address.StreetAddressLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.infrastructure.plugin.map.KartagoMapService;
-import se.streamsource.streamflow.web.infrastructure.scheduler.Qi4JQuartzJobFactory;
-import se.streamsource.streamflow.web.infrastructure.scheduler.QuartzSchedulerService;
 import se.streamsource.streamflow.web.rest.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
@@ -220,6 +218,7 @@ public class DomainAssembler
                  .identifiedBy("entityexport").instantiateOnStartup().visibleIn(Visibility.application);
          ModuleAssembly config = module.layer().application().layer( "Configuration" ).module( "DefaultConfiguration" );
          config.entities(EntityExportConfiguration.class).visibleIn(Visibility.application);
+         module.objects(ToJson.class);
       }
    }
 

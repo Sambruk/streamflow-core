@@ -34,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -44,6 +45,9 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.spi.entity.EntityState;
+import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -51,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
@@ -75,7 +80,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * It fires on startup (writes from index to cache)
  * and helps to write to cache when application started.
  * <br/>
- * Search response sized with 1000 because tests shows this optimal value.
+ * Search response sized with 1000 because tests show this's the optimal value.
  */
 @Mixins({ EntityExportService.Mixin.class, EntityStateChangeListener.class })
 public interface EntityExportService
@@ -138,6 +143,8 @@ public interface EntityExportService
       CachingService cachingService;
       @Service
       ServiceReference<DataSource> dataSource;
+      @Service
+      EntityStore entityStoreService;
 
       @Structure
       ModuleSPI moduleSPI;
@@ -427,6 +434,9 @@ public interface EntityExportService
          {
             logger.info( "Started entities export from index to cache." );
 
+            final EntityStoreUnitOfWork uow = entityStoreService.newUnitOfWork(UsecaseBuilder.newUsecase("toJSON"), moduleSPI);
+            final ToJson toJSON = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStoreService).newInstance();
+
             SearchResponse searchResponse = client.prepareSearch( support.index() )
                     .addSort( "_modified", SortOrder.ASC )
                     .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
@@ -444,9 +454,11 @@ public interface EntityExportService
 
                for ( SearchHit searchHit : entities )
                {
-                  caching.put( new Element( cacheIdGenerator.getAndIncrement(), searchHit.getSourceAsString() ) );
+                  final String identity = searchHit.getId();
+                  final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
+                  caching.put( new Element( cacheIdGenerator.getAndIncrement(), toJSON.toJSON( entityState, true ) ) );
                }
-               numberOfExportedEntities += entities.totalHits();
+               numberOfExportedEntities += entities.getHits().length;
 
                searchResponse = client
                        .prepareSearchScroll( searchResponse.getScrollId() )
@@ -456,12 +468,12 @@ public interface EntityExportService
                entities = searchResponse.getHits();
                if ( numberOfExportedEntities >= nextForLog )
                {
-                  logger.info( String.format( "Exported %d (%d) entities",
+                  logger.info( String.format( "Exported %d %% (%d) entities",
                           (short) (numberOfExportedEntities * 100.0 / count), numberOfExportedEntities ) );
                   nextForLog = ( long ) ( count * ( partPercent += step ) );
                }
 
-            } while ( entities.totalHits() != 0 );
+            } while ( entities.getHits().length != 0 );
 
             logger.info( "Finished entities export from index to cache." );
          } else

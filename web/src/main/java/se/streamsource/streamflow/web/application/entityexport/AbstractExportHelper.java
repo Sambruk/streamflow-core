@@ -96,9 +96,9 @@ public abstract class AbstractExportHelper
 
          columns.add( "id" );
 
-         final Statement statement = connection.createStatement();
-
-         statement.executeUpdate( subPropertyTable );
+         try (final Statement statement = connection.createStatement()) {
+            statement.executeUpdate( subPropertyTable );
+         }
 
          tables.put( tableName, columns );
       }
