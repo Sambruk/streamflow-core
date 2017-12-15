@@ -456,8 +456,8 @@ public interface EntityExportService
                entities = searchResponse.getHits();
                if ( numberOfExportedEntities >= nextForLog )
                {
-                  logger.info( String.format( "Exported %.2f%% (%d) entities",
-                          numberOfExportedEntities * 100.0 / count, numberOfExportedEntities ) );
+                  logger.info( String.format( "Exported %d (%d) entities",
+                          (short) (numberOfExportedEntities * 100.0 / count), numberOfExportedEntities ) );
                   nextForLog = ( long ) ( count * ( partPercent += step ) );
                }
 
