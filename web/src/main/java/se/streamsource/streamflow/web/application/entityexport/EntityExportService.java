@@ -444,7 +444,7 @@ public interface EntityExportService
                     .setSize( REQUEST_SIZE_THRESHOLD )
                     .get();
 
-            SearchHits entities = searchResponse.getHits();
+            SearchHit[] entities = searchResponse.getHits().getHits();
 
             final float step = 0.05f;
             float partPercent = 0f;
@@ -458,14 +458,14 @@ public interface EntityExportService
                   final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
                   caching.put( new Element( cacheIdGenerator.getAndIncrement(), toJSON.toJSON( entityState, true ) ) );
                }
-               numberOfExportedEntities += entities.getHits().length;
+               numberOfExportedEntities += entities.length;
 
                searchResponse = client
                        .prepareSearchScroll( searchResponse.getScrollId() )
                        .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
                        .execute().actionGet();
 
-               entities = searchResponse.getHits();
+               entities = searchResponse.getHits().getHits();
                if ( numberOfExportedEntities >= nextForLog )
                {
                   logger.info( String.format( "Exported %d %% (%d) entities",
@@ -473,7 +473,7 @@ public interface EntityExportService
                   nextForLog = ( long ) ( count * ( partPercent += step ) );
                }
 
-            } while ( entities.getHits().length != 0 );
+            } while ( entities.length != 0 );
 
             logger.info( "Finished entities export from index to cache." );
          } else

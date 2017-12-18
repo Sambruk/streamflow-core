@@ -129,8 +129,8 @@ public interface ElasticSearchFinder
 
             // Execute
             SearchResponse response = request.execute().actionGet();
-            SearchHits hits = response.getHits();
-            final List<SearchHit> result = new ArrayList<>(Arrays.asList(hits.getHits()));
+            SearchHit[] hits = response.getHits().getHits();
+            final List<SearchHit> result = new ArrayList<>(Arrays.asList(hits));
             if (useScroll) {
                 do
                 {
@@ -140,10 +140,10 @@ public interface ElasticSearchFinder
                             .execute()
                             .actionGet();
 
-                    hits = response.getHits();
+                    hits = response.getHits().getHits();
 
-                    result.addAll(Arrays.asList(hits.getHits()));
-                } while ( hits.getHits().length != 0 );
+                    result.addAll(Arrays.asList(hits));
+                } while ( hits.length != 0 );
             }
 
             return Iterables.map(new Function<SearchHit, EntityReference>() {
