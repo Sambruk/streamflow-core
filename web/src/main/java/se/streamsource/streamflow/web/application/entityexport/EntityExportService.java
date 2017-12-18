@@ -28,7 +28,6 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,6 +125,8 @@ public interface EntityExportService
 
       private static final int REQUEST_SIZE_THRESHOLD = 1000;
       private static final long SCROLL_KEEP_ALIVE = TimeUnit.MINUTES.toMillis(1);
+      private static final long DATA_BYTES_THRESHOLD = 1024L * 1024L * 1024L; //( ( (1024b => 1Kb) * 1024)  => 1Mb) * 1024  => 1Gb
+      private static final long SLEEP_MILLIS_WHEN_ACHIEVE_DATA_BYTES_THRESHOLD = SCROLL_KEEP_ALIVE / 2L;
 
       private String schemaInfoFileAbsPath;
       private Map<String, Set<String>> tables;
@@ -449,6 +450,7 @@ public interface EntityExportService
             final float step = 0.05f;
             float partPercent = 0f;
             long nextForLog = ( long ) ( count * ( partPercent += step ) );
+            long dataSize = 0L;
             do
             {
 
@@ -456,7 +458,9 @@ public interface EntityExportService
                {
                   final String identity = searchHit.getId();
                   final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
-                  caching.put( new Element( cacheIdGenerator.getAndIncrement(), toJSON.toJSON( entityState, true ) ) );
+                  final String entity = toJSON.toJSON(entityState, true);
+                  caching.put( new Element( cacheIdGenerator.getAndIncrement(), entity) );
+                  dataSize += entity.getBytes(StandardCharsets.UTF_8).length;
                }
                numberOfExportedEntities += entities.length;
 
@@ -466,6 +470,13 @@ public interface EntityExportService
                        .execute().actionGet();
 
                entities = searchResponse.getHits().getHits();
+
+               if (dataSize >= DATA_BYTES_THRESHOLD)
+               {
+                  dataSize = 0L;
+                  Thread.sleep(SLEEP_MILLIS_WHEN_ACHIEVE_DATA_BYTES_THRESHOLD);
+               }
+
                if ( numberOfExportedEntities >= nextForLog )
                {
                   logger.info( String.format( "Exported %d %% (%d) entities",
