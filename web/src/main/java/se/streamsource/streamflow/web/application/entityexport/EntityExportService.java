@@ -22,6 +22,7 @@ import net.sf.ehcache.Element;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -441,6 +442,7 @@ public interface EntityExportService
             SearchResponse searchResponse = client.prepareSearch( support.index() )
                     .addSort( "_modified", SortOrder.ASC )
                     .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
+                    .setSearchType( SearchType.QUERY_AND_FETCH )
                     .setQuery( query )
                     .setSize( REQUEST_SIZE_THRESHOLD )
                     .get();
