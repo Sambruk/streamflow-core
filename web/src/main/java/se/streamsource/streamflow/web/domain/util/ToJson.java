@@ -22,16 +22,11 @@ package se.streamsource.streamflow.web.domain.util;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Function;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityType;
@@ -48,9 +43,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Converts an entity to a json string aggregating all associations and many associations too.
@@ -71,6 +64,7 @@ public class ToJson {
         this.entityStore = entityStore;
         this.uow = entityStore.newUnitOfWork( UsecaseBuilder.newUsecase("toJson"), module );
     }
+
     /**
      * <pre>
      * {
@@ -86,8 +80,25 @@ public class ToJson {
      */
     public  String toJSON( EntityState state, boolean aggregateAssociations )
     {
-        long start = System.nanoTime();
-        JSONObject json = null;
+        return toJSON(state, aggregateAssociations, false);
+    }
+
+    /**
+     * <pre>
+     * {
+     *  "_identity": "ENTITY-IDENTITY",
+     *  "_types": [ "All", "Entity", "types" ],
+     *  "_modified": 123,
+     *  "_description": "Main entity type",
+     *  "property.name": property.value,
+     *  "association.name": "ASSOCIATED-IDENTITY",
+     *  "manyassociation.name": [ "ASSOCIATED", "IDENTITIES" ]
+     * }
+     * </pre>
+     */
+    public  String toJSON( EntityState state, boolean aggregateAssociations, boolean ignoreQueryable )
+    {
+        JSONObject json;
         try
         {
             json = new JSONObject();
@@ -104,7 +115,7 @@ public class ToJson {
             // Properties
             for( PropertyType propType : entityType.properties() )
             {
-                if( propType.queryable() )
+                if( ignoreQueryable || propType.queryable() )
                 {
                     String key = propType.qualifiedName().name();
                     Object value = state.getProperty(propType.qualifiedName());
@@ -135,7 +146,7 @@ public class ToJson {
             // Associations
             for( AssociationDescriptor assocDesc : entityDesc.state().associations() )
             {
-                if( assocDesc.associationType().queryable() )
+                if( ignoreQueryable || assocDesc.associationType().queryable() )
                 {
                     String key = assocDesc.qualifiedName().name();
                     EntityReference associated = state.getAssociation(assocDesc.qualifiedName());
@@ -152,7 +163,7 @@ public class ToJson {
                             try
                             {
                                 EntityState assocState = uow.getEntityState( EntityReference.parseEntityReference( associated.identity() ) );
-                                value = new JSONObject( toJSON( assocState, false ) );
+                                value = new JSONObject( toJSON( assocState, false, ignoreQueryable ) );
                             } catch ( EntityNotFoundException e )
                             {
                                 value = new JSONObject( Collections.singletonMap("identity", associated.identity() + " aggregation impossible") );
@@ -170,7 +181,7 @@ public class ToJson {
             // ManyAssociations
             for( ManyAssociationDescriptor manyAssocDesc : entityDesc.state().manyAssociations() )
             {
-                if( manyAssocDesc.manyAssociationType().queryable() )
+                if( ignoreQueryable || manyAssocDesc.manyAssociationType().queryable() )
                 {
                     String key = manyAssocDesc.qualifiedName().name();
                     JSONArray array = new JSONArray();
@@ -182,7 +193,7 @@ public class ToJson {
                             try
                             {
                                 EntityState assocState = uow.getEntityState(EntityReference.parseEntityReference(associated.identity()));
-                                array.put( new JSONObject( toJSON( assocState, false ) ) );
+                                array.put( new JSONObject( toJSON( assocState, false, ignoreQueryable ) ) );
                             } catch ( EntityNotFoundException e )
                             {
                                 array.put( new JSONObject( Collections.singletonMap("identity", associated.identity() + " aggregation impossible") ) );

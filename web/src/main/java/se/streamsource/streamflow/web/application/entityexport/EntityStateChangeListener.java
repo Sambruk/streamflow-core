@@ -97,7 +97,7 @@ public class EntityStateChangeListener
                      entityExportService.saveToCache( object.toString() );
                   } else
                   {
-                     entityExportService.saveToCache( toJSON.toJSON( changedState, true ) );
+                     entityExportService.saveToCache( toJSON.toJSON( changedState, true, true ) );
                   }
                }
             }
