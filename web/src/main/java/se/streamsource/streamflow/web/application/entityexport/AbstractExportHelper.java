@@ -672,7 +672,7 @@ public abstract class AbstractExportHelper
       switch ( dbVendor )
       {
          case mssql:
-            return isMax ? "NTEXT" : "NVARCHAR(" + length + ")";
+            return isMax ? "NVARCHAR(MAX)" : "NVARCHAR(" + length + ")";
 
          default:
             return isMax ? "TEXT" : "VARCHAR(" + length + ")";
