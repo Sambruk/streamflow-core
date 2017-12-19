@@ -457,7 +457,7 @@ public interface EntityExportService
                {
                   final String identity = searchHit.getId();
                   final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
-                  final String entity = toJSON.toJSON(entityState, true, true);
+                  final String entity = toJSON.toJSON(entityState, true);
                   caching.put( new Element( cacheIdGenerator.getAndIncrement(), entity) );
                }
                numberOfExportedEntities += entities.length;

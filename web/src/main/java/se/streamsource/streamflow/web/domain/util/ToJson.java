@@ -65,22 +65,14 @@ public class ToJson {
         this.uow = entityStore.newUnitOfWork( UsecaseBuilder.newUsecase("toJson"), module );
     }
 
-    /**
-     * <pre>
-     * {
-     *  "_identity": "ENTITY-IDENTITY",
-     *  "_types": [ "All", "Entity", "types" ],
-     *  "_modified": 123,
-     *  "_description": "Main entity type",
-     *  "property.name": property.value,
-     *  "association.name": "ASSOCIATED-IDENTITY",
-     *  "manyassociation.name": [ "ASSOCIATED", "IDENTITIES" ]
-     * }
-     * </pre>
-     */
-    public  String toJSON( EntityState state, boolean aggregateAssociations )
+    public  String toJSON( EntityState state )
     {
-        return toJSON(state, aggregateAssociations, false);
+        return toJSON(state, false);
+    }
+
+    public  String toJSON( EntityState state, boolean full )
+    {
+        return toJSON(state, full, true);
     }
 
     /**
@@ -96,7 +88,7 @@ public class ToJson {
      * }
      * </pre>
      */
-    public  String toJSON( EntityState state, boolean aggregateAssociations, boolean ignoreQueryable )
+    private String toJSON(EntityState state, boolean ignoreQueryable, boolean aggregateAssociations)
     {
         JSONObject json;
         try
@@ -163,7 +155,7 @@ public class ToJson {
                             try
                             {
                                 EntityState assocState = uow.getEntityState( EntityReference.parseEntityReference( associated.identity() ) );
-                                value = new JSONObject( toJSON( assocState, false, ignoreQueryable ) );
+                                value = new JSONObject( toJSON( assocState, ignoreQueryable, false) );
                             } catch ( EntityNotFoundException e )
                             {
                                 value = new JSONObject( Collections.singletonMap("identity", associated.identity() + " aggregation impossible") );
@@ -193,7 +185,7 @@ public class ToJson {
                             try
                             {
                                 EntityState assocState = uow.getEntityState(EntityReference.parseEntityReference(associated.identity()));
-                                array.put( new JSONObject( toJSON( assocState, false, ignoreQueryable ) ) );
+                                array.put( new JSONObject( toJSON( assocState, ignoreQueryable, false ) ) );
                             } catch ( EntityNotFoundException e )
                             {
                                 array.put( new JSONObject( Collections.singletonMap("identity", associated.identity() + " aggregation impossible") ) );

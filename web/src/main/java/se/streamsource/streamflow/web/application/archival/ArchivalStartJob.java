@@ -371,7 +371,7 @@ public interface ArchivalStartJob extends InterruptableJob, TransientComposite {
                 Outputs.text(file, "UTF-8").receiveFrom(new Sender<String, Throwable>() {
                     @Override
                     public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super String, ReceiverThrowableType> receiver) throws ReceiverThrowableType, Throwable {
-                        receiver.receive(toJson.toJSON( api.getEntityState(caseEntity), true ));
+                        receiver.receive(toJson.toJSON( api.getEntityState(caseEntity) ));
                     }
                 });
             } catch (Throwable throwable) {
