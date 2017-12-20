@@ -73,6 +73,7 @@ import java.sql.Connection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -132,8 +133,8 @@ public interface EntityExportService
 
       //statistics
       private long statisticsStartExportTime;
-      private int statisticsCounter = 1;
-      private double totalExportTime = 0;
+      private AtomicInteger statisticsCounter = new AtomicInteger(1);
+      private AtomicLong totalExportTime = new AtomicLong(0);
 
       @Service
       FileConfiguration config;
@@ -248,13 +249,13 @@ public interface EntityExportService
       public String getNextEntity()
       {
          final Integer loggingStatisticsEntitiesCount = thisConfig.configuration().loggingStatisticsEntitiesCount().get();
-         if ( loggingStatisticsEntitiesCount > 0 && statisticsCounter == 1 )
+         if ( loggingStatisticsEntitiesCount > 0 && statisticsCounter.get() == 1 )
          {
             statisticsStartExportTime = System.currentTimeMillis();
          } else if ( loggingStatisticsEntitiesCount < 1 )
          {
-            statisticsCounter = 1;
-            totalExportTime = 0;
+            statisticsCounter.set(1);
+            totalExportTime.set(0);
          }
 
          final Element element = caching.get( currentId.get() );
@@ -326,23 +327,23 @@ public interface EntityExportService
 
                   final boolean isLastProcessed = currentId.get() + 1 == cacheIdGenerator.get();
 
-                  if ( statisticsCounter == loggingStatisticsEntitiesCount || isLastProcessed )
+                  if ( statisticsCounter.get() == loggingStatisticsEntitiesCount || isLastProcessed )
                   {
                      final long currentTime = System.currentTimeMillis();
                      final long exportTime = currentTime - statisticsStartExportTime;
-                     totalExportTime += exportTime;
+                     totalExportTime.addAndGet(exportTime);
 
                      String message =
                              String.format( "The average export time is %.3f ms of %d entities selection",
-                                     totalExportTime / currentId.get(),
+                                     (double) totalExportTime.get() / currentId.get(),
                                      currentId.get());
 
                      logger.info( message );
 
-                     statisticsCounter = 1;
+                     statisticsCounter.set(1);
                   } else
                   {
-                     statisticsCounter++;
+                     statisticsCounter.incrementAndGet();
                   }
 
                }
@@ -432,7 +433,7 @@ public interface EntityExportService
 
          if ( count != 0 )
          {
-            logger.info( "Started entities export from index to cache." );
+            logger.info( "Started entities export from index to cache. Ready to be exported " + count + " entities." );
 
             final EntityStoreUnitOfWork uow = entityStoreService.newUnitOfWork(UsecaseBuilder.newUsecase("toJSON"), moduleSPI);
             final ToJson toJSON = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStoreService).newInstance();
