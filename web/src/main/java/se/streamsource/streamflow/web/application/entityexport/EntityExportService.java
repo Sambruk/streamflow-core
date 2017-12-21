@@ -441,7 +441,6 @@ public interface EntityExportService
             SearchResponse searchResponse = client.prepareSearch( support.index() )
                     .addSort( "_modified", SortOrder.ASC )
                     .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
-                    .setSearchType( SearchType.QUERY_AND_FETCH )
                     .setQuery( query )
                     .setSize( REQUEST_SIZE_THRESHOLD )
                     .get();
@@ -450,6 +449,7 @@ public interface EntityExportService
 
             final float step = 0.05f;
             float partPercent = 0f;
+            long totalExported = 0L;
             long nextForLog = ( long ) ( count * ( partPercent += step ) );
             do
             {
@@ -459,6 +459,7 @@ public interface EntityExportService
                   final String identity = searchHit.getId();
                   final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
                   final String entity = toJSON.toJSON(entityState, true);
+                  totalExported++;
                   caching.put( new Element( cacheIdGenerator.getAndIncrement(), entity) );
                }
                numberOfExportedEntities += entities.length;
@@ -479,7 +480,7 @@ public interface EntityExportService
 
             } while ( entities.length != 0 );
 
-            logger.info( "Finished entities export from index to cache." );
+            logger.info( "Finished entities export from index to cache. Total exported = " + totalExported );
          } else
          {
             logger.info( "Nothing to export from index to cache." );
