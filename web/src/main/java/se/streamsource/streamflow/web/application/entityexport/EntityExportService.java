@@ -440,6 +440,7 @@ public interface EntityExportService
 
             SearchResponse searchResponse = client.prepareSearch( support.index() )
                     .addSort( "_modified", SortOrder.ASC )
+                    .addFields("_identity", "_modified")
                     .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
                     .setQuery( query )
                     .setSize( REQUEST_SIZE_THRESHOLD )
@@ -456,7 +457,7 @@ public interface EntityExportService
 
                for ( SearchHit searchHit : entities )
                {
-                  final String identity = searchHit.getId();
+                  final String identity = searchHit.getFields().get("_identity").getValue();
                   final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
                   final String entity = toJSON.toJSON(entityState, true);
                   totalExported++;
