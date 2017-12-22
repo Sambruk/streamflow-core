@@ -77,8 +77,6 @@ public class EntityExportHelper extends AbstractExportHelper
 
    public Map<String, Set<String>> help() throws Exception
    {
-      connection.setAutoCommit( false );
-
       final String identity = entity.getString( "identity" );
 
       try ( final ResultSet isExistRS = selectFromWhereId( tableName(), identity ) )
@@ -119,8 +117,6 @@ public class EntityExportHelper extends AbstractExportHelper
          }
 
       }
-
-      connection.commit();
 
       saveTablesState();
 

@@ -18,6 +18,7 @@
  */
 package se.streamsource.streamflow.web.application.entityexport;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -34,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.domain.util.ToJson;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -88,16 +91,17 @@ public class EntityStateChangeListener
             {
                if ( !changedState.status().equals( EntityStatus.LOADED ) )
                {
+                  final String identity = changedState.identity().identity();
                   if ( changedState.status().equals( EntityStatus.REMOVED ) )
                   {
                      final JSONObject object = new JSONObject();
                      object
-                             .put( "identity", changedState.identity() )
+                             .put( "identity", identity)
                              .put( "_removed", true );
-                     entityExportService.saveToCache( object.toString() );
+                     entityExportService.saveToCache( identity, changedState.lastModified(), object.toString() );
                   } else
                   {
-                     entityExportService.saveToCache( toJSON.toJSON( changedState, true ) );
+                     entityExportService.saveToCache( identity, changedState.lastModified(), toJSON.toJSON( changedState, true ) );
                   }
                }
             }
@@ -108,7 +112,7 @@ public class EntityStateChangeListener
             }
 
 
-            if ( EntityExportJob.FINISHED.get() && entityExportService.hasNextEntity() )
+            if ( EntityExportJob.FINISHED.get() && hasNext())
             {
                final Future<?> exportTask = executor.submit( newEntityExportJob() );
 
@@ -122,7 +126,7 @@ public class EntityStateChangeListener
                      try
                      {
                         exportTask.get();
-                        if ( entityExportService.hasNextEntity() )
+                        if ( hasNext() )
                         {
                            entityStateChangeListener.notifyChanges( new ArrayList<EntityState>() );
                         }
@@ -148,6 +152,12 @@ public class EntityStateChangeListener
          }
       }
 
+   }
+
+   private boolean hasNext() throws SQLException {
+      try (final Connection connection = dataSource.get().getConnection()) {
+         return entityExportService.getNextEntity(connection) != null;
+      }
    }
 
    private EntityExportJob newEntityExportJob()

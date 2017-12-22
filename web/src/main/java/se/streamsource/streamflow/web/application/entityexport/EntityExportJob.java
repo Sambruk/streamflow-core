@@ -44,15 +44,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Task for export from cache to SQL. It uses {@link EntityExportHelper} to achieve this goals.
  * <br/>
- * Main while loop is bounded with {@link #EXPORT_LIMIT} and connection created
+ * Main while loop is bounded with {@link EntityExportService#SIZE_THRESHOLD} and connection created
  * for every entity to prevent memory leak, detected in testing.
  * <br/>
- * {@link #EXPORT_LIMIT} is 1000 because tests shows this optimal value.
+ * {@link EntityExportService#SIZE_THRESHOLD} is 1000 because tests shows this optimal value.
  */
 public class EntityExportJob implements Runnable
 {
 
-   public static final Integer EXPORT_LIMIT = 1000;
    public static final AtomicBoolean FINISHED = new AtomicBoolean( true );
 
    private static final Logger logger = LoggerFactory.getLogger( EntityExportJob.class );
@@ -66,85 +65,85 @@ public class EntityExportJob implements Runnable
    @Override
    public void run()
    {
-
       FINISHED.set( false );
 
-      int counterLimit = 0;
-      while ( entityExportService.isExported() && entityExportService.hasNextEntity() && EXPORT_LIMIT != counterLimit )
+      try (final Connection connection = dataSource.get().getConnection())
       {
-         try ( final Connection connection = dataSource.get().getConnection() )
+          connection.setAutoCommit(false);
+
+         int counterLimit = 0;
+         String nextEntity;
+         while ( entityExportService.isExported()
+                 && (nextEntity = entityExportService.getNextEntity(connection)) != null
+                 && EntityExportService.SIZE_THRESHOLD != counterLimit )
          {
-            final String nextEntity = entityExportService.getNextEntity();
-
-            if ( nextEntity.isEmpty() )
-            {
-               logger.info( "Entity doesn't exist in cache." );
-            }
-
-            final JSONObject entity = new JSONObject( nextEntity );
-
-            final String description = entity.optString( "_description" );
-
-
-            if ( description.isEmpty() )
-            {
-               throw new IllegalStateException( "JSON must include _description property." );
-            }
-
-            final EntityDescriptor entityDescriptor = module.entityDescriptor( description );
-            final EntityType entityType = entityDescriptor.entityType();
-
-            final Iterable<PropertyType> existsProperties =
-                    getNotNullProperties( entity, entityType.properties() );
-            final Iterable<AssociationType> existsAssociations =
-                    getNotNullProperties( entity, entityType.associations() );
-            final Iterable<ManyAssociationType> existsManyAssociations =
-                    getNotNullProperties( entity, entityType.manyAssociations() );
-
-            Map<String, Object> subProps = new HashMap<>();
-
-            for ( PropertyType existsProperty : existsProperties )
-            {
-               final QualifiedName qualifiedName = existsProperty.qualifiedName();
-               final Object jsonStructure = entity.get( qualifiedName.name() );
-
-               if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
+               if ( nextEntity.isEmpty() )
                {
-                  subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, module ) );
+                  logger.info( "Entity doesn't exist in cache." );
                }
-            }
 
-            final EntityExportHelper entityExportHelper = new EntityExportHelper();
+               final JSONObject entity = new JSONObject( nextEntity );
 
-            entityExportHelper.setExistsProperties( existsProperties );
-            entityExportHelper.setExistsAssociations( existsAssociations );
-            entityExportHelper.setExistsManyAssociations( existsManyAssociations );
-            entityExportHelper.setSubProps( subProps );
-            entityExportHelper.setConnection( connection );
-            entityExportHelper.setEntity( entity );
-            entityExportHelper.setAllProperties( entityType.properties() );
-            entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
-            entityExportHelper.setAllAssociations( entityType.associations() );
-            entityExportHelper.setClassName( description );
-            entityExportHelper.setModule( module );
-            entityExportHelper.setDbVendor( entityExportService.getDbVendor() );
-            entityExportHelper.setTables( entityExportService.getTables() );
-            entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
-            entityExportHelper.setShowSql( entityExportService.configuration().showSql().get() );
-            entityExportService.setTables( entityExportHelper.help() );
+               final String description = entity.optString( "_description" );
 
-            entityExportService.savedSuccess( entity );
+               if ( description.isEmpty() )
+               {
+                  throw new IllegalStateException( "JSON must include _description property." );
+               }
 
-            counterLimit++;
+               final EntityDescriptor entityDescriptor = module.entityDescriptor( description );
+               final EntityType entityType = entityDescriptor.entityType();
 
-         } catch ( Exception e )
-         {
-            logger.error( "Unexpected error: ", e );
+               final Iterable<PropertyType> existsProperties =
+                       getNotNullProperties( entity, entityType.properties() );
+               final Iterable<AssociationType> existsAssociations =
+                       getNotNullProperties( entity, entityType.associations() );
+               final Iterable<ManyAssociationType> existsManyAssociations =
+                       getNotNullProperties( entity, entityType.manyAssociations() );
+
+               Map<String, Object> subProps = new HashMap<>();
+
+               for ( PropertyType existsProperty : existsProperties )
+               {
+                  final QualifiedName qualifiedName = existsProperty.qualifiedName();
+                  final Object jsonStructure = entity.get( qualifiedName.name() );
+
+                  if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
+                  {
+                     subProps.put( qualifiedName.name(), existsProperty.type().fromJSON( jsonStructure, module ) );
+                  }
+               }
+
+               final EntityExportHelper entityExportHelper = new EntityExportHelper();
+
+               entityExportHelper.setExistsProperties( existsProperties );
+               entityExportHelper.setExistsAssociations( existsAssociations );
+               entityExportHelper.setExistsManyAssociations( existsManyAssociations );
+               entityExportHelper.setSubProps( subProps );
+               entityExportHelper.setConnection( connection );
+               entityExportHelper.setEntity( entity );
+               entityExportHelper.setAllProperties( entityType.properties() );
+               entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
+               entityExportHelper.setAllAssociations( entityType.associations() );
+               entityExportHelper.setClassName( description );
+               entityExportHelper.setModule( module );
+               entityExportHelper.setDbVendor( entityExportService.getDbVendor() );
+               entityExportHelper.setTables( entityExportService.getTables() );
+               entityExportHelper.setSchemaInfoFileAbsPath( entityExportService.getSchemaInfoFileAbsPath() );
+               entityExportHelper.setShowSql( entityExportService.configuration().showSql().get() );
+               entityExportService.setTables( entityExportHelper.help() );
+
+               entityExportService.savedSuccess( entity.getString("identity"), entity.getLong("_modified"), connection );
+
+               counterLimit++;
          }
+
+      } catch ( Exception e )
+      {
+          logger.error( "Unexpected error: ", e );
       }
 
-      FINISHED.set( true );
-
+       FINISHED.set( true );
    }
 
    private <T> Iterable<T> getNotNullProperties( final JSONObject entity, Iterable<T> iterable )
@@ -201,5 +200,4 @@ public class EntityExportJob implements Runnable
    {
       this.dataSource = dataSource;
    }
-
 }
