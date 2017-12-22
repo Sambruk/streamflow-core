@@ -1,6 +1,5 @@
 /**
- *
- * Copyright
+ *additionalight
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
  *
@@ -24,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -37,9 +35,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.EntityStore;
-import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -112,8 +108,6 @@ public interface EntityExportService
       @Service
       ServiceReference<DataSource> dataSource;
       @Service
-      BackupRestore backupRestore;
-      @Service
       EntityStore entityStore;
 
       @Structure
@@ -131,6 +125,7 @@ public interface EntityExportService
       private AtomicInteger statisticsCounter = new AtomicInteger();
 
       private Caching caching;
+      private Caching tempCaching;
 
       @Override
       public void activate() throws Exception
@@ -143,6 +138,9 @@ public interface EntityExportService
 
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
             caching.removeAll();
+
+            tempCaching = new Caching( cachingService, Caches.ENTITYSTATESTEMP );
+            tempCaching.removeAll();
 
             try
             {
@@ -157,6 +155,8 @@ public interface EntityExportService
                dbVendor = _getDbVendor();
 
                export();
+
+               tempCaching.removeAll();
 
             } catch ( Throwable e )
             {
@@ -345,14 +345,13 @@ public interface EntityExportService
       {
          logger.info( "Started entities export from database to cache." );
          logger.info( "Checking..." );
-         final EntityStoreUnitOfWork uow = entityStore.newUnitOfWork(UsecaseBuilder.newUsecase("toJSON"), moduleSPI);
-         final ToJson toJSON = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStore).newInstance();
 
          long totalExported = 0L;
          try (final Connection connection = dataSource.get().getConnection()) {
             try (final Statement statement = connection.createStatement()) {
-               final EntityAsStringReceiver receiver = new EntityAsStringReceiver(statement);
-               backupRestore.backup().transferTo(Outputs.withReceiver(receiver));
+               final ToJson toJSON = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStore).newInstance();
+               final EntityStatesReceiver receiver = new EntityStatesReceiver(statement, toJSON);
+               entityStore.entityStates(moduleSPI).transferTo(Outputs.withReceiver(receiver));
                statement.executeBatch();
                logger.info( "Checked " + receiver.numberOfProceedEntities + " entities" );
             }
@@ -369,8 +368,7 @@ public interface EntityExportService
                   int i = 0;
                   while (resultSet.next()) {
                      final String identity = resultSet.getString(1);
-                     final EntityState entityState = uow.getEntityState(EntityReference.parseEntityReference(identity));
-                     caching.put( new Element( identity, toJSON.toJSON(entityState, true)) );
+                     caching.put( new Element( identity, tempCaching.get(identity).getObjectValue().toString() ) );
                      totalExported++;
                      condition = "AND [identity] > '" + identity + "'";
                      i++;
@@ -390,22 +388,23 @@ public interface EntityExportService
          isExported.set( true );
       }
 
-      private class EntityAsStringReceiver implements Receiver<String, Throwable>{
+      private class EntityStatesReceiver implements Receiver<EntityState, Throwable>{
          final Statement statement;
+         private final ToJson toJSON;
          long numberOfProceedEntities = 0L;
 
-         private EntityAsStringReceiver(Statement statement) {
+         private EntityStatesReceiver(Statement statement, ToJson toJSON) {
             this.statement = statement;
+            this.toJSON = toJSON;
          }
 
          @Override
-         public void receive(String entityJsonString) throws Throwable {
-            final JSONObject entity = new JSONObject(entityJsonString);
-            final String identity = entity.getString("identity");
-            final long modified = entity.getLong("modified");
-            final String updateEntityInfoSql = updateEntityInfoSql(identity, modified, false);
+         public void receive(EntityState entityState) throws Throwable {
+            final String identity = entityState.identity().identity();
+            final String updateEntityInfoSql = updateEntityInfoSql(identity, entityState.lastModified(), false);
 
             statement.addBatch(updateEntityInfoSql);
+            tempCaching.put(new Element(identity, toJSON.toJSON(entityState, true)));
 
             numberOfProceedEntities++;
 
