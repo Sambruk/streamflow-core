@@ -145,13 +145,12 @@ public interface EntityExportService
             {
 
                tables = readSchemaStateFromFile();
+               dbVendor = _getDbVendor();
 
                try ( final Connection connection = dataSource.get().getConnection() )
                {
                   createBaseSchema( connection );
                }
-
-               dbVendor = _getDbVendor();
 
                export();
 
@@ -299,7 +298,7 @@ public interface EntityExportService
             if ( showSqlEntitiesCount )
             {
                final boolean isLast = getNextEntity(connection) == null;
-               if ( statisticsCounter.incrementAndGet() % 1000 == 0 || isLast)
+               if ( statisticsCounter.incrementAndGet() % SIZE_THRESHOLD == 0 || isLast)
                {
                   logger.info("Exported " + statisticsCounter.get() + " entities to sql");
                }
@@ -326,10 +325,6 @@ public interface EntityExportService
 
       private void createBaseSchema( Connection connection ) throws Exception
       {
-         final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
-         final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
-         final DbVendor dbVendor = DbVendor.from( dataSourceConfiguration.dbVendor().get() );
-
          final SchemaCreatorHelper schemaUpdater = new SchemaCreatorHelper();
          schemaUpdater.setModule( moduleSPI );
          schemaUpdater.setConnection( connection );

@@ -85,7 +85,7 @@ public class EntityExportJob implements Runnable
 
                final JSONObject entity = new JSONObject( nextEntity );
 
-               final String type = entity.optString( "type" );
+               final String type = entity.optString( JSONEntityState.JSON_KEY_TYPE );
 
                if ( type.isEmpty() )
                {
@@ -95,9 +95,9 @@ public class EntityExportJob implements Runnable
                final EntityDescriptor entityDescriptor = module.entityDescriptor( type );
                final EntityType entityType = entityDescriptor.entityType();
 
-             final JSONObject propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
+               final JSONObject propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
 
-             final Iterable<PropertyType> existsProperties =
+               final Iterable<PropertyType> existsProperties =
                        getNotNullProperties(propertiesHolder, entityType.properties() );
                final Iterable<AssociationType> existsAssociations =
                        getNotNullProperties( entity.getJSONObject(JSONEntityState.JSON_KEY_ASSOCIATIONS), entityType.associations() );

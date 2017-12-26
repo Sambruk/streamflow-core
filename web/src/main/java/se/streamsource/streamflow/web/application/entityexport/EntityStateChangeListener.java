@@ -18,9 +18,7 @@
  */
 package se.streamsource.streamflow.web.application.entityexport;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
@@ -31,8 +29,6 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.spi.entity.*;
 import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
-import org.qi4j.spi.entitystore.EntityNotFoundException;
-import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.entitystore.helpers.JSONEntityState;
 import org.qi4j.spi.property.PropertyType;
@@ -40,14 +36,15 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.util.Primitives;
-import se.streamsource.streamflow.web.domain.util.ToJson;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -65,9 +62,6 @@ public class EntityStateChangeListener
 
    @Service
    EntityExportService entityExportService;
-
-   @Service
-   EntityStore entityStoreService;
 
    @Structure
    ModuleSPI moduleSPI;
