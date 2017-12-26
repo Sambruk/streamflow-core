@@ -1,6 +1,6 @@
 /**
  *
- * Copyrightt
+ * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
  *

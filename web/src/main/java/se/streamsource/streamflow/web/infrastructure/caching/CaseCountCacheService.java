@@ -29,7 +29,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueComposite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.web.domain.Removable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -49,6 +50,7 @@ public interface CaseCountCacheService
    class Mixin
       implements Activatable
    {
+      private static final Logger logger = LoggerFactory.getLogger( CaseCountCacheService.class );
 
       @Structure
       Module module;
@@ -58,7 +60,11 @@ public interface CaseCountCacheService
       
       public void activate() throws Exception
       {
-         initCache();
+         try {
+            initCache();
+         } catch (Exception e) {
+            logger.error("Unexpected exception: ", e);
+         }
       }
 
       public void passivate() throws Exception
