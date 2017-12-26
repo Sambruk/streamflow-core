@@ -29,6 +29,7 @@ import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.entity.EntityType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
+import org.qi4j.spi.entitystore.helpers.JSONEntityState;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -84,29 +85,31 @@ public class EntityExportJob implements Runnable
 
                final JSONObject entity = new JSONObject( nextEntity );
 
-               final String description = entity.optString( "_description" );
+               final String type = entity.optString( "type" );
 
-               if ( description.isEmpty() )
+               if ( type.isEmpty() )
                {
-                  throw new IllegalStateException( "JSON must include _description property." );
+                  throw new IllegalStateException( "JSON must include type property." );
                }
 
-               final EntityDescriptor entityDescriptor = module.entityDescriptor( description );
+               final EntityDescriptor entityDescriptor = module.entityDescriptor( type );
                final EntityType entityType = entityDescriptor.entityType();
 
-               final Iterable<PropertyType> existsProperties =
-                       getNotNullProperties( entity, entityType.properties() );
+             final JSONObject propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
+
+             final Iterable<PropertyType> existsProperties =
+                       getNotNullProperties(propertiesHolder, entityType.properties() );
                final Iterable<AssociationType> existsAssociations =
-                       getNotNullProperties( entity, entityType.associations() );
+                       getNotNullProperties( entity.getJSONObject(JSONEntityState.JSON_KEY_ASSOCIATIONS), entityType.associations() );
                final Iterable<ManyAssociationType> existsManyAssociations =
-                       getNotNullProperties( entity, entityType.manyAssociations() );
+                       getNotNullProperties( entity.getJSONObject(JSONEntityState.JSON_KEY_MANYASSOCIATIONS), entityType.manyAssociations() );
 
                Map<String, Object> subProps = new HashMap<>();
 
                for ( PropertyType existsProperty : existsProperties )
                {
                   final QualifiedName qualifiedName = existsProperty.qualifiedName();
-                  final Object jsonStructure = entity.get( qualifiedName.name() );
+                  final Object jsonStructure = propertiesHolder.get( qualifiedName.name() );
 
                   if ( jsonStructure instanceof JSONObject || jsonStructure instanceof JSONArray )
                   {
@@ -125,7 +128,7 @@ public class EntityExportJob implements Runnable
                entityExportHelper.setAllProperties( entityType.properties() );
                entityExportHelper.setAllManyAssociations( entityType.manyAssociations() );
                entityExportHelper.setAllAssociations( entityType.associations() );
-               entityExportHelper.setClassName( description );
+               entityExportHelper.setClassName( type );
                entityExportHelper.setModule( module );
                entityExportHelper.setDbVendor( entityExportService.getDbVendor() );
                entityExportHelper.setTables( entityExportService.getTables() );
@@ -133,7 +136,7 @@ public class EntityExportJob implements Runnable
                entityExportHelper.setShowSql( entityExportService.configuration().showSql().get() );
                entityExportService.setTables( entityExportHelper.help() );
 
-               entityExportService.savedSuccess( entity.getString("identity"), entity.getLong("_modified"), connection );
+               entityExportService.savedSuccess( entity.getString("identity"), entity.getLong("modified"), connection );
 
                counterLimit++;
          }

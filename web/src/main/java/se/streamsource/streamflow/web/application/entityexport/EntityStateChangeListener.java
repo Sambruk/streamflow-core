@@ -19,25 +19,34 @@
 package se.streamsource.streamflow.web.application.entityexport;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.service.ServiceReference;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entity.EntityStatus;
+import org.qi4j.spi.entity.*;
+import org.qi4j.spi.entity.association.AssociationDescriptor;
+import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
+import org.qi4j.spi.entitystore.EntityNotFoundException;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entitystore.StateChangeListener;
+import org.qi4j.spi.entitystore.helpers.JSONEntityState;
+import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.util.Primitives;
 import se.streamsource.streamflow.web.domain.util.ToJson;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -85,8 +94,6 @@ public class EntityStateChangeListener
       {
          try
          {
-            final ToJson toJSON = moduleSPI.objectBuilderFactory().newObjectBuilder( ToJson.class ).use( moduleSPI, entityStoreService).newInstance();
-
             for ( EntityState changedState : changedStates )
             {
                if ( !changedState.status().equals( EntityStatus.LOADED ) )
@@ -96,12 +103,13 @@ public class EntityStateChangeListener
                   {
                      final JSONObject object = new JSONObject();
                      object
-                             .put( "identity", identity)
+                             .put(JSONEntityState.JSON_KEY_IDENTITY, identity)
+                             .put(JSONEntityState.JSON_KEY_TYPE, changedState.entityDescriptor().entityType().toString())
                              .put( "_removed", true );
                      entityExportService.saveToCache( identity, changedState.lastModified(), object.toString() );
                   } else
                   {
-                     entityExportService.saveToCache( identity, changedState.lastModified(), toJSON.toJSON( changedState, true ) );
+                     entityExportService.saveToCache( identity, changedState.lastModified(), toJSON(changedState) );
                   }
                }
             }
@@ -182,6 +190,86 @@ public class EntityStateChangeListener
             return thread;
          }
       };
+   }
+
+   private String toJSON(EntityState state)
+   {
+      JSONObject json;
+      try
+      {
+         json = new JSONObject();
+
+         json.put(JSONEntityState.JSON_KEY_IDENTITY, state.identity());
+
+         EntityDescriptor entityDesc = state.entityDescriptor();
+         EntityType entityType = entityDesc.entityType();
+
+         json.put(JSONEntityState.JSON_KEY_TYPE, entityType.toString());
+         json.put(JSONEntityState.JSON_KEY_MODIFIED, state.lastModified() );
+
+         final JSONObject properties = new JSONObject();
+         for( PropertyType propType : entityType.properties() )
+         {
+
+               String key = propType.qualifiedName().name();
+               Object value = state.getProperty(propType.qualifiedName());
+               if( value == null || Primitives.isPrimitiveValue(value) )
+               {
+                  properties.put( key, value );
+               }
+               else
+               {
+                  // TODO Theses tests are pretty fragile, find a better way to fix this, Jackson API should behave better
+                  String serialized = propType.type().toJSON(value).toString();
+                  if( serialized.startsWith( "{" ) )
+                  {
+                     properties.put( key, new JSONObject( serialized ) );
+                  }
+                  else if( serialized.startsWith( "[" ) )
+                  {
+                     properties.put( key, new JSONArray( serialized ) );
+                  }
+                  else
+                  {
+                     properties.put( key, serialized );
+                  }
+               }
+         }
+         json.put(JSONEntityState.JSON_KEY_PROPERTIES, properties);
+
+         final JSONObject associations = new JSONObject();
+         for( AssociationDescriptor assocDesc : entityDesc.state().associations() )
+         {
+            String key = assocDesc.qualifiedName().name();
+            EntityReference associated = state.getAssociation(assocDesc.qualifiedName());
+            associations.put( key, associated != null ? associated.identity() : null );
+         }
+         json.put(JSONEntityState.JSON_KEY_ASSOCIATIONS, associations);
+
+         final JSONObject manyassociations = new JSONObject();
+         for( ManyAssociationDescriptor manyAssocDesc : entityDesc.state().manyAssociations() )
+         {
+            String key = manyAssocDesc.qualifiedName().name();
+            ManyAssociationState associateds = state.getManyAssociation(manyAssocDesc.qualifiedName());
+            JSONArray array = null;
+            if (associateds != null) {
+               array = new JSONArray();
+               for( EntityReference associated : associateds )
+               {
+                  array.put(associated.identity());
+               }
+            }
+            manyassociations.put( key, array );
+         }
+         json.put(JSONEntityState.JSON_KEY_MANYASSOCIATIONS, manyassociations);
+
+         return json.toString();
+      }
+      catch( Exception e )
+      {
+         logger.info("Failed to convert Entity to Json: " + state.identity(), e);
+         throw new RuntimeException("Failed to convert Entity to Json: " + state.identity(), e);
+      }
    }
 
 }

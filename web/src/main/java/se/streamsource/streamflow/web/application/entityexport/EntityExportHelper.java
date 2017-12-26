@@ -27,6 +27,7 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.types.CollectionType;
 import org.qi4j.spi.entity.association.AssociationType;
 import org.qi4j.spi.entity.association.ManyAssociationType;
+import org.qi4j.spi.entitystore.helpers.JSONEntityState;
 import org.qi4j.spi.property.PropertyType;
 
 import java.sql.PreparedStatement;
@@ -77,7 +78,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
    public Map<String, Set<String>> help() throws Exception
    {
-      final String identity = entity.getString( "identity" );
+      final String identity = entity.getString( JSONEntityState.JSON_KEY_IDENTITY );
 
       try ( final ResultSet isExistRS = selectFromWhereId( tableName(), identity ) )
       {
@@ -85,7 +86,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
          if ( isExistRS.next() )
          {
-            deleteEntityAndRelations( isExistRS.getString( "identity" ) );
+            deleteEntityAndRelations( isExistRS.getString( JSONEntityState.JSON_KEY_IDENTITY ) );
          }
       }
 
@@ -126,6 +127,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
    private void saveManyAssociations() throws Exception
    {
+      final JSONObject manyAssociationHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_MANYASSOCIATIONS);
       for ( ManyAssociationType existsManyAssociation : existsManyAssociations )
       {
 
@@ -154,7 +156,7 @@ public class EntityExportHelper extends AbstractExportHelper
          createCrossRefTableIfNotExists( tableName, associationTable, stringSqlType( 255 ), stringSqlType( 255 ) );
 
          final String name = existsManyAssociation.qualifiedName().name();
-         final JSONArray array = entity.getJSONArray( name );
+         final JSONArray array = manyAssociationHolder.getJSONArray( name );
 
          final String query = "INSERT INTO " + escapeSqlColumnOrTable( tableName ) +
                  " (owner_id,link_id) VALUES (?,?)";
@@ -163,8 +165,8 @@ public class EntityExportHelper extends AbstractExportHelper
          {
             for ( int j = 0; ; j++ )
             {
-               final JSONObject arrEl = array.optJSONObject( j );
-               if ( arrEl == null )
+               final String associationIdentity = array.optString( j );
+               if ( associationIdentity.isEmpty() )
                {
                   break;
                }
@@ -182,11 +184,11 @@ public class EntityExportHelper extends AbstractExportHelper
                }
                if ( k == 1 )
                {
-                  checkEntityExists( associationClass, arrEl.getString( "identity" ) );
+                  checkEntityExists( associationClass, associationIdentity );
                }
 
-               preparedStatement.setString( 1, entity.getString( "identity" ) );
-               preparedStatement.setString( 2, arrEl.getString( "identity" ) );
+               preparedStatement.setString( 1, entity.getString( JSONEntityState.JSON_KEY_IDENTITY ) );
+               preparedStatement.setString( 2, associationIdentity );
                preparedStatement.addBatch();
             }
 
@@ -210,7 +212,7 @@ public class EntityExportHelper extends AbstractExportHelper
       {
          final String name = existsProperty.qualifiedName().name();
 
-         if ( !name.equals( "identity" ) && subProps.get( name ) == null )
+         if ( !name.equals( JSONEntityState.JSON_KEY_IDENTITY ) && subProps.get( name ) == null )
          {
             query
                     .append( escapeSqlColumnOrTable( toSnakeCaseFromCamelCase( name ) ) )
@@ -263,7 +265,7 @@ public class EntityExportHelper extends AbstractExportHelper
 
                      for ( SingletonMap val : collectionOfValues )
                      {
-                        preparedStatement.setString( 1, entity.getString( "identity" ) );
+                        preparedStatement.setString( 1, entity.getString( JSONEntityState.JSON_KEY_IDENTITY ) );
                         preparedStatement.setInt( 2, ( Integer ) val.getKey() );
                         preparedStatement.addBatch();
                      }
@@ -272,7 +274,7 @@ public class EntityExportHelper extends AbstractExportHelper
                   }
                } else
                {
-                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( "identity" ), stringSqlType( 255 ) ) );
+                  processCollection( key, value, new PreparedStatementStringBinder( entity.getString( JSONEntityState.JSON_KEY_IDENTITY ), stringSqlType( 255 ) ) );
                }
             } else if ( value instanceof ValueComposite )
             {
@@ -308,11 +310,11 @@ public class EntityExportHelper extends AbstractExportHelper
    {
       Map<String, String> associations = new LinkedHashMap<>();
 
+      final JSONObject associationsHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_ASSOCIATIONS);
       for ( AssociationType existsAssociation : existsAssociations )
       {
          final String name = existsAssociation.qualifiedName().name();
-         final JSONObject jsonObject = entity.getJSONObject( name );
-         final String identity = jsonObject.getString( "identity" );
+         final String identity = associationsHolder.getString( name );
 
          final Class<?> assocClassName = Class.forName( existsAssociation.type().name() );
          String associationClass = null;
@@ -324,7 +326,7 @@ public class EntityExportHelper extends AbstractExportHelper
             }
          }
 
-         checkEntityExists( jsonObject.optString( "_type", associationClass ), identity );
+         checkEntityExists( associationClass, identity );
          associations.put( toSnakeCaseFromCamelCase( name ), identity );
       }
 
@@ -421,7 +423,7 @@ public class EntityExportHelper extends AbstractExportHelper
       {
          final String name = property.qualifiedName().name();
          final String columnName = toSnakeCaseFromCamelCase( name );
-         if ( !name.equals( "identity" ) && columns.contains( columnName ) )
+         if ( !name.equals( JSONEntityState.JSON_KEY_IDENTITY ) && columns.contains( columnName ) )
          {
             queryNullUpdate.append( escapeSqlColumnOrTable( columnName ) )
                     .append( "=NULL," );
@@ -459,6 +461,7 @@ public class EntityExportHelper extends AbstractExportHelper
                               String identity
    ) throws JSONException, SQLException, ClassNotFoundException
    {
+      final JSONObject propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
       int i = 1;
       for ( PropertyType existsProperty : existsProperties )
       {
@@ -466,12 +469,12 @@ public class EntityExportHelper extends AbstractExportHelper
 
          final String name = existsProperty.qualifiedName().name();
 
-         if ( name.equals( "identity" ) || subProps.get( name ) != null )
+         if ( name.equals( JSONEntityState.JSON_KEY_IDENTITY ) || subProps.get( name ) != null )
          {
             continue;
          }
 
-         setSimpleType( statement, type, entity, name, i++ );
+         setSimpleType( statement, type, propertiesHolder, name, i++ );
 
       }
 

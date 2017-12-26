@@ -35,15 +35,13 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
@@ -109,7 +107,7 @@ public interface EntityExportService
       @Service
       ServiceReference<DataSource> dataSource;
       @Service
-      EntityStore entityStore;
+      BackupRestore backupRestoreService;
 
       @Structure
       ModuleSPI moduleSPI;
@@ -350,9 +348,8 @@ public interface EntityExportService
          long totalExported = 0L;
          try (final Connection connection = dataSource.get().getConnection()) {
             try (final Statement statement = connection.createStatement()) {
-               final ToJson toJSON = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStore).newInstance();
-               final EntityStatesReceiver receiver = new EntityStatesReceiver(statement, toJSON);
-               entityStore.entityStates(moduleSPI).transferTo(Outputs.withReceiver(receiver));
+               final EntityFromStoreReceiver receiver = new EntityFromStoreReceiver(statement);
+               backupRestoreService.backup().transferTo(Outputs.withReceiver(receiver));
                statement.executeBatch();
                logger.info( "Checked " + receiver.numberOfProceedEntities + " entities" );
             }
@@ -389,23 +386,23 @@ public interface EntityExportService
          isExported.set( true );
       }
 
-      private class EntityStatesReceiver implements Receiver<EntityState, Throwable>{
+      private class EntityFromStoreReceiver implements Receiver<String, Throwable>{
          final Statement statement;
-         private final ToJson toJSON;
          long numberOfProceedEntities = 0L;
 
-         private EntityStatesReceiver(Statement statement, ToJson toJSON) {
+         private EntityFromStoreReceiver(Statement statement) {
             this.statement = statement;
-            this.toJSON = toJSON;
          }
 
          @Override
-         public void receive(EntityState entityState) throws Throwable {
-            final String identity = entityState.identity().identity();
-            final String updateEntityInfoSql = updateEntityInfoSql(identity, entityState.lastModified(), false);
+         public void receive(String entityAsString) throws Throwable {
+            final JSONObject entity = new JSONObject(entityAsString);
+
+            final String identity = entity.getString("identity");
+            final String updateEntityInfoSql = updateEntityInfoSql(identity, entity.getLong("modified"), false);
 
             statement.addBatch(updateEntityInfoSql);
-            tempCaching.put(new Element(identity, toJSON.toJSON(entityState, true)));
+            tempCaching.put(new Element(identity, entityAsString));
 
             numberOfProceedEntities++;
 
