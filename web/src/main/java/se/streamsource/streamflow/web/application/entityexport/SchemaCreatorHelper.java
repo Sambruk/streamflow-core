@@ -276,6 +276,14 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          try (final Statement statement = connection.createStatement()) {
             statement.execute(identityTimestampInfo.toString());
          }
+         try (final Statement statement = connection.createStatement()) {
+            statement.execute("CREATE INDEX identity_modified_info_modified_index " +
+                    " ON " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " (modified);");
+         }
+         try (final Statement statement = connection.createStatement()) {
+            statement.execute("CREATE INDEX identity_modified_info_proceed_index " +
+                    " ON " + IDENTITY_MODIFIED_INFO_TABLE_NAME + "(proceed);");
+         }
 
          Set<String> columns = tables.get(IDENTITY_MODIFIED_INFO_TABLE_NAME);
          if (columns == null) {
@@ -287,39 +295,6 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          columns.add( "modified" );
 
          tables.put(IDENTITY_MODIFIED_INFO_TABLE_NAME, columns);
-
-         saveTablesState();
-      }
-
-      if ( !tables.containsKey(IDENTITY_MODIFIED_INFO_VIEW_NAME) )
-      {
-         final StringBuilder identityTimestampInfo = new StringBuilder();
-         identityTimestampInfo.append("CREATE VIEW ")
-                 .append(escapeSqlColumnOrTable(IDENTITY_MODIFIED_INFO_VIEW_NAME))
-                 .append(" AS ")
-                 .append(LINE_SEPARATOR)
-                 .append("SELECT TOP(1) [identity] FROM ")
-                 .append(IDENTITY_MODIFIED_INFO_TABLE_NAME)
-                 .append(LINE_SEPARATOR)
-                 .append("WHERE proceed = 0 ")
-                 .append(LINE_SEPARATOR)
-                 .append("ORDER BY modified")
-                 .append(LINE_SEPARATOR);
-
-         entityInfo = EntityInfo.from( this.getClass() );
-
-         try (final Statement statement = connection.createStatement()) {
-            statement.execute(identityTimestampInfo.toString());
-         }
-
-         Set<String> columns = tables.get(IDENTITY_MODIFIED_INFO_TABLE_NAME);
-         if (columns == null) {
-            columns = new HashSet<>();
-         }
-
-         columns.add( "identity" );
-
-         tables.put(IDENTITY_MODIFIED_INFO_VIEW_NAME, columns);
 
          saveTablesState();
       }

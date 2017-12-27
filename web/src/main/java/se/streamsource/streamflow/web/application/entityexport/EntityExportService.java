@@ -57,7 +57,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static se.streamsource.streamflow.web.application.entityexport.AbstractExportHelper.LINE_SEPARATOR;
 import static se.streamsource.streamflow.web.application.entityexport.SchemaCreatorHelper.IDENTITY_MODIFIED_INFO_TABLE_NAME;
-import static se.streamsource.streamflow.web.application.entityexport.SchemaCreatorHelper.IDENTITY_MODIFIED_INFO_VIEW_NAME;
 
 /**
  * Service encapsulates interaction with cache for entity export.
@@ -80,7 +79,7 @@ public interface EntityExportService
 
    void saveToCache(String identity, long modified, String transaction) throws SQLException;
 
-   String getNextEntity(Connection connection);
+   List<String> getNextEntities(Connection connection);
 
    String getSchemaInfoFileAbsPath();
 
@@ -240,19 +239,22 @@ public interface EntityExportService
       }
 
       @Override
-      public String getNextEntity(Connection connection)
+      public List<String> getNextEntities(Connection connection)
       {
          try (final Statement statement = connection.createStatement()) {
-             final String select = "SELECT [identity] FROM " + IDENTITY_MODIFIED_INFO_VIEW_NAME;
+             final String select = "SELECT TOP(" + EntityExportService.SIZE_THRESHOLD + ") [identity] FROM "
+                     + IDENTITY_MODIFIED_INFO_TABLE_NAME
+                     + " WHERE proceed = 0 ORDER BY modified";
              final ResultSet resultSet = statement.executeQuery(select);
-             if (resultSet.next()) {
-                 return caching.get(resultSet.getString(1)).getObjectValue().toString();
-             } else {
-                 return null;
+             final ArrayList<String> result = new ArrayList<>(SIZE_THRESHOLD);
+             while (resultSet.next()) {
+                final String entityAsString = caching.get(resultSet.getString(1)).getObjectValue().toString();
+                result.add(entityAsString);
              }
+             return result;
          } catch (Exception e) {
             logger.error("Unexpected exception. ", e);
-            return null;
+            return new ArrayList<>();
          }
 
       }
@@ -297,8 +299,7 @@ public interface EntityExportService
             final boolean showSqlEntitiesCount = thisConfig.configuration().showSqlEntitiesCount().get();
             if ( showSqlEntitiesCount )
             {
-               final boolean isLast = getNextEntity(connection) == null;
-               if ( statisticsCounter.incrementAndGet() % SIZE_THRESHOLD == 0 || isLast)
+               if ( statisticsCounter.incrementAndGet() % SIZE_THRESHOLD == 0)
                {
                   logger.info("Exported " + statisticsCounter.get() + " entities to sql");
                }

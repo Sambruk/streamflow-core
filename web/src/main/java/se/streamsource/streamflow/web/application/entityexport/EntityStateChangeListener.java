@@ -41,6 +41,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -114,9 +115,10 @@ public class EntityStateChangeListener
             }
 
 
-            if ( EntityExportJob.FINISHED.get() && hasNext())
+            final List<String> nextEntities = getNextEntities();
+            if ( EntityExportJob.FINISHED.get() && !nextEntities.isEmpty())
             {
-               final Future<?> exportTask = executor.submit( newEntityExportJob() );
+               final Future<?> exportTask = executor.submit( newEntityExportJob(nextEntities) );
 
                final Runnable checker = new Runnable()
                {
@@ -128,7 +130,7 @@ public class EntityStateChangeListener
                      try
                      {
                         exportTask.get();
-                        if ( hasNext() )
+                        if ( !getNextEntities().isEmpty() )
                         {
                            entityStateChangeListener.notifyChanges( new ArrayList<EntityState>() );
                         }
@@ -156,18 +158,19 @@ public class EntityStateChangeListener
 
    }
 
-   private boolean hasNext() throws SQLException {
+   private List<String> getNextEntities() throws SQLException {
       try (final Connection connection = dataSource.get().getConnection()) {
-         return entityExportService.getNextEntity(connection) != null;
+         return entityExportService.getNextEntities(connection);
       }
    }
 
-   private EntityExportJob newEntityExportJob()
+   private EntityExportJob newEntityExportJob(List<String> nextEntities)
    {
       EntityExportJob entityExportJob = new EntityExportJob();
       entityExportJob.setEntityExportService( entityExportService );
       entityExportJob.setDataSource( dataSource );
       entityExportJob.setModule( moduleSPI );
+      entityExportJob.setEntities(nextEntities);
       return entityExportJob;
    }
 

@@ -39,6 +39,8 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -62,8 +64,9 @@ public class EntityExportJob implements Runnable
    private ModuleSPI module;
 
    private ServiceReference<DataSource> dataSource;
+   private List<String> entities;
 
-   @Override
+    @Override
    public void run()
    {
       FINISHED.set( false );
@@ -73,11 +76,12 @@ public class EntityExportJob implements Runnable
           connection.setAutoCommit(false);
 
          int counterLimit = 0;
-         String nextEntity;
+         final Iterator<String> nextEntities = entities.iterator();
          while ( entityExportService.isExported()
-                 && (nextEntity = entityExportService.getNextEntity(connection)) != null
+                 && nextEntities.hasNext()
                  && EntityExportService.SIZE_THRESHOLD != counterLimit )
          {
+               final String nextEntity = nextEntities.next();
                if ( nextEntity.isEmpty() )
                {
                   logger.info( "Entity doesn't exist in cache." );
@@ -203,4 +207,8 @@ public class EntityExportJob implements Runnable
    {
       this.dataSource = dataSource;
    }
+
+    public void setEntities(List<String> entities) {
+        this.entities = entities;
+    }
 }
