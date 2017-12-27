@@ -27,7 +27,8 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.*;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -57,7 +58,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static se.streamsource.streamflow.web.application.entityexport.AbstractExportHelper.LINE_SEPARATOR;
 import static se.streamsource.streamflow.web.application.entityexport.SchemaCreatorHelper.IDENTITY_MODIFIED_INFO_TABLE_NAME;
-import static se.streamsource.streamflow.web.application.entityexport.SchemaCreatorHelper.IDENTITY_MODIFIED_INFO_VIEW_NAME;
 
 /**
  * Service encapsulates interaction with cache for entity export.
@@ -243,7 +243,9 @@ public interface EntityExportService
       public String getNextEntity(Connection connection)
       {
          try (final Statement statement = connection.createStatement()) {
-             final String select = "SELECT [identity] FROM " + IDENTITY_MODIFIED_INFO_VIEW_NAME;
+             final String select = "SELECT TOP(1) [identity] FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " " +
+                     "WHERE proceed = 0 " +
+                     "ORDER BY modified";
              final ResultSet resultSet = statement.executeQuery(select);
              if (resultSet.next()) {
                  return caching.get(resultSet.getString(1)).getObjectValue().toString();
