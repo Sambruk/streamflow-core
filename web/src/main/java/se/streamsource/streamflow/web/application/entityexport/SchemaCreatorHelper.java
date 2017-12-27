@@ -42,6 +42,7 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 {
    private static final Logger logger = LoggerFactory.getLogger( SchemaCreatorHelper.class );
    public static final String IDENTITY_MODIFIED_INFO_TABLE_NAME = "identity_modified_info";
+   public static final String IDENTITY_MODIFIED_INFO_VIEW_NAME = IDENTITY_MODIFIED_INFO_TABLE_NAME + "_top_one_by_modified";
 
    private EntityType entityType;
    private EntityInfo entityInfo;
@@ -286,6 +287,39 @@ public class SchemaCreatorHelper extends AbstractExportHelper
          columns.add( "modified" );
 
          tables.put(IDENTITY_MODIFIED_INFO_TABLE_NAME, columns);
+
+         saveTablesState();
+      }
+
+      if ( !tables.containsKey(IDENTITY_MODIFIED_INFO_VIEW_NAME) )
+      {
+         final StringBuilder identityTimestampInfo = new StringBuilder();
+         identityTimestampInfo.append("CREATE VIEW ")
+                 .append(escapeSqlColumnOrTable(IDENTITY_MODIFIED_INFO_VIEW_NAME))
+                 .append(" AS ")
+                 .append(LINE_SEPARATOR)
+                 .append("SELECT TOP(1) [identity] FROM ")
+                 .append(IDENTITY_MODIFIED_INFO_TABLE_NAME)
+                 .append(LINE_SEPARATOR)
+                 .append("WHERE proceed = 0 ")
+                 .append(LINE_SEPARATOR)
+                 .append("ORDER BY modified")
+                 .append(LINE_SEPARATOR);
+
+         entityInfo = EntityInfo.from( this.getClass() );
+
+         try (final Statement statement = connection.createStatement()) {
+            statement.execute(identityTimestampInfo.toString());
+         }
+
+         Set<String> columns = tables.get(IDENTITY_MODIFIED_INFO_TABLE_NAME);
+         if (columns == null) {
+            columns = new HashSet<>();
+         }
+
+         columns.add( "identity" );
+
+         tables.put(IDENTITY_MODIFIED_INFO_VIEW_NAME, columns);
 
          saveTablesState();
       }
