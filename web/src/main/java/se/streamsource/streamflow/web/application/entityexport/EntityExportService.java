@@ -20,24 +20,14 @@ package se.streamsource.streamflow.web.application.entityexport;
 
 import net.sf.ehcache.Element;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.SortOrder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.io.*;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -45,36 +35,28 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entitystore.EntityStore;
-import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
+import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.StateChangeListener;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.infrastructure.index.elasticsearch.ElasticSearchSupport;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.domain.util.ToJson;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
+import java.sql.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+
+import static se.streamsource.streamflow.web.application.entityexport.AbstractExportHelper.LINE_SEPARATOR;
+import static se.streamsource.streamflow.web.application.entityexport.SchemaCreatorHelper.IDENTITY_MODIFIED_INFO_TABLE_NAME;
 
 /**
  * Service encapsulates interaction with cache for entity export.
@@ -91,17 +73,17 @@ public interface EntityExportService
         Configuration<EntityExportConfiguration>
 {
 
+   int SIZE_THRESHOLD = 1000;
+
    boolean isExported();
 
-   void saveToCache( String transaction );
+   void saveToCache(String identity, long modified, String transaction) throws SQLException;
 
-   String getNextEntity();
+   List<String> getNextEntities(Connection connection);
 
    String getSchemaInfoFileAbsPath();
 
-   boolean hasNextEntity();
-
-   void savedSuccess( JSONObject entity );
+   void savedSuccess( String identity, long modified, Connection connection );
 
    Map<String, Set<String>> getTables() throws IOException, ClassNotFoundException;
 
@@ -114,45 +96,34 @@ public interface EntityExportService
    {
       private static final Logger logger = LoggerFactory.getLogger( EntityExportService.class );
 
-      private String infoFileAbsPath;
-
-      private DbVendor dbVendor;
-
       @This
       Configuration<EntityExportConfiguration> thisConfig;
 
-      private AtomicLong cacheIdGenerator = new AtomicLong( 1 );
-      private AtomicLong currentId = new AtomicLong( 1 );
-      private AtomicBoolean isExported = new AtomicBoolean( false );
-
-      private static final int REQUEST_SIZE_THRESHOLD = 1000;
-      private static final long SCROLL_KEEP_ALIVE = TimeUnit.MINUTES.toMillis(1);
-
-      private String schemaInfoFileAbsPath;
-      private Map<String, Set<String>> tables;
-
-      //statistics
-      private long statisticsStartExportTime;
-      private AtomicInteger statisticsCounter = new AtomicInteger(1);
-      private AtomicLong totalExportTime = new AtomicLong(0);
-
       @Service
       FileConfiguration config;
-      @Service
-      ElasticSearchSupport support;
       @Service
       CachingService cachingService;
       @Service
       ServiceReference<DataSource> dataSource;
       @Service
-      EntityStore entityStoreService;
+      BackupRestore backupRestoreService;
 
       @Structure
       ModuleSPI moduleSPI;
       @Structure
       Module module;
 
+      private AtomicBoolean isExported = new AtomicBoolean();
+
+      private DbVendor dbVendor;
+      private String schemaInfoFileAbsPath;
+      private Map<String, Set<String>> tables;
+
+      //statistics
+      private AtomicInteger statisticsCounter = new AtomicInteger();
+
       private Caching caching;
+      private Caching tempCaching;
 
       @Override
       public void activate() throws Exception
@@ -166,21 +137,25 @@ public interface EntityExportService
             caching = new Caching( cachingService, Caches.ENTITYSTATES );
             caching.removeAll();
 
+            tempCaching = new Caching( cachingService, Caches.ENTITYSTATESTEMP );
+            tempCaching.removeAll();
+
             try
             {
 
                tables = readSchemaStateFromFile();
+               dbVendor = _getDbVendor();
 
                try ( final Connection connection = dataSource.get().getConnection() )
                {
                   createBaseSchema( connection );
                }
 
-               dbVendor = _getDbVendor();
-
                export();
 
-            } catch ( Exception e )
+               tempCaching.removeAll();
+
+            } catch ( Throwable e )
             {
                logger.error( "Unexpected exception: ", e );
             }
@@ -230,12 +205,30 @@ public interface EntityExportService
       }
 
       @Override
-      public synchronized void saveToCache( String transaction )
-      {
+      public void saveToCache(String identity, long modified, String transaction) throws SQLException {
          //Resolved possible NPE
          if ( caching != null )
          {
-            caching.put( new Element( cacheIdGenerator.getAndIncrement(), transaction ) );
+
+            try (final Connection connection = dataSource.get().getConnection()) {
+               try (final Statement statement = connection.createStatement()) {
+                  final String sqlUpdateEntity = updateEntityInfoSql(identity, modified, false);
+                  statement.executeUpdate(sqlUpdateEntity);
+
+                  final String selectProceed = "SELECT proceed FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
+                          "WHERE [identity] = '" + identity + "'";
+                  final ResultSet resultSet = statement.executeQuery(selectProceed);
+
+                  if (resultSet.next()) {
+                     final boolean proceed = resultSet.getBoolean(1);
+                     if (!proceed) {
+                        caching.put(new Element( identity, transaction));
+                     }
+                  } else {
+                     throw new IllegalStateException();
+                  }
+               }
+            }
          }
       }
 
@@ -246,26 +239,24 @@ public interface EntityExportService
       }
 
       @Override
-      public String getNextEntity()
+      public List<String> getNextEntities(Connection connection)
       {
-         final Integer loggingStatisticsEntitiesCount = thisConfig.configuration().loggingStatisticsEntitiesCount().get();
-         if ( loggingStatisticsEntitiesCount > 0 && statisticsCounter.get() == 1 )
-         {
-            statisticsStartExportTime = System.currentTimeMillis();
-         } else if ( loggingStatisticsEntitiesCount < 1 )
-         {
-            statisticsCounter.set(1);
-            totalExportTime.set(0);
+         try (final Statement statement = connection.createStatement()) {
+             final String select = "SELECT TOP(" + EntityExportService.SIZE_THRESHOLD + ") [identity] FROM "
+                     + IDENTITY_MODIFIED_INFO_TABLE_NAME
+                     + " WHERE proceed = 0 ORDER BY modified";
+             final ResultSet resultSet = statement.executeQuery(select);
+             final ArrayList<String> result = new ArrayList<>(SIZE_THRESHOLD);
+             while (resultSet.next()) {
+                final String entityAsString = caching.get(resultSet.getString(1)).getObjectValue().toString();
+                result.add(entityAsString);
+             }
+             return result;
+         } catch (Exception e) {
+            logger.error("Unexpected exception. ", e);
+            return new ArrayList<>();
          }
 
-         final Element element = caching.get( currentId.get() );
-         return element == null ? "" : ( String ) element.getObjectValue();
-      }
-
-      @Override
-      public boolean hasNextEntity()
-      {
-         return !( cacheIdGenerator.get() == currentId.get() );
       }
 
       @Override
@@ -292,62 +283,26 @@ public interface EntityExportService
       }
 
       @Override
-      public void savedSuccess( JSONObject entity )
+      public void savedSuccess( String identity, long modified, Connection connection )
       {
          try
          {
-            try ( final BufferedReader br = new BufferedReader( new FileReader( infoFileAbsPath ) ) )
+            try (final Statement statement = connection.createStatement()) {
+               final String sqlUpdateEntity = updateEntityInfoSql(identity, modified, true);
+               statement.executeUpdate(sqlUpdateEntity);
+            }
+
+            connection.commit();
+
+            caching.remove(identity);
+
+            final boolean showSqlEntitiesCount = thisConfig.configuration().showSqlEntitiesCount().get();
+            if ( showSqlEntitiesCount )
             {
-               final String modifiedFromInfo = br.readLine();
-
-               final Long modified = entity.getLong( "_modified" );
-               final String identity = entity.getString( "identity" );
-
-               final PrintWriter pw;
-
-               if ( modifiedFromInfo == null
-                       || br.readLine() == null
-                       || !modifiedFromInfo.equals( modified.toString() ) )
+               if ( statisticsCounter.incrementAndGet() % SIZE_THRESHOLD == 0)
                {
-                  pw = new PrintWriter( infoFileAbsPath );
-                  pw.println( modified );
-                  pw.println( identity );
-               } else
-               {
-                  pw = new PrintWriter( new FileWriter( infoFileAbsPath, true ) );
-                  pw.println( identity );
+                  logger.info("Exported " + statisticsCounter.get() + " entities to sql");
                }
-
-               pw.flush();
-               pw.close();
-
-               final Integer loggingStatisticsEntitiesCount = thisConfig.configuration().loggingStatisticsEntitiesCount().get();
-               if ( loggingStatisticsEntitiesCount > 0 )
-               {
-
-                  final boolean isLastProcessed = currentId.get() + 1 == cacheIdGenerator.get();
-
-                  if ( statisticsCounter.get() == loggingStatisticsEntitiesCount || isLastProcessed )
-                  {
-                     final long currentTime = System.currentTimeMillis();
-                     final long exportTime = currentTime - statisticsStartExportTime;
-                     totalExportTime.addAndGet(exportTime);
-
-                     String message =
-                             String.format( "The average export time is %.3f ms of %d entities selection",
-                                     (double) totalExportTime.get() / currentId.get(),
-                                     currentId.get());
-
-                     logger.info( message );
-
-                     statisticsCounter.set(1);
-                  } else
-                  {
-                     statisticsCounter.incrementAndGet();
-                  }
-
-               }
-
             }
 
          } catch ( Exception e )
@@ -355,7 +310,6 @@ public interface EntityExportService
             logger.error( "Error: ", e );
          }
 
-         caching.remove( currentId.getAndIncrement() );
       }
 
       @Override
@@ -372,10 +326,6 @@ public interface EntityExportService
 
       private void createBaseSchema( Connection connection ) throws Exception
       {
-         final UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Get Datasource configuration" ) );
-         final DataSourceConfiguration dataSourceConfiguration = uow.get( DataSourceConfiguration.class, dataSource.identity() );
-         final DbVendor dbVendor = DbVendor.from( dataSourceConfiguration.dbVendor().get() );
-
          final SchemaCreatorHelper schemaUpdater = new SchemaCreatorHelper();
          schemaUpdater.setModule( moduleSPI );
          schemaUpdater.setConnection( connection );
@@ -386,139 +336,109 @@ public interface EntityExportService
          schemaUpdater.create();
       }
 
-      private void export() throws IOException, InterruptedException
+      private void export() throws Throwable
       {
+         logger.info( "Started entities export from database to cache." );
+         logger.info( "Checking..." );
 
-         final File infoFile = new File( config.dataDirectory(), "entityexport/last_processed_timestamp.info" );
-         infoFileAbsPath = infoFile.getAbsolutePath();
-
-         LastProcessedTimestampInfo lastProcessedTimestamp = new LastProcessedTimestampInfo( 0L );
-         if ( infoFile.exists() )
-         {
-            try
-            {
-               lastProcessedTimestamp = getLastProcessedTimestampInfo();
-            } catch ( IllegalStateException allOk )
-            {
-            } catch ( Exception e )
-            {
-               logger.error( "Error on reading last_processed_timestamp.info file.", e );
+         long totalExported = 0L;
+         try (final Connection connection = dataSource.get().getConnection()) {
+            try (final Statement statement = connection.createStatement()) {
+               final EntityFromStoreReceiver receiver = new EntityFromStoreReceiver(statement);
+               backupRestoreService.backup().transferTo(Outputs.withReceiver(receiver));
+               statement.executeBatch();
+               logger.info( "Checked " + receiver.numberOfProceedEntities + " entities" );
             }
-         } else if ( !( infoFile.createNewFile() ) )
-         {
-            throw new IllegalStateException( "Can't create file of last processed entities info" );
-         }
 
-         long numberOfExportedEntities = 0L;
+            final String select = "SELECT TOP(" + SIZE_THRESHOLD + ") [identity] FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
+                    "WHERE [proceed] = 0 ";
+            boolean hasNext = true;
+            String condition = "";
 
-         Client client = support.client();
+            while (hasNext) {
+               final String resultSql = select + condition;
+               try (final PreparedStatement preparedStatement = connection.prepareStatement(resultSql)) {
+                  final ResultSet resultSet = preparedStatement.executeQuery();
+                  int i = 0;
+                  while (resultSet.next()) {
+                     final String identity = resultSet.getString(1);
+                     caching.put( new Element( identity, tempCaching.get(identity).getObjectValue().toString() ) );
+                     totalExported++;
+                     condition = "AND [identity] > '" + identity + "'";
+                     i++;
+                  }
 
-         QueryBuilder query = QueryBuilders
-                 .rangeQuery( "_modified" )
-                 .gte( lastProcessedTimestamp.lastProcessedTimestamp );
+                  if (totalExported % SIZE_THRESHOLD == 0) {
+                     logger.info("Exported " + totalExported + " entities to cache");
+                  }
 
-         if ( lastProcessedTimestamp.ids.size() > 0 )
-         {
-            query = QueryBuilders
-                    .filteredQuery( query,
-                            FilterBuilders.boolFilter().mustNot( FilterBuilders.termsFilter( "_identity", lastProcessedTimestamp.ids ) ) );
-         }
-
-         final long count = client
-                 .prepareCount( support.index() )
-                 .setQuery( query )
-                 .execute()
-                 .actionGet()
-                 .getCount();
-
-         if ( count != 0 )
-         {
-            logger.info( "Started entities export from index to cache. Ready to be exported " + count + " entities." );
-
-            final EntityStoreUnitOfWork uow = entityStoreService.newUnitOfWork(UsecaseBuilder.newUsecase("toJSON"), moduleSPI);
-            final ToJson toJSON = module.objectBuilderFactory().newObjectBuilder(ToJson.class).use( moduleSPI, entityStoreService).newInstance();
-
-            SearchResponse searchResponse = client.prepareSearch( support.index() )
-                    .addSort( "_modified", SortOrder.ASC )
-                    .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
-                    .setSearchType( SearchType.QUERY_AND_FETCH )
-                    .setQuery( query )
-                    .setSize( REQUEST_SIZE_THRESHOLD )
-                    .get();
-
-            SearchHit[] entities = searchResponse.getHits().getHits();
-
-            final float step = 0.05f;
-            float partPercent = 0f;
-            long nextForLog = ( long ) ( count * ( partPercent += step ) );
-            do
-            {
-
-               for ( SearchHit searchHit : entities )
-               {
-                  final String identity = searchHit.getId();
-                  final EntityState entityState = uow.getEntityState( EntityReference.parseEntityReference( identity ) );
-                  final String entity = toJSON.toJSON(entityState, true);
-                  caching.put( new Element( cacheIdGenerator.getAndIncrement(), entity) );
+                  hasNext = i != 0;
                }
-               numberOfExportedEntities += entities.length;
-
-               searchResponse = client
-                       .prepareSearchScroll( searchResponse.getScrollId() )
-                       .setScroll( new TimeValue( SCROLL_KEEP_ALIVE ) )
-                       .execute().actionGet();
-
-               entities = searchResponse.getHits().getHits();
-
-               if ( numberOfExportedEntities >= nextForLog )
-               {
-                  logger.info( String.format( "Exported %d %% (%d) entities",
-                          numberOfExportedEntities * 100 / count, numberOfExportedEntities ) );
-                  nextForLog = ( long ) ( count * ( partPercent += step ) );
-               }
-
-            } while ( entities.length != 0 );
-
-            logger.info( "Finished entities export from index to cache." );
-         } else
-         {
-            logger.info( "Nothing to export from index to cache." );
+            }
          }
+
+         logger.info( "Finished entities export from database to cache. Total exported to cache = " + totalExported );
 
          isExported.set( true );
       }
 
-      LastProcessedTimestampInfo getLastProcessedTimestampInfo() throws Exception
-      {
-         final List<String> data = IOUtils.readLines( new FileInputStream( infoFileAbsPath ), "UTF-8" );
+      private class EntityFromStoreReceiver implements Receiver<String, Throwable>{
+         final Statement statement;
+         long numberOfProceedEntities = 0L;
 
-         if ( data.isEmpty() )
-         {
-            throw new IllegalStateException( "File is empty." );
+         private EntityFromStoreReceiver(Statement statement) {
+            this.statement = statement;
          }
 
-         if ( data.size() < 2 )
-         {
-            throw new IllegalStateException( "At least must be two records." );
+         @Override
+         public void receive(String entityAsString) throws Throwable {
+            final JSONObject entity = new JSONObject(entityAsString);
+
+            final String identity = entity.getString("identity");
+            final String updateEntityInfoSql = updateEntityInfoSql(identity, entity.getLong("modified"), false);
+
+            statement.addBatch(updateEntityInfoSql);
+            tempCaching.put(new Element(identity, entityAsString));
+
+            numberOfProceedEntities++;
+
+            if (numberOfProceedEntities % SIZE_THRESHOLD == 0) {
+               logger.info( "Checked " + numberOfProceedEntities + " entities" );
+               statement.executeBatch();
+            }
+
          }
-
-         LastProcessedTimestampInfo lastProcessedTimestampInfo = new LastProcessedTimestampInfo( new Long( data.remove( 0 ) ) );
-
-         lastProcessedTimestampInfo.ids.addAll( data );
-
-         return lastProcessedTimestampInfo;
-
       }
 
-      private class LastProcessedTimestampInfo
-      {
-         private Long lastProcessedTimestamp;
-         private Set<String> ids;
+      private String updateEntityInfoSql(String identity, long modified, boolean saveProceed) {
+         switch (dbVendor) {
+            case mssql:
+               return "UPDATE " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR  +
+                       (saveProceed
+                               ? "SET proceed = 1," + LINE_SEPARATOR
+                               :
+                       "SET proceed          = CASE" + LINE_SEPARATOR  +
+                       "                       WHEN proceed = 0 AND modified <= " + modified + LINE_SEPARATOR  +
+                       "                         THEN 0" + LINE_SEPARATOR  +
+                       "                       ELSE 1" + LINE_SEPARATOR  +
+                       "                       END," + LINE_SEPARATOR
+                       ) +
+                       "" + LINE_SEPARATOR  +
+                       (saveProceed
+                               ? "modified = " + modified + LINE_SEPARATOR
+                               :
+                       "  modified = CASE" + LINE_SEPARATOR  +
+                       "                       WHEN proceed = 0 AND modified <= " + modified + LINE_SEPARATOR  +
+                       "                         THEN modified" + LINE_SEPARATOR  +
+                       "                       ELSE " + modified + LINE_SEPARATOR  +
+                       "                       END" + LINE_SEPARATOR
+                       ) +
+                       "WHERE [identity] = '" + identity + "'" + LINE_SEPARATOR  +
+                       "IF (@@ROWCOUNT = 0)" + LINE_SEPARATOR  +
+                       "  INSERT INTO " + IDENTITY_MODIFIED_INFO_TABLE_NAME +  " ([identity], modified, proceed) VALUES ('" + identity + "',  " + modified +  ", 0)";
 
-         private LastProcessedTimestampInfo( Long lastProcessedTimestamp )
-         {
-            this.lastProcessedTimestamp = lastProcessedTimestamp;
-            this.ids = new HashSet<>();
+            default: return "";
+
          }
       }
 

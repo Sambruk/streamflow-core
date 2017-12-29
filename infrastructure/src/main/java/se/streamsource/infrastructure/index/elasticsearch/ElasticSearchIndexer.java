@@ -208,8 +208,6 @@ public interface ElasticSearchIndexer
          * {
          *  "_identity": "ENTITY-IDENTITY",
          *  "_types": [ "All", "Entity", "types" ],
-         *  "_modified": 123,
-         *  "_description": "Main entity type",
          *  "property.name": property.value,
          *  "association.name": "ASSOCIATED-IDENTITY",
          *  "manyassociation.name": [ "ASSOCIATED", "IDENTITIES" ]
@@ -218,15 +216,12 @@ public interface ElasticSearchIndexer
          */
         private String toJSON( EntityState state, Map<String, EntityState> newStates, EntityStoreUnitOfWork uow )
         {
-            long start = System.nanoTime();
             JSONObject json = null;
             try
             {
                 json = new JSONObject();
 
                 json.put( "_identity", state.identity().identity() );
-                json.put( "_modified", state.lastModified() );
-                json.put( "_description", state.entityDescriptor().toString() );
 
                 json.put( "_types", Iterables.addAll( new ArrayList<String>(), Iterables.map( toClassName(), state.entityDescriptor().mixinTypes()) ) );
                 EntityType entityType = state.entityDescriptor().entityType();

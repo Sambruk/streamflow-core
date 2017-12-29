@@ -80,8 +80,6 @@ public class ToJson {
      * {
      *  "_identity": "ENTITY-IDENTITY",
      *  "_types": [ "All", "Entity", "types" ],
-     *  "_modified": 123,
-     *  "_description": "Main entity type",
      *  "property.name": property.value,
      *  "association.name": "ASSOCIATED-IDENTITY",
      *  "manyassociation.name": [ "ASSOCIATED", "IDENTITIES" ]
@@ -101,8 +99,6 @@ public class ToJson {
             EntityType entityType = entityDesc.entityType();
 
             json.put("_type", entityType.toString());
-            json.put( "_modified", state.lastModified() );
-            json.put( "_description", state.entityDescriptor().toString() );
 
             // Properties
             for( PropertyType propType : entityType.properties() )

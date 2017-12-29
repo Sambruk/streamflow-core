@@ -51,6 +51,16 @@
         <pinning store="inCache" />
     </cache>
 
+    <cache name="ENTITYSTATESTEMP"
+           maxEntriesLocalHeap="1000"
+           maxEntriesLocalDisk="2147483640"
+           timeToIdleSeconds="86400"
+           timeToLiveSeconds="86400"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap" synchronousWrites="false"/>
+        <pinning store="inCache" />
+    </cache>
+
     <cache name="CASECOUNTS"
            maxEntriesLocalHeap="2000"
            maxEntriesLocalDisk="2147483640"

@@ -41,6 +41,8 @@ import java.util.Set;
 public class SchemaCreatorHelper extends AbstractExportHelper
 {
    private static final Logger logger = LoggerFactory.getLogger( SchemaCreatorHelper.class );
+   public static final String IDENTITY_MODIFIED_INFO_TABLE_NAME = "identity_modified_info";
+   public static final String IDENTITY_MODIFIED_INFO_VIEW_NAME = IDENTITY_MODIFIED_INFO_TABLE_NAME + "_top_one_by_modified";
 
    private EntityType entityType;
    private EntityInfo entityInfo;
@@ -89,6 +91,8 @@ public class SchemaCreatorHelper extends AbstractExportHelper
 
          }
       }
+
+      createIdentitiesInfoTables();
 
    }
 
@@ -226,6 +230,75 @@ public class SchemaCreatorHelper extends AbstractExportHelper
               .append( LINE_SEPARATOR );
 
       return mainTableCreate.toString();
+   }
+
+
+   private void createIdentitiesInfoTables() throws IOException, JSONException, SQLException {
+
+      if ( !tables.containsKey(IDENTITY_MODIFIED_INFO_TABLE_NAME) )
+      {
+         final StringBuilder identityTimestampInfo = new StringBuilder();
+         identityTimestampInfo.append( "CREATE TABLE " )
+                 .append( escapeSqlColumnOrTable(IDENTITY_MODIFIED_INFO_TABLE_NAME) )
+                 .append( " (" )
+
+                 .append( LINE_SEPARATOR )
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( " " )
+                 .append( stringSqlType( 255 ) )
+                 .append( " NOT NULL," )
+                 .append( LINE_SEPARATOR )
+
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "modified" ) )
+                 .append( " " )
+                 .append( detectSqlType( Long.class ) )
+                 .append( " NULL," )
+                 .append( LINE_SEPARATOR )
+
+                 .append( " " )
+                 .append( escapeSqlColumnOrTable( "proceed" ) )
+                 .append( " " )
+                 .append( detectSqlType( Boolean.class ) )
+                 .append( " NULL," )
+                 .append( LINE_SEPARATOR )
+
+                 .append( " PRIMARY KEY (" )
+                 .append( escapeSqlColumnOrTable( "identity" ) )
+                 .append( ") " )
+                 .append( LINE_SEPARATOR )
+                 .append( ");" )
+                 .append( LINE_SEPARATOR );
+
+         entityInfo = EntityInfo.from( this.getClass() );
+
+         try (final Statement statement = connection.createStatement()) {
+            statement.execute(identityTimestampInfo.toString());
+         }
+         try (final Statement statement = connection.createStatement()) {
+            statement.execute("CREATE INDEX identity_modified_info_modified_index " +
+                    " ON " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " (modified);");
+         }
+         try (final Statement statement = connection.createStatement()) {
+            statement.execute("CREATE INDEX identity_modified_info_proceed_index " +
+                    " ON " + IDENTITY_MODIFIED_INFO_TABLE_NAME + "(proceed);");
+         }
+
+         Set<String> columns = tables.get(IDENTITY_MODIFIED_INFO_TABLE_NAME);
+         if (columns == null) {
+            columns = new HashSet<>();
+         }
+
+         columns.add( "identity" );
+         columns.add( "proceed" );
+         columns.add( "modified" );
+
+         tables.put(IDENTITY_MODIFIED_INFO_TABLE_NAME, columns);
+
+         saveTablesState();
+      }
+
    }
 
    @Override
