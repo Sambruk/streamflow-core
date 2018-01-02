@@ -22,7 +22,6 @@ For development purposes
 For production and proper releases
 ----------------------------------
 
-
 #. Perform required actions at CVS(Github)
 
     If there are uncommitted changes:
@@ -65,6 +64,21 @@ For production and proper releases
 
         If the release build breaks before checking in the changed poms, just re-run it. The release.properties file keeps track of where it was.
 
+#. Prepare codesign storage
+
+    * If you haven't one create new. For example and details you can follow https://docs.oracle.com/javase/tutorial/security/sigcert/index.html or  https://docs.oracle.com/javase/tutorial/security/sigcert/index.html.
+
+    * Add your certificate to your store. You can do that with command
+
+        .. code-block:: terminal
+
+            keytool -import -alias codesigncert -keystore <cacerts> -file <cert.pem>
+
+
+    * Update properties at **./webstart/certificate.properties**
+
+    .. note::
+        Signing code is only used for swing web start client. So you can freely build and use server part only.
 
 #. Deploy build to repository
 
