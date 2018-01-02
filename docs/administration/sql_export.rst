@@ -65,19 +65,19 @@ Streamflow DB transfer model
 On application startup:
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-    0. Reader gets information from last_processed_entities.info file where placed info about last SQL transfer.
-    1. According to previous step reader gets JSON entities states from index.
-    2. Reader writes entity sates (JSON string) to cache. In cache reader stores object as value with id number. Objects are sorted by modified property, so we need to generate ids started from 1 with increment. Every time of app restart, numbering will be started from 1.
+    1. Read portion of data from jdbm DB
+    2. Convert entity to JSON string and saving with identity as key it at temporary cache for further processing
+    3. Add/update entity record to SQL DB with following fields identity, modified, isProceed. To prevent avoiding unnecessary processing in future
+    4. Pass entities by it's identity to reader to check current state.
+    5. Selecting entities identity which have not processed state
+    6. Transfer entire entity to cache for further processing
+    7. Pass entity JSON from cache to Entity transfer
+    8. Save entity at DB
+    9. Pass entities identities which are out of date to Entity transfer
 
-       After all entities will be processed, application will start.
-
-       Application started:
-    3. Trigger of entity state change is listening changes and writing their to cache.
-    4. Listener  of entity state change triggers save save to db process.
-    5. Starting of entity transfer.
-    6. Get object from cache.
-    7. Map JSON to Hibernate entities. Persist to SQL server. Get information about persisted objects.
-    8. Write information to last_processed_entities.info file.
+    On each startup it takes some time to compare jdbm and sql DB. If no new or modified entities found it will not make any export again.
+    If during previous process it was interrupted it will be resumed at same place.
+    After all entities will be processed(checked or exported), application will start.
 
 Enable and configure at VisualVM
 --------------------------------
