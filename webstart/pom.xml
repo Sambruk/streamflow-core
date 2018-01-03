@@ -65,6 +65,7 @@
                         <Codebase>*</Codebase>
                     </updateManifestEntries>
 
+                    <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
                     <unsign>true</unsign>
                     <verbose>false</verbose>
                 </configuration>
