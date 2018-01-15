@@ -26,7 +26,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.service.ServiceReference;
-import org.qi4j.spi.entity.*;
+import org.qi4j.spi.entity.EntityDescriptor;
+import org.qi4j.spi.entity.EntityState;
+import org.qi4j.spi.entity.EntityStatus;
+import org.qi4j.spi.entity.EntityType;
+import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.spi.entity.association.AssociationDescriptor;
 import org.qi4j.spi.entity.association.ManyAssociationDescriptor;
 import org.qi4j.spi.entitystore.StateChangeListener;
@@ -89,11 +93,19 @@ public class EntityStateChangeListener
       {
          try
          {
+            if ( executor == null )
+            {
+               executor = Executors.newSingleThreadExecutor( newThreadFactory() );
+            }
+            //Used to run entity export task only after handling all entities at cache level
+            List<Future<?>> futures = new ArrayList<>();
+
             for ( EntityState changedState : changedStates )
             {
                if ( !changedState.status().equals( EntityStatus.LOADED ) )
                {
                   final String identity = changedState.identity().identity();
+                  String transaction;
                   if ( changedState.status().equals( EntityStatus.REMOVED ) )
                   {
                      final JSONObject object = new JSONObject();
@@ -101,53 +113,41 @@ public class EntityStateChangeListener
                              .put(JSONEntityState.JSON_KEY_IDENTITY, identity)
                              .put(JSONEntityState.JSON_KEY_TYPE, changedState.entityDescriptor().entityType().toString())
                              .put( "_removed", true );
-                     entityExportService.saveToCache( identity, changedState.lastModified(), object.toString() );
+                     transaction = object.toString();
                   } else
                   {
-                     entityExportService.saveToCache( identity, changedState.lastModified(), toJSON(changedState) );
+                     transaction = toJSON(changedState);
+                  }
+
+                  EntityDBCheckJob entityDBCheckJob = entityExportService.saveToCache(identity, changedState.lastModified(), transaction);
+                  if (null != entityDBCheckJob)
+                  {
+                     futures.add(executor.submit(entityDBCheckJob));
                   }
                }
             }
-
-            if ( executor == null )
+            if(futures.size()>0)
             {
-               executor = Executors.newSingleThreadExecutor( newThreadFactory() );
+                futures.add(executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            runExportTasks();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }));
             }
 
+            boolean allDone = true;
+            for(Future<?> future : futures){
+               allDone &= future.isDone(); // check if entities was handled
+            }
 
-            final List<String> nextEntities = getNextEntities();
-            if ( EntityExportJob.FINISHED.get() && !nextEntities.isEmpty())
+            if(allDone)
             {
-               final Future<?> exportTask = executor.submit( newEntityExportJob(nextEntities) );
-
-               final Runnable checker = new Runnable()
-               {
-                  private EntityStateChangeListener entityStateChangeListener;
-
-                  @Override
-                  public void run()
-                  {
-                     try
-                     {
-                        exportTask.get();
-                        if ( !getNextEntities().isEmpty() )
-                        {
-                           entityStateChangeListener.notifyChanges( new ArrayList<EntityState>() );
-                        }
-                     } catch ( Exception e )
-                     {
-                        logger.error( "Unexpected error: ", e );
-                     }
-                  }
-
-                  Runnable setEntityStateChangeListener( EntityStateChangeListener entityStateChangeListener )
-                  {
-                     this.entityStateChangeListener = entityStateChangeListener;
-                     return this;
-                  }
-               }.setEntityStateChangeListener( this );
-
-               executor.submit( checker );
+               runExportTasks();
             }
 
          } catch ( Exception e )
@@ -156,6 +156,43 @@ public class EntityStateChangeListener
          }
       }
 
+   }
+
+   private void runExportTasks() throws SQLException {
+      final List<String> nextEntities = getNextEntities();
+      if ( EntityExportJob.FINISHED.get() && !nextEntities.isEmpty())
+      {
+         final Future<?> exportTask = executor.submit( newEntityExportJob(nextEntities) );
+
+         final Runnable checker = new Runnable()
+         {
+            private EntityStateChangeListener entityStateChangeListener;
+
+            @Override
+            public void run()
+            {
+               try
+               {
+                  exportTask.get();
+                  if ( !getNextEntities().isEmpty() )
+                  {
+                     entityStateChangeListener.notifyChanges( new ArrayList<EntityState>() );
+                  }
+               } catch ( Exception e )
+               {
+                  logger.error( "Unexpected error: ", e );
+               }
+            }
+
+            Runnable setEntityStateChangeListener( EntityStateChangeListener entityStateChangeListener )
+            {
+               this.entityStateChangeListener = entityStateChangeListener;
+               return this;
+            }
+         }.setEntityStateChangeListener( this );
+
+         executor.submit( checker );
+      }
    }
 
    private List<String> getNextEntities() throws SQLException {

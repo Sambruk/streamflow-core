@@ -27,7 +27,8 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.*;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Receiver;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -50,8 +51,17 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -77,7 +87,7 @@ public interface EntityExportService
 
    boolean isExported();
 
-   void saveToCache(String identity, long modified, String transaction) throws SQLException;
+   EntityDBCheckJob saveToCache(String identity, long modified, String transaction);
 
    List<String> getNextEntities(Connection connection);
 
@@ -205,31 +215,18 @@ public interface EntityExportService
       }
 
       @Override
-      public void saveToCache(String identity, long modified, String transaction) throws SQLException {
+      public EntityDBCheckJob saveToCache(String identity, long modified, String transaction){
+         EntityDBCheckJob entityDBCheckJob = null;
+
          //Resolved possible NPE
-         if ( caching != null )
+         if (caching != null)
          {
-
-            try (final Connection connection = dataSource.get().getConnection()) {
-               try (final Statement statement = connection.createStatement()) {
-                  final String sqlUpdateEntity = updateEntityInfoSql(identity, modified, false);
-                  statement.executeUpdate(sqlUpdateEntity);
-
-                  final String selectProceed = "SELECT proceed FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
-                          "WHERE [identity] = '" + identity + "'";
-                  final ResultSet resultSet = statement.executeQuery(selectProceed);
-
-                  if (resultSet.next()) {
-                     final boolean proceed = resultSet.getBoolean(1);
-                     if (!proceed) {
-                        caching.put(new Element( identity, transaction));
-                     }
-                  } else {
-                     throw new IllegalStateException();
-                  }
-               }
-            }
+            entityDBCheckJob = new EntityDBCheckJob(dbVendor, dataSource, caching);
+            entityDBCheckJob.setIdentity(identity);
+            entityDBCheckJob.setModified(modified);
+            entityDBCheckJob.setTransaction(transaction);
          }
+         return entityDBCheckJob;
       }
 
       @Override
