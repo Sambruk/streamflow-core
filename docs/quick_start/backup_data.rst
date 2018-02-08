@@ -28,6 +28,9 @@ Where is data?
 
 Backup placed at **`{StreamflowServer}/data/backup`** folder.
 
+.. note::
+    For more detailed information about files stored at system you can check :ref:`local-files-label-reference`
+
 .. important::
     If you have necessary data at this location,
     you need it move to another folder, otherwise data will be lost.

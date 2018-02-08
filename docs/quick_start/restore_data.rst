@@ -14,4 +14,7 @@ Restore data
     :width: 100%
 
 .. hint::
-   Or you can jsut fully replace **{StreamflowServer}** folder and reload server
+   Or you can just fully replace **{StreamflowServer}** folder and reload server
+
+.. note::
+    For more detailed information about files stored at system you can check :ref:`local-files-label-reference`
