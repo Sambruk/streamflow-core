@@ -168,7 +168,7 @@ Glassfish setup
    to java-config section  (There are two of them) you can find iy quickly by huge amount of other jvm-options
 
 
-#.If SSL was configured tell Glassfish that Apache acts as a SSL-terminating proxy server.
+#. If SSL was configured tell Glassfish that Apache acts as a SSL-terminating proxy server.
 
     In the Admin Console go to
     Network Config - Network Listeners - http-listener-1 - Tab HTTP
@@ -182,6 +182,41 @@ Glassfish setup
             <thread-pool name="http-thread-pool" max-thread-pool-size="200"/>
 
     Put needed value (Maybe it should be lower than 200)
+
+.. _local-files-label-reference:
+
+Local files
+^^^^^^^^^^^
+Streamflow database folder and configuration entries in Java Preferences(windows registry) are tight coupled to the user who is running Glassfish. Can be edited with :doc:`../administration/manager`
+
+If Glassfish is run as a windows service with the system default user the database folder ends up in
+
+    .. note::
+        varies if run with 32bit or 64bit - SysWOW64 or System32
+
+    ``C:\Windows\System32\config\systemprofile\Application Data``
+
+It is possible to run Glassfish with its own user that has the *userprofile* location moved to another location - i.e. D:
+
+    #. Create a new Standard User with no password expiration and user may not change password.
+
+    #. If Glassfish was installed by an administrator the new user will need to be part of the administrators group to be able to run Glassfish.
+    #. Move the profile to the new location ( D: ) and create a link
+
+        .. code-block:: console
+
+            mklink /D C:\Users\<username>  D:\<username>
+
+        .. hint::
+            (where ever you moved the profile to)
+
+    #. Go to the Glassfish windows service and change the user in LogOn tab to the newly created user.
+
+    #. Start the Glassfish service again to create the Streamflow database and the configuration location in the registry for the new user.
+
+If you need to move an old database to the new location just replace the StreamflowServer folder inside the new Application Data with the one from the old location.
+
+Configuration preferences are a little more tricky. The best way might be to export the old entries change the first part of the path to the location for the new user, change the location entry for the database files in the **data** key to represent the new database file location and then import the entries into the registry.
 
 
 Ubuntu + Java 7 + Tomcat
@@ -207,7 +242,8 @@ Apache setup
         a2enmod proxy
         a2enmod proxy_http
 
-#. Edit default site configuration to enable proxy located at file **/etc/apache2/sites-available/default
+#. Edit default site configuration to enable proxy located at file **/etc/apache2/sites-available/default**
+
     There should be following content
 
     .. code-block:: xml
@@ -469,3 +505,23 @@ Tomcat setup
                        redirectport="8443" />
 
     Put needed value (Maybe it should be lower than 200)
+
+SQL Server
+----------
+
+To setup a connection to a SQLServer you need to:
+
+    #. Download the **sql-driver** from `Microsoft  http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=11774`_.
+    #. Unzip and copy **sqljdbc4.jar** to application folder library location
+
+        * Tomcat
+            `$CATALINA_HOME/lib`
+
+        * Glassfish
+            `../glassfish/domains/<domain>/lib/ext`
+
+    #. Setup the datasource in Streamflow using :doc:`../administration/manager` the following information.
+
+        **driver**  com.microsoft.sqlserver.jdbc.SQLServerDataSource
+        **url** jdbc:sqlserver://<hostname>:1433;databaseName=<databasename>
+
