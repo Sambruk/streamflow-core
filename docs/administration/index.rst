@@ -7,3 +7,4 @@ Administration
     admin_tool
     manager
     sql_export
+    statistic_module
