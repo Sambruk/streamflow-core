@@ -89,8 +89,6 @@ public interface EntityExportService
 
    EntityDBCheckJob saveToCache(String identity, long modified, String transaction);
 
-   String updateEntityInfoSql(String identity, long modified, boolean saveProceed);
-
    List<String> getNextEntities(Connection connection);
 
    String getSchemaInfoFileAbsPath();
@@ -223,7 +221,7 @@ public interface EntityExportService
          //Resolved possible NPE
          if (caching != null)
          {
-            entityDBCheckJob = new EntityDBCheckJob(dbVendor, dataSource, caching, this);
+            entityDBCheckJob = new EntityDBCheckJob(dbVendor, dataSource, caching);
             entityDBCheckJob.setIdentity(identity);
             entityDBCheckJob.setModified(modified);
             entityDBCheckJob.setTransaction(transaction);
@@ -409,7 +407,7 @@ public interface EntityExportService
          }
       }
 
-      public String updateEntityInfoSql(String identity, long modified, boolean saveProceed) {
+      private String updateEntityInfoSql(String identity, long modified, boolean saveProceed) {
          switch (dbVendor) {
             case mssql:
                return "UPDATE " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR  +

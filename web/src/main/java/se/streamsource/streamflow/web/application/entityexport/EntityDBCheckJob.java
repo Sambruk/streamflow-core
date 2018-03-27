@@ -45,24 +45,21 @@ public class EntityDBCheckJob implements Runnable {
     private final DbVendor dbVendor;
     private final ServiceReference<DataSource> dataSource;
     private final Caching caching;
-    private final EntityExportService entityExportService;
-
     private String identity;
     private long modified;
     private String transaction;
 
-    public EntityDBCheckJob(DbVendor dbVendor, ServiceReference<DataSource> dataSource, Caching caching, EntityExportService entityExportService) {
+    public EntityDBCheckJob(DbVendor dbVendor, ServiceReference<DataSource> dataSource, Caching caching) {
         this.dbVendor = dbVendor;
         this.dataSource = dataSource;
         this.caching = caching;
-        this.entityExportService = entityExportService;
     }
 
     @Override
     public void run() {
         try (final Connection connection = dataSource.get().getConnection()) {
             try (final Statement statement = connection.createStatement()) {
-                final String sqlUpdateEntity = entityExportService.updateEntityInfoSql(identity, modified, false);
+                final String sqlUpdateEntity = updateEntityInfoSql(identity, modified);
                 statement.executeUpdate(sqlUpdateEntity);
 
                 final String selectProceed = "SELECT proceed FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
@@ -83,6 +80,34 @@ public class EntityDBCheckJob implements Runnable {
             logger.error( "Unexpected SQLException: ", e );
         }
 
+    }
+
+    private String updateEntityInfoSql(String identity, long modified) {
+        switch (dbVendor) {
+
+            case mssql:
+                return "UPDATE " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
+                        ("SET proceed          = CASE" + LINE_SEPARATOR +
+                                        "                       WHEN proceed = 0 OR modified <= " + modified + LINE_SEPARATOR +
+                                        "                         THEN 0" + LINE_SEPARATOR +
+                                        "                       ELSE 1" + LINE_SEPARATOR +
+                                        "                       END," + LINE_SEPARATOR
+                        ) +
+                        "" + LINE_SEPARATOR +
+                        ("  modified = CASE" + LINE_SEPARATOR +
+                                        "                       WHEN proceed = 0 OR modified <= " + modified + LINE_SEPARATOR +
+                                        "                         THEN modified" + LINE_SEPARATOR +
+                                        "                       ELSE " + modified + LINE_SEPARATOR +
+                                        "                       END" + LINE_SEPARATOR
+                        ) +
+                        "WHERE [identity] = '" + identity + "'" + LINE_SEPARATOR +
+                        "IF (@@ROWCOUNT = 0)" + LINE_SEPARATOR +
+                        "  INSERT INTO " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " ([identity], modified, proceed) VALUES ('" + identity + "',  " + modified + ", 0)";
+
+            default:
+                return "";
+
+        }
     }
 
     public void setIdentity(String identity) {
