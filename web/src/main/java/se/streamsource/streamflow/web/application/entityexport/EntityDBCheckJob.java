@@ -1,14 +1,15 @@
 /**
+ *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- * <p>
+ *
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.gnu.org/licenses/agpl.txt
- * <p>
+ *
+ *     http://www.gnu.org/licenses/agpl.txt
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,21 +45,24 @@ public class EntityDBCheckJob implements Runnable {
     private final DbVendor dbVendor;
     private final ServiceReference<DataSource> dataSource;
     private final Caching caching;
+    private final EntityExportService entityExportService;
+
     private String identity;
     private long modified;
     private String transaction;
 
-    public EntityDBCheckJob(DbVendor dbVendor, ServiceReference<DataSource> dataSource, Caching caching) {
+    public EntityDBCheckJob(DbVendor dbVendor, ServiceReference<DataSource> dataSource, Caching caching, EntityExportService entityExportService) {
         this.dbVendor = dbVendor;
         this.dataSource = dataSource;
         this.caching = caching;
+        this.entityExportService = entityExportService;
     }
 
     @Override
     public void run() {
         try (final Connection connection = dataSource.get().getConnection()) {
             try (final Statement statement = connection.createStatement()) {
-                final String sqlUpdateEntity = updateEntityInfoSql(identity, modified, false);
+                final String sqlUpdateEntity = entityExportService.updateEntityInfoSql(identity, modified, false);
                 statement.executeUpdate(sqlUpdateEntity);
 
                 final String selectProceed = "SELECT proceed FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
@@ -79,39 +83,6 @@ public class EntityDBCheckJob implements Runnable {
             logger.error( "Unexpected SQLException: ", e );
         }
 
-    }
-
-    private String updateEntityInfoSql(String identity, long modified, boolean saveProceed) {
-        switch (dbVendor) {
-            case mssql:
-                return "UPDATE " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
-                        (saveProceed
-                                ? "SET proceed = 1," + LINE_SEPARATOR
-                                :
-                                "SET proceed          = CASE" + LINE_SEPARATOR +
-                                        "                       WHEN proceed = 0 AND modified <= " + modified + LINE_SEPARATOR +
-                                        "                         THEN 0" + LINE_SEPARATOR +
-                                        "                       ELSE 1" + LINE_SEPARATOR +
-                                        "                       END," + LINE_SEPARATOR
-                        ) +
-                        "" + LINE_SEPARATOR +
-                        (saveProceed
-                                ? "modified = " + modified + LINE_SEPARATOR
-                                :
-                                "  modified = CASE" + LINE_SEPARATOR +
-                                        "                       WHEN proceed = 0 AND modified <= " + modified + LINE_SEPARATOR +
-                                        "                         THEN modified" + LINE_SEPARATOR +
-                                        "                       ELSE " + modified + LINE_SEPARATOR +
-                                        "                       END" + LINE_SEPARATOR
-                        ) +
-                        "WHERE [identity] = '" + identity + "'" + LINE_SEPARATOR +
-                        "IF (@@ROWCOUNT = 0)" + LINE_SEPARATOR +
-                        "  INSERT INTO " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " ([identity], modified, proceed) VALUES ('" + identity + "',  " + modified + ", 0)";
-
-            default:
-                return "";
-
-        }
     }
 
     public void setIdentity(String identity) {
