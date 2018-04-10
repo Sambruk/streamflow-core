@@ -246,8 +246,20 @@ public interface EntityExportService
              final ResultSet resultSet = statement.executeQuery(select);
              final ArrayList<String> result = new ArrayList<>(SIZE_THRESHOLD);
              while (resultSet.next()) {
-                final String entityAsString = caching.get(resultSet.getString(1)).getObjectValue().toString();
-                result.add(entityAsString);
+                final String identity = resultSet.getString(1);
+                 Element cacheElement = caching.get(identity);
+                 if (cacheElement != null) {
+                     final String entityAsString = cacheElement.getObjectValue().toString();
+                     result.add(entityAsString);
+                 } else {
+                    logger.info("Not found at cache. " + identity);
+
+                    if (this.removeArchivedCase(identity)) {
+                       logger.info("Removed from SQL DB: " + identity);
+                    } else {
+                       logger.info("Failed to remove from SQL DB: " + identity);
+                    }
+                 }
              }
              return result;
          } catch (Exception e) {
@@ -358,13 +370,25 @@ public interface EntityExportService
                try (final PreparedStatement preparedStatement = connection.prepareStatement(resultSql)) {
                   final ResultSet resultSet = preparedStatement.executeQuery();
                   int i = 0;
-                  while (resultSet.next()) {
-                     final String identity = resultSet.getString(1);
-                     caching.put( new Element( identity, tempCaching.get(identity).getObjectValue().toString() ) );
-                     totalExported++;
-                     condition = "AND [identity] > '" + identity + "'";
-                     i++;
-                  }
+                   while (resultSet.next()) {
+                       final String identity = resultSet.getString(1);
+                       Element cacheElement = tempCaching.get(identity);
+                       if (cacheElement != null) {
+                           caching.put(new Element(identity, cacheElement.getObjectValue().toString()));
+                           totalExported++;
+                           condition = "AND [identity] > '" + identity + "'";
+                           i++;
+                       }
+                       else {
+                          logger.info("Not found at cache. "+ identity);
+
+                          if (this.removeArchivedCase(identity)) {
+                             logger.info("Removed from SQL DB: " + identity);
+                          } else {
+                             logger.info("Failed to remove from SQL DB: " + identity);
+                          }
+                       }
+                   }
 
                   if (totalExported % SIZE_THRESHOLD == 0) {
                      logger.info("Exported " + totalExported + " entities to cache");
