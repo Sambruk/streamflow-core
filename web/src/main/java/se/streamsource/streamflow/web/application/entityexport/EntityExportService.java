@@ -464,213 +464,181 @@ public interface EntityExportService
          }
       }
 
-      private boolean removeArchivedCase(String identity) {
-         boolean isRemoveSuccess = false;
+       private boolean removeArchivedCase(String identity) {
+           boolean isRemoveSuccess = false;
 
-         final String removeIdentityFromLastModified = "DELETE FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " WHERE [identity] = ?";
+           final String removeIdentityFromLastModified = "DELETE FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " WHERE [identity] = ?";
 
-         //Log
-         final String removeCaseLogEntries = "DELETE clev FROM case_log_entry_value clev " +
-                 "           INNER JOIN case_log_entity_entries_cross_ref r ON clev.id = r.link_id " +
-                 "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
-                 "           WHERE ce.[identity] = ?";
+           //Log
+           final String removeCaseLogEntries = "DELETE clev FROM case_log_entry_value clev " +
+                   "           INNER JOIN case_log_entity_entries_cross_ref r ON clev.id = r.link_id " +
+                   "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
+                   "           WHERE ce.[identity] = ?";
 
-         final String removeCaseLogReferences = "DELETE r " +
-                 "FROM case_log_entity_entries_cross_ref r " +
-                 "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
-                 "           WHERE ce.[identity] = ?";
+           final String removeCaseLogReferences = "DELETE r " +
+                   "FROM case_log_entity_entries_cross_ref r " +
+                   "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
+                   "           WHERE ce.[identity] = ?";
 
-         final String removeCaseLogReference = "UPDATE case_entity SET caselog = NULL WHERE [identity] = ?;";
+           final String removeCaseLogReference = "UPDATE case_entity SET caselog = NULL WHERE [identity] = ?;";
 
-         //Notes
-         final String removeCaseNoteEntries = "DELETE nv " +
-                 "FROM note_value nv" +
-                 "  INNER JOIN notes_time_line_entity_notes_cross_ref ntle ON nv.id = ntle.link_id" +
-                 "  INNER JOIN case_entity ce ON ntle.owner_id = ce.notes " +
-                 "WHERE ce.[identity] = ?;";
+           //Notes
+           final String removeCaseNoteEntries = "DELETE nv " +
+                   "FROM note_value nv" +
+                   "  INNER JOIN notes_time_line_entity_notes_cross_ref ntle ON nv.id = ntle.link_id" +
+                   "  INNER JOIN case_entity ce ON ntle.owner_id = ce.notes " +
+                   "WHERE ce.[identity] = ?;";
 
-         final String removeCaseNoteReferences = "DELETE  ntle " +
-                 "FROM notes_time_line_entity_notes_cross_ref ntle " +
-                 "  INNER JOIN case_entity ce ON ntle.owner_id = ce.notes " +
-                 "WHERE ce.[identity] = ?;";
+           final String removeCaseNoteReferences = "DELETE  ntle " +
+                   "FROM notes_time_line_entity_notes_cross_ref ntle " +
+                   "  INNER JOIN case_entity ce ON ntle.owner_id = ce.notes " +
+                   "WHERE ce.[identity] = ?;";
 
-         final String removeCaseNoteReference = "UPDATE case_entity SET notes = NULL WHERE [identity] = ?;";
-
-
-         //History
-         final String removeCaseMessageEntries = "DELETE message " +
-                 "FROM message_entity message" +
-                 "  INNER JOIN conversation_entity converssation ON message.conversation = converssation.[identity] " +
-                 "  INNER JOIN case_entity_conversations_cross_ref ceccr ON converssation.[identity] = ceccr.link_id " +
-                 "WHERE ceccr.[owner_id] = ?;";
-
-         final String removeCaseConversations = "DELETE converssation " +
-                 "FROM conversation_entity converssation" +
-                 "  INNER JOIN case_entity_conversations_cross_ref ceccr ON converssation.[identity] = ceccr.link_id " +
-                 "WHERE ceccr.[owner_id] = ?;";
-
-         final String removeCaseConversationReferences = "DELETE ceccr " +
-                 "FROM case_entity_conversations_cross_ref ceccr " +
-                 "WHERE ceccr.[owner_id] = ?;";
-
-         final String removeCaseConversationReference = "UPDATE case_entity SET history = NULL WHERE [identity] = ?;";
-
-         //Attachments
-         final String removeCaseAttachments = "DELETE ae " +
-                 "FROM attachment_entity ae" +
-                 " INNER JOIN case_entity_attachments_cross_ref ceacr ON ae.[identity] = ceacr.link_id " +
-                 "WHERE ceacr.[owner_id] = ?;";
-
-         final String removeCaseAttachmentsReferences = "DELETE ceacr " +
-                 "FROM case_entity_attachments_cross_ref ceacr " +
-                 "WHERE ceacr.[owner_id] = ?;";
-
-         //Forms
-         final String removeSubmittedFieldValues = "DELETE fv " +
-                 "FROM submitted_field_value fv" +
-                 "" +
-                 "  JOIN submitted_page_value_fields_cross_ref spvfcr ON fv.id = spvfcr.link_id" +
-                 "  JOIN submitted_page_value spv ON spvfcr.owner_id = spv.id" +
-                 "" +
-                 "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
-                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
-                 "" +
-                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
-                 "WHERE cesfcr.[owner_id] = ?;";
-
-         final String removeSubmittedPageReferences = "DELETE spvfcr " +
-                 "FROM submitted_page_value_fields_cross_ref spvfcr" +
-                 "  JOIN submitted_page_value spv ON spvfcr.owner_id = spv.id" +
-                 "" +
-                 "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
-                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
-                 "" +
-                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
-                 "WHERE cesfcr.[owner_id] = ?;";
-
-         final String removeSubmittedPageValues = "DELETE spv " +
-                 "FROM submitted_page_value spv " +
-                 "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
-                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
-                 "" +
-                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
-                 "WHERE cesfcr.[owner_id] = ?;";
+           final String removeCaseNoteReference = "UPDATE case_entity SET notes = NULL WHERE [identity] = ?;";
 
 
-         final String removeSubmittedFormPageReferences = "DELETE sfvpcr " +
-                 "FROM submitted_form_value_pages_cross_ref sfvpcr" +
-                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
-                 "" +
-                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
-                 "WHERE cesfcr.[owner_id] = ?;";
+           //History
+           final String removeCaseMessageEntries = "DELETE message " +
+                   "FROM message_entity message" +
+                   "  INNER JOIN conversation_entity converssation ON message.conversation = converssation.[identity] " +
+                   "  INNER JOIN case_entity_conversations_cross_ref ceccr ON converssation.[identity] = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
 
-         final String removeSubmittedFormValues = "DELETE sfv " +
-                 "FROM submitted_form_value sfv" +
-                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
-                 "WHERE cesfcr.[owner_id] = ?;";
+           final String removeCaseConversations = "DELETE converssation " +
+                   "FROM conversation_entity converssation" +
+                   "  INNER JOIN case_entity_conversations_cross_ref ceccr ON converssation.[identity] = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
 
-         final String removeSubmittedFormReferences = "DELETE cesfcr " +
-                 "FROM case_entity_submitted_forms_cross_ref cesfcr " +
-                 "WHERE cesfcr.[owner_id] = ?;";
+           final String removeCaseConversationReferences = "DELETE ceccr " +
+                   "FROM case_entity_conversations_cross_ref ceccr " +
+                   "WHERE ceccr.[owner_id] = ?;";
 
-         try (final Connection connection = dataSource.get().getConnection()) {
-            connection.setAutoCommit(false);
-            PreparedStatement ps;
-            try {
-               ps = connection.prepareStatement(removeIdentityFromLastModified);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeCaseConversationReference = "UPDATE case_entity SET history = NULL WHERE [identity] = ?;";
 
-               //Case log
-               ps = connection.prepareStatement(removeCaseLogReference);
-               ps.setString(1, identity);
-               ps.execute();
+           //Attachments
+           final String removeCaseAttachments = "DELETE ae " +
+                   "FROM attachment_entity ae" +
+                   " INNER JOIN case_entity_attachments_cross_ref ceacr ON ae.[identity] = ceacr.link_id " +
+                   "WHERE ceacr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseLogEntries);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeCaseAttachmentsReferences = "DELETE ceacr " +
+                   "FROM case_entity_attachments_cross_ref ceacr " +
+                   "WHERE ceacr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseLogReferences);
-               ps.setString(1, identity);
-               ps.execute();
+           //Forms
+           final String removeSubmittedFieldValues = "DELETE fv " +
+                   "FROM submitted_field_value fv" +
+                   "" +
+                   "  JOIN submitted_page_value_fields_cross_ref spvfcr ON fv.id = spvfcr.link_id" +
+                   "  JOIN submitted_page_value spv ON spvfcr.owner_id = spv.id" +
+                   "" +
+                   "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
+                   "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                   "" +
+                   "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
+                   "WHERE cesfcr.[owner_id] = ?;";
 
-               //Notes
-               ps = connection.prepareStatement(removeCaseNoteReference);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeSubmittedPageReferences = "DELETE spvfcr " +
+                   "FROM submitted_page_value_fields_cross_ref spvfcr" +
+                   "  JOIN submitted_page_value spv ON spvfcr.owner_id = spv.id" +
+                   "" +
+                   "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
+                   "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                   "" +
+                   "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
+                   "WHERE cesfcr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseNoteEntries);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeSubmittedPageValues = "DELETE spv " +
+                   "FROM submitted_page_value spv " +
+                   "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
+                   "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                   "" +
+                   "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
+                   "WHERE cesfcr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseNoteReferences);
-               ps.setString(1, identity);
-               ps.execute();
 
-               //History
-               ps = connection.prepareStatement(removeCaseConversationReference);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeSubmittedFormPageReferences = "DELETE sfvpcr " +
+                   "FROM submitted_form_value_pages_cross_ref sfvpcr" +
+                   "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                   "" +
+                   "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
+                   "WHERE cesfcr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseMessageEntries);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeSubmittedFormValues = "DELETE sfv " +
+                   "FROM submitted_form_value sfv" +
+                   "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
+                   "WHERE cesfcr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseConversations);
-               ps.setString(1, identity);
-               ps.execute();
+           final String removeSubmittedFormReferences = "DELETE cesfcr " +
+                   "FROM case_entity_submitted_forms_cross_ref cesfcr " +
+                   "WHERE cesfcr.[owner_id] = ?;";
 
-               ps = connection.prepareStatement(removeCaseConversationReferences);
-               ps.setString(1, identity);
-               ps.execute();
+           try (final Connection connection = dataSource.get().getConnection()) {
+               connection.setAutoCommit(false);
+               try {
+                   removeIdentityWiredData(connection, identity, removeIdentityFromLastModified);
 
-               //Attachments
-               ps = connection.prepareStatement(removeCaseAttachments);
-               ps.setString(1, identity);
-               ps.execute();
+                   //Case log
+                   removeIdentityWiredData(connection, identity, removeCaseLogReference);
 
-               ps = connection.prepareStatement(removeCaseAttachmentsReferences);
-               ps.setString(1, identity);
-               ps.execute();
+                   removeIdentityWiredData(connection, identity, removeCaseLogEntries);
 
-               //Forms
-               ps = connection.prepareStatement(removeSubmittedPageReferences);
-               ps.setString(1, identity);
-               ps.execute();
+                   removeIdentityWiredData(connection, identity, removeCaseLogReferences);
 
-               ps = connection.prepareStatement(removeSubmittedFieldValues);
-               ps.setString(1, identity);
-               ps.execute();
+                   //Notes
+                   removeIdentityWiredData(connection, identity, removeCaseNoteReference);
 
-               ps = connection.prepareStatement(removeSubmittedFormPageReferences);
-               ps.setString(1, identity);
-               ps.execute();
+                   removeIdentityWiredData(connection, identity, removeCaseNoteEntries);
 
-               ps = connection.prepareStatement(removeSubmittedPageValues);
-               ps.setString(1, identity);
-               ps.execute();
+                   removeIdentityWiredData(connection, identity, removeCaseNoteReferences);
 
-               ps = connection.prepareStatement(removeSubmittedFormReferences);
-               ps.setString(1, identity);
-               ps.execute();
+                   //History
+                   removeIdentityWiredData(connection, identity, removeCaseConversationReference);
 
-               ps = connection.prepareStatement(removeSubmittedFormValues);
-               ps.setString(1, identity);
-               ps.execute();
+                   removeIdentityWiredData(connection, identity, removeCaseMessageEntries);
 
-            } catch (SQLException e) {
-               logger.error("Failed to remove archived entity" + e.getMessage());
-               connection.rollback();
+                   removeIdentityWiredData(connection, identity, removeCaseConversations);
+
+                   removeIdentityWiredData(connection, identity, removeCaseConversationReferences);
+
+                   //Attachments
+                   removeIdentityWiredData(connection, identity, removeCaseAttachments);
+
+                   removeIdentityWiredData(connection, identity, removeCaseAttachmentsReferences);
+
+                   //Forms
+                   removeIdentityWiredData(connection, identity, removeSubmittedPageReferences);
+
+                   removeIdentityWiredData(connection, identity, removeSubmittedFieldValues);
+
+                   removeIdentityWiredData(connection, identity, removeSubmittedFormPageReferences);
+
+                   removeIdentityWiredData(connection, identity, removeSubmittedPageValues);
+
+                   removeIdentityWiredData(connection, identity, removeSubmittedFormReferences);
+
+                   removeIdentityWiredData(connection, identity, removeSubmittedFormValues);
+
+               } catch (SQLException e) {
+                   logger.error("Failed to remove archived entity" + e.getMessage());
+                   connection.rollback();
+                   connection.setAutoCommit(true);
+               }
+               connection.commit();
                connection.setAutoCommit(true);
-            }
-            connection.commit();
-            connection.setAutoCommit(true);
-            isRemoveSuccess = true;
-         } catch (SQLException e) {
-            logger.error("Failed during remove cached entity" + e.getMessage());
-         }
+               isRemoveSuccess = true;
+           } catch (SQLException e) {
+               logger.error("Failed during remove cached entity" + e.getMessage());
+           }
 
-         return isRemoveSuccess;
-      }
+           return isRemoveSuccess;
+       }
+
+       private void removeIdentityWiredData(Connection connection, String identity, String query) throws SQLException {
+           PreparedStatement ps;
+           ps = connection.prepareStatement(query);
+           ps.setString(1, identity);
+           ps.execute();
+       }
    }
 }
