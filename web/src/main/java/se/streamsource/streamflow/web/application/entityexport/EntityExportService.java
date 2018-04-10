@@ -519,14 +519,14 @@ public interface EntityExportService
          final String removeCaseConversationReference = "UPDATE case_entity SET history = NULL WHERE [identity] = ?;";
 
          //Attachments
-          final String removeCaseAttachments = "DELETE ae " +
-                  "FROM attachment_entity ae" +
-                  " INNER JOIN case_entity_attachments_cross_ref ceacr ON ae.[identity] = ceacr.link_id " +
-                  "WHERE ceacr.[owner_id] = ?;";
+         final String removeCaseAttachments = "DELETE ae " +
+                 "FROM attachment_entity ae" +
+                 " INNER JOIN case_entity_attachments_cross_ref ceacr ON ae.[identity] = ceacr.link_id " +
+                 "WHERE ceacr.[owner_id] = ?;";
 
-          final String removeCaseAttachmentsReferences = "DELETE ceacr " +
-                  "FROM case_entity_attachments_cross_ref ceacr " +
-                  "WHERE ceacr.[owner_id] = ?;";
+         final String removeCaseAttachmentsReferences = "DELETE ceacr " +
+                 "FROM case_entity_attachments_cross_ref ceacr " +
+                 "WHERE ceacr.[owner_id] = ?;";
 
 
          try (final Connection connection = dataSource.get().getConnection()) {
