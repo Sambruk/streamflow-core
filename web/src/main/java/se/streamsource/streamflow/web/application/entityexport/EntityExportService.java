@@ -595,11 +595,11 @@ public interface EntityExportService
                    //History
                    removeIdentityWiredData(connection, identity, removeCaseConversationReference);
 
+                   removeIdentityWiredData(connection, identity, removeCaseConversationReferences);
+
                    removeIdentityWiredData(connection, identity, removeCaseMessageEntries);
 
                    removeIdentityWiredData(connection, identity, removeCaseConversations);
-
-                   removeIdentityWiredData(connection, identity, removeCaseConversationReferences);
 
                    //Attachments
                    removeIdentityWiredData(connection, identity, removeCaseAttachments);
@@ -620,7 +620,7 @@ public interface EntityExportService
                    removeIdentityWiredData(connection, identity, removeSubmittedFormValues);
 
                } catch (SQLException e) {
-                   logger.error("Failed to remove archived entity" + e.getMessage());
+                   logger.error("Failed to remove archived entity " + e.getMessage());
                    connection.rollback();
                    connection.setAutoCommit(true);
                }
@@ -628,7 +628,7 @@ public interface EntityExportService
                connection.setAutoCommit(true);
                isRemoveSuccess = true;
            } catch (SQLException e) {
-               logger.error("Failed during remove cached entity" + e.getMessage());
+               logger.error("Failed during remove cached entity " + e.getMessage());
            }
 
            return isRemoveSuccess;
