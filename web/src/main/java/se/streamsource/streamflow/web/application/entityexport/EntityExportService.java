@@ -528,6 +528,58 @@ public interface EntityExportService
                  "FROM case_entity_attachments_cross_ref ceacr " +
                  "WHERE ceacr.[owner_id] = ?;";
 
+         //Forms
+         final String removeSubmitedFieldValues = "DELETE fv " +
+                 "FROM submitted_field_value fv" +
+                 "  JOIN field_entity field ON fv.field = field.[identity]" +
+                 "" +
+                 "  JOIN submitted_page_value_fields_cross_ref spvfcr ON fv.id = spvfcr.link_id" +
+                 "  JOIN submitted_page_value spv ON spvfcr.owner_id = spv.id" +
+                 "" +
+                 "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
+                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                 "" +
+                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id" +
+                 "  JOIN form_entity fe ON sfv.form = fe.[identity]" +
+                 "WHERE cesfcr.[owner_id] = ?;";
+
+         final String removeSubmitedPageReferences = "DELETE spvfcr " +
+                 "FROM submitted_page_value_fields_cross_ref spvfcr" +
+                 "  JOIN submitted_page_value spv ON spvfcr.owner_id = spv.id" +
+                 "" +
+                 "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
+                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                 "" +
+                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id" +
+                 "  JOIN form_entity fe ON sfv.form = fe.[identity]" +
+                 "WHERE cesfcr.[owner_id] = ?;";
+
+         final String removeSubmitedPageValues = "DELETE spv " +
+                 "FROM submitted_page_value spv " +
+                 "  JOIN submitted_form_value_pages_cross_ref sfvpcr ON spv.id = sfvpcr.link_id" +
+                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                 "" +
+                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id" +
+                 "  JOIN form_entity fe ON sfv.form = fe.[identity]" +
+                 "WHERE cesfcr.[owner_id] = ?;";
+
+
+         final String removeSubmitedFormPageReferences = "DELETE sfvpcr " +
+                 "FROM submitted_form_value_pages_cross_ref sfvpcr" +
+                 "  JOIN submitted_form_value sfv ON sfvpcr.owner_id = sfv.id" +
+                 "" +
+                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id" +
+                 "  JOIN form_entity fe ON sfv.form = fe.[identity]" +
+                 "WHERE cesfcr.[owner_id] = ?;";
+
+         final String removeSubmitedFormValues = "DELETE sfv " +
+                 "FROM submitted_form_value sfv" +
+                 "  JOIN case_entity_submitted_forms_cross_ref cesfcr ON sfv.id = cesfcr.link_id " +
+                 "WHERE cesfcr.[owner_id] = ?;";
+
+         final String removeSubmitedFormReferences = "DELETE cesfcr " +
+                 "FROM case_entity_submitted_forms_cross_ref cesfcr " +
+                 "WHERE cesfcr.[owner_id] = ?;";
 
          try (final Connection connection = dataSource.get().getConnection()) {
             connection.setAutoCommit(false);
@@ -590,6 +642,31 @@ public interface EntityExportService
                ps.setString(1, identity);
                ps.execute();
 
+               //Forms
+               ps = connection.prepareStatement(removeSubmitedPageReferences);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeSubmitedFieldValues);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeSubmitedFormPageReferences);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeSubmitedPageValues);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeSubmitedFormReferences);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeSubmitedFormValues);
+               ps.setString(1, identity);
+               ps.execute();
+
             } catch (SQLException e) {
                logger.error("Failed to remove archived entity" + e.getMessage());
                connection.rollback();
@@ -604,9 +681,5 @@ public interface EntityExportService
 
          return isRemoveSuccess;
       }
-
-
    }
-
-
 }
