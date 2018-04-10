@@ -475,7 +475,7 @@ public interface EntityExportService
                  "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
                  "           WHERE ce.[identity] = ?";
 
-         final String removeCaseLogRegerences = "DELETE r " +
+         final String removeCaseLogReferences = "DELETE r " +
                  "FROM case_log_entity_entries_cross_ref r " +
                  "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
                  "           WHERE ce.[identity] = ?";
@@ -537,7 +537,7 @@ public interface EntityExportService
                ps.setString(1, identity);
                ps.execute();
 
-               ps = connection.prepareStatement(removeCaseLogRegerences);
+               ps = connection.prepareStatement(removeCaseLogReferences);
                ps.setString(1, identity);
                ps.execute();
 
