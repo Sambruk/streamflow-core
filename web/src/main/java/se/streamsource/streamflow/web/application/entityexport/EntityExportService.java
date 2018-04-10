@@ -54,6 +54,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -438,6 +439,129 @@ public interface EntityExportService
 
          }
       }
+
+      private boolean removeArchivedCase(String identity) {
+         boolean isRemoveSuccess = false;
+
+         final String removeIdentityFromLastModified = "DELETE FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + " WHERE [identity] = ?";
+
+         //Log
+         final String removeCaseLogEntries = "DELETE clev FROM case_log_entry_value clev " +
+                 "           INNER JOIN case_log_entity_entries_cross_ref r ON clev.id = r.link_id " +
+                 "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
+                 "           WHERE ce.[identity] = ?";
+
+         final String removeCaseLogRegerences = "DELETE r " +
+                 "FROM case_log_entity_entries_cross_ref r " +
+                 "           INNER JOIN case_entity ce ON ce.[caselog] = r.owner_id " +
+                 "           WHERE ce.[identity] = ?";
+
+         final String removeCaseLogReference = "UPDATE case_entity SET caselog = NULL WHERE [identity] = ?;";
+
+         //Notes
+         final String removeCaseNoteEntries = "DELETE nv " +
+                 "FROM note_value nv" +
+                 "  INNER JOIN notes_time_line_entity_notes_cross_ref ntle ON nv.id = ntle.link_id" +
+                 "  INNER JOIN case_entity ce ON ntle.owner_id = ce.notes " +
+                 "WHERE ce.[identity] = ?;";
+
+         final String removeCaseNoteReferences = "DELETE  ntle " +
+                 "FROM notes_time_line_entity_notes_cross_ref ntle " +
+                 "  INNER JOIN case_entity ce ON ntle.owner_id = ce.notes " +
+                 "WHERE ce.[identity] = ?;";
+
+         final String removeCaseNoteReference = "UPDATE case_entity SET notes = NULL WHERE [identity] = ?;";
+
+
+         //History
+         final String removeCaseMessageEntries = "DELETE message " +
+                 "FROM message_entity message" +
+                 "  INNER JOIN conversation_entity converssation ON message.conversation = converssation.[identity] " +
+                 "  INNER JOIN case_entity_conversations_cross_ref ceccr ON converssation.[identity] = ceccr.link_id " +
+                 "  INNER JOIN case_entity ce ON ceccr.owner_id = ce.[identity] " +
+                 "WHERE ce.[identity] = ?;";
+
+         final String removeCaseConversations = "DELETE converssation " +
+                 "FROM conversation_entity converssation" +
+                 "  INNER JOIN case_entity_conversations_cross_ref ceccr ON converssation.[identity] = ceccr.link_id " +
+                 "  INNER JOIN case_entity ce ON ceccr.owner_id = ce.[identity] " +
+                 "WHERE ce.[identity] = ?;";
+
+         final String removeCaseConversationReferences = "DELETE ceccr " +
+                 "FROM case_entity_conversations_cross_ref ceccr" +
+                 "  JOIN case_entity ce ON ceccr.owner_id = ce.[identity] " +
+                 "WHERE ce.[identity] = ?;";
+
+         final String removeCaseConversationReference = "UPDATE case_entity SET history = NULL WHERE [identity] = ?;";
+
+
+         try (final Connection connection = dataSource.get().getConnection()) {
+            connection.setAutoCommit(false);
+            PreparedStatement ps;
+            try {
+               ps = connection.prepareStatement(removeIdentityFromLastModified);
+               ps.setString(1, identity);
+               ps.execute();
+
+               //Case log
+
+               ps = connection.prepareStatement(removeCaseLogReference);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseLogEntries);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseLogRegerences);
+               ps.setString(1, identity);
+               ps.execute();
+
+               //Notes
+               ps = connection.prepareStatement(removeCaseNoteReference);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseNoteEntries);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseNoteReferences);
+               ps.setString(1, identity);
+               ps.execute();
+
+               //History
+               ps = connection.prepareStatement(removeCaseConversationReference);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseMessageEntries);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseConversations);
+               ps.setString(1, identity);
+               ps.execute();
+
+               ps = connection.prepareStatement(removeCaseConversationReferences);
+               ps.setString(1, identity);
+               ps.execute();
+
+            } catch (SQLException e) {
+               logger.error("Failed to remove archived entity" + e.getMessage());
+               connection.rollback();
+               connection.setAutoCommit(true);
+            }
+            connection.commit();
+            connection.setAutoCommit(true);
+            isRemoveSuccess = true;
+         } catch (SQLException e) {
+            logger.error("Failed during remove cached entity" + e.getMessage());
+         }
+
+         return isRemoveSuccess;
+      }
+
 
    }
 
