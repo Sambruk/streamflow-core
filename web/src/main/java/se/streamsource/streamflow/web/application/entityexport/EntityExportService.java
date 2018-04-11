@@ -602,9 +602,9 @@ public interface EntityExportService
                    removeIdentityWiredData(connection, identity, removeCaseConversations);
 
                    //Attachments
-                   removeIdentityWiredData(connection, identity, removeCaseAttachments);
-
                    removeIdentityWiredData(connection, identity, removeCaseAttachmentsReferences);
+
+                   removeIdentityWiredData(connection, identity, removeCaseAttachments);
 
                    //Forms
                    removeIdentityWiredData(connection, identity, removeSubmittedPageReferences);
