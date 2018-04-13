@@ -573,6 +573,53 @@ public interface EntityExportService
                    "FROM case_entity_submitted_forms_cross_ref cesfcr " +
                    "WHERE cesfcr.[owner_id] = ?;";
 
+           //Contacts
+           final String removeContactDTO = "DELETE c " +
+                   "FROM contact_dto c " +
+                   "JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
+
+          final String removeContactDTOReference = "DELETE ceccr " +
+                  "FROM case_entity_contacts_cross_ref ceccr " +
+                  "WHERE ceccr.[owner_id] = ?;";
+
+           final String removeContactPhone = "DELETE cpd FROM contact_dto c " +
+                   "  JOIN contact_dto_phone_numbers_cross_ref cdpncr ON c.id = cdpncr.owner_id " +
+                   "  JOIN contact_phone_dto cpd ON cpd.id = cdpncr.link_id " +
+                   "  JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
+
+           final String removeContactPhoneReference = "DELETE cdpncr FROM contact_dto c " +
+                   "  JOIN contact_dto_phone_numbers_cross_ref cdpncr ON c.id = cdpncr.owner_id " +
+                   "  JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
+
+           final String removeContactEmail = "DELETE ced FROM " +
+                   "  contact_email_dto ced " +
+                   "  JOIN contact_dto_email_addresses_cross_ref cdeacr ON ced.id = cdeacr.owner_id " +
+                   "  JOIN contact_dto c ON cdeacr.owner_id = c.id " +
+                   "  JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
+
+           final String removeContactEmailReference = "DELETE cdeacr FROM " +
+                   "  contact_dto_email_addresses_cross_ref cdeacr" +
+                   "  JOIN contact_dto c ON cdeacr.owner_id = c.id " +
+                   "  JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] = ?;";
+
+
+           final String removeContactAddress = "DELETE cad FROM contact_dto c " +
+                   "  JOIN contact_dto_addresses_cross_ref cdacr ON c.id = cdacr.owner_id " +
+                   "  JOIN contact_address_dto cad ON cad.id = cdacr.link_id " +
+                   "  JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] =?;";
+
+           final String removeContactAddressReference = "DELETE cdacr FROM contact_dto c " +
+                   "  JOIN contact_dto_addresses_cross_ref cdacr ON c.id = cdacr.owner_id " +
+                   "  JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
+                   "WHERE ceccr.[owner_id] =?;";
+
+
            try (final Connection connection = dataSource.get().getConnection()) {
                connection.setAutoCommit(false);
                try {
@@ -618,6 +665,16 @@ public interface EntityExportService
                    removeIdentityWiredData(connection, identity, removeSubmittedFormReferences);
 
                    removeIdentityWiredData(connection, identity, removeSubmittedFormValues);
+
+                   //Contacts
+                   removeIdentityWiredData(connection, identity, removeContactAddressReference);
+                   removeIdentityWiredData(connection, identity, removeContactAddress);
+                   removeIdentityWiredData(connection, identity, removeContactPhoneReference);
+                   removeIdentityWiredData(connection, identity, removeContactPhone);
+                   removeIdentityWiredData(connection, identity, removeContactEmailReference);
+                   removeIdentityWiredData(connection, identity, removeContactEmail);
+                   removeIdentityWiredData(connection, identity, removeContactDTOReference);
+                   removeIdentityWiredData(connection, identity, removeContactDTO);
 
                } catch (SQLException e) {
                    logger.error("Failed to remove archived entity " + e.getMessage());
