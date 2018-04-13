@@ -579,9 +579,9 @@ public interface EntityExportService
                    "JOIN case_entity_contacts_cross_ref ceccr ON c.id = ceccr.link_id " +
                    "WHERE ceccr.[owner_id] = ?;";
 
-          final String removeContactDTOReference = "DELETE ceccr " +
-                  "FROM case_entity_contacts_cross_ref ceccr " +
-                  "WHERE ceccr.[owner_id] = ?;";
+           final String removeContactDTOReference = "DELETE ceccr " +
+                   "FROM case_entity_contacts_cross_ref ceccr " +
+                   "WHERE ceccr.[owner_id] = ?;";
 
            final String removeContactPhone = "DELETE cpd FROM contact_dto c " +
                    "  JOIN contact_dto_phone_numbers_cross_ref cdpncr ON c.id = cdpncr.owner_id " +
@@ -627,43 +627,30 @@ public interface EntityExportService
 
                    //Case log
                    removeIdentityWiredData(connection, identity, removeCaseLogReference);
-
                    removeIdentityWiredData(connection, identity, removeCaseLogEntries);
-
                    removeIdentityWiredData(connection, identity, removeCaseLogReferences);
 
                    //Notes
                    removeIdentityWiredData(connection, identity, removeCaseNoteReference);
-
                    removeIdentityWiredData(connection, identity, removeCaseNoteEntries);
-
                    removeIdentityWiredData(connection, identity, removeCaseNoteReferences);
 
                    //History
                    removeIdentityWiredData(connection, identity, removeCaseConversationReference);
-
                    removeIdentityWiredData(connection, identity, removeCaseConversationReferences);
-
                    removeIdentityWiredData(connection, identity, removeCaseMessageEntries);
-
                    removeIdentityWiredData(connection, identity, removeCaseConversations);
 
                    //Attachments
                    removeIdentityWiredData(connection, identity, removeCaseAttachmentsReferences);
-
                    removeIdentityWiredData(connection, identity, removeCaseAttachments);
 
                    //Forms
                    removeIdentityWiredData(connection, identity, removeSubmittedPageReferences);
-
                    removeIdentityWiredData(connection, identity, removeSubmittedFieldValues);
-
                    removeIdentityWiredData(connection, identity, removeSubmittedFormPageReferences);
-
                    removeIdentityWiredData(connection, identity, removeSubmittedPageValues);
-
                    removeIdentityWiredData(connection, identity, removeSubmittedFormReferences);
-
                    removeIdentityWiredData(connection, identity, removeSubmittedFormValues);
 
                    //Contacts
