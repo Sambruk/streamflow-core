@@ -99,8 +99,12 @@ public class EntityExportJob implements Runnable
                final EntityDescriptor entityDescriptor = module.entityDescriptor( type );
                final EntityType entityType = entityDescriptor.entityType();
 
-               final JSONObject propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
-
+               final JSONObject propertiesHolder;
+               if (entity.has(JSONEntityState.JSON_KEY_PROPERTIES)){
+                   propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
+               } else {
+                   propertiesHolder = new JSONObject();
+               }
                final Iterable<PropertyType> existsProperties =
                        getNotNullProperties(propertiesHolder, entityType.properties() );
                final Iterable<AssociationType> existsAssociations =
