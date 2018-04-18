@@ -100,19 +100,28 @@ public class EntityExportJob implements Runnable
                final EntityType entityType = entityDescriptor.entityType();
 
                final JSONObject propertiesHolder;
-               if (entity.has(JSONEntityState.JSON_KEY_PROPERTIES)){
-                   propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
-               } else {
-                   propertiesHolder = new JSONObject();
-               }
-               final Iterable<PropertyType> existsProperties =
-                       getNotNullProperties(propertiesHolder, entityType.properties() );
-               final Iterable<AssociationType> existsAssociations =
-                       getNotNullProperties( entity.getJSONObject(JSONEntityState.JSON_KEY_ASSOCIATIONS), entityType.associations() );
-               final Iterable<ManyAssociationType> existsManyAssociations =
-                       getNotNullProperties( entity.getJSONObject(JSONEntityState.JSON_KEY_MANYASSOCIATIONS), entityType.manyAssociations() );
+               final JSONObject associationsHolder;
+               final JSONObject manyAssociationsHolder;
 
-               Map<String, Object> subProps = new HashMap<>();
+             boolean isRemoved = entity.has("_removed") && entity.getBoolean("_removed");
+             if (isRemoved) {
+                 propertiesHolder = new JSONObject();
+                 associationsHolder = new JSONObject();
+                 manyAssociationsHolder = new JSONObject();
+             } else {
+                 propertiesHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_PROPERTIES);
+                 associationsHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_ASSOCIATIONS);
+                 manyAssociationsHolder = entity.getJSONObject(JSONEntityState.JSON_KEY_MANYASSOCIATIONS);
+             }
+
+             final Iterable<PropertyType> existsProperties =
+                     getNotNullProperties(propertiesHolder, entityType.properties());
+             final Iterable<AssociationType> existsAssociations =
+                     getNotNullProperties(associationsHolder, entityType.associations());
+             final Iterable<ManyAssociationType> existsManyAssociations =
+                     getNotNullProperties(manyAssociationsHolder, entityType.manyAssociations());
+
+             Map<String, Object> subProps = new HashMap<>();
 
                for ( PropertyType existsProperty : existsProperties )
                {
@@ -144,7 +153,7 @@ public class EntityExportJob implements Runnable
                entityExportHelper.setShowSql( entityExportService.configuration().showSql().get() );
                entityExportService.setTables( entityExportHelper.help() );
 
-               entityExportService.savedSuccess( entity.getString("identity"), entity.getLong("modified"), connection );
+               entityExportService.savedSuccess(entity.getString("identity"), isRemoved ? System.currentTimeMillis() : entity.getLong("modified"), connection);
 
                counterLimit++;
          }
