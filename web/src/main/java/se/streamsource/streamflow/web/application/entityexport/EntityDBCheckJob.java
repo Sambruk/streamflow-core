@@ -1,14 +1,15 @@
 /**
+ *
  * Copyright
  * 2009-2015 Jayway Products AB
  * 2016-2017 Föreningen Sambruk
- * <p>
+ *
  * Licensed under AGPL, Version 3.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.gnu.org/licenses/agpl.txt
- * <p>
+ *
+ *     http://www.gnu.org/licenses/agpl.txt
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +59,7 @@ public class EntityDBCheckJob implements Runnable {
     public void run() {
         try (final Connection connection = dataSource.get().getConnection()) {
             try (final Statement statement = connection.createStatement()) {
-                final String sqlUpdateEntity = updateEntityInfoSql(identity, modified, false);
+                final String sqlUpdateEntity = updateEntityInfoSql(identity, modified);
                 statement.executeUpdate(sqlUpdateEntity);
 
                 final String selectProceed = "SELECT proceed FROM " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
@@ -81,25 +82,20 @@ public class EntityDBCheckJob implements Runnable {
 
     }
 
-    private String updateEntityInfoSql(String identity, long modified, boolean saveProceed) {
+    private String updateEntityInfoSql(String identity, long modified) {
         switch (dbVendor) {
+
             case mssql:
                 return "UPDATE " + IDENTITY_MODIFIED_INFO_TABLE_NAME + LINE_SEPARATOR +
-                        (saveProceed
-                                ? "SET proceed = 1," + LINE_SEPARATOR
-                                :
-                                "SET proceed          = CASE" + LINE_SEPARATOR +
-                                        "                       WHEN proceed = 0 AND modified <= " + modified + LINE_SEPARATOR +
+                        ("SET proceed          = CASE" + LINE_SEPARATOR +
+                                        "                       WHEN proceed = 0 OR modified <= " + modified + LINE_SEPARATOR +
                                         "                         THEN 0" + LINE_SEPARATOR +
                                         "                       ELSE 1" + LINE_SEPARATOR +
                                         "                       END," + LINE_SEPARATOR
                         ) +
                         "" + LINE_SEPARATOR +
-                        (saveProceed
-                                ? "modified = " + modified + LINE_SEPARATOR
-                                :
-                                "  modified = CASE" + LINE_SEPARATOR +
-                                        "                       WHEN proceed = 0 AND modified <= " + modified + LINE_SEPARATOR +
+                        ("  modified = CASE" + LINE_SEPARATOR +
+                                        "                       WHEN proceed = 0 OR modified <= " + modified + LINE_SEPARATOR +
                                         "                         THEN modified" + LINE_SEPARATOR +
                                         "                       ELSE " + modified + LINE_SEPARATOR +
                                         "                       END" + LINE_SEPARATOR
