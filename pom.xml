@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.29-beta7-SNAPSHOT</version>
+    <version>1.29-beta8</version>
     <packaging>pom</packaging>
 
     <properties>
