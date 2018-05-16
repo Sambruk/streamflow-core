@@ -73,7 +73,7 @@ public interface SubCases
          aCase.createNotes();
       }
 
-      public CaseEntity createdSubCase( DomainEvent event, String id )
+      public CaseEntity createdSubCase(@Optional DomainEvent event, String id )
       {
          EntityBuilder<CaseEntity> builder = module.unitOfWorkFactory().currentUnitOfWork().newEntityBuilder( CaseEntity.class, id );
          CreatedOn createdOn = builder.instanceFor( CreatedOn.class );
