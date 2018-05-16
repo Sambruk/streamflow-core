@@ -104,6 +104,12 @@ public class CaseResource
         subResource(SubCasesResource.class);
     }
 
+    @SubResource
+    public void parent()
+    {
+        subResource(SubCaseResource.class);
+    }
+
    @SubResource
    public void conversations()
    {
