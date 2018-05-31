@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.domain.structure.caze;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -43,6 +44,10 @@ public interface SubCase
    abstract class Mixin
          implements SubCase, Data
    {
+
+      @This
+      Case myself;
+
       public void changeParent( Case newParent )
       {
          if (newParent == null || !newParent.equals( parent().get() ))
@@ -54,6 +59,7 @@ public interface SubCase
       public void changedParent( @Optional DomainEvent event, Case newParent )
       {
          parent().set( newParent );
+         newParent.assignSubCase(myself);
       }
    }
 }

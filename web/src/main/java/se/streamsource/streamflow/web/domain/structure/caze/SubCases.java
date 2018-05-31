@@ -46,11 +46,15 @@ public interface SubCases
 
    void removeSubCase(Case subCase);
 
+   void assignSubCase(Case subCase);
+
    interface Data
    {
       ManyAssociation<Case> subCases();
 
       CaseEntity createdSubCase(@Optional DomainEvent event, String id);
+
+      void assignSubCase(@Optional DomainEvent event, Case subCase);
 
       void removedSubCase(@Optional DomainEvent event, Case subCase);
    }
@@ -73,6 +77,11 @@ public interface SubCases
          aCase.changeParent( myself );
          aCase.createLog();
          aCase.createNotes();
+      }
+
+      public void assignSubCase(Case subCase)
+      {
+        subCases().add(subCase);
       }
 
       public CaseEntity createdSubCase(@Optional DomainEvent event, String id )
@@ -111,7 +120,13 @@ public interface SubCases
 
       public void removedSubCase( @Optional DomainEvent event, Case subCase )
       {
+         subCase.changeParent(null);
          subCases().remove( subCase );
+      }
+
+      public void assignSubCase( @Optional DomainEvent event, Case subCase )
+      {
+         assignSubCase(subCase);
       }
    }
 }
