@@ -28,9 +28,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
@@ -79,10 +81,22 @@ public interface SubCases
          CreatedOn createdOn = builder.instanceFor( CreatedOn.class );
          createdOn.createdOn().set( event.on().get() );
 
-         createdOn.createdBy().set( module.unitOfWorkFactory().currentUnitOfWork().get( Creator.class, event.by().get() ));
+         createdOn.createdBy().set(module.unitOfWorkFactory().currentUnitOfWork().get(Creator.class, event.by().get()));
 
          CaseEntity caseEntity = builder.newInstance();
-         subCases().add(caseEntity  );
+         RoleMap roleMap = RoleMap.current();
+
+         CaseEntity parentCase = roleMap.get(CaseEntity.class);
+         Owner owner = parentCase.owner().get();
+         caseEntity.changeOwner(owner);
+
+         caseEntity.open();
+
+         caseEntity.assignTo(RoleMap.role(Assignee.class));
+         caseEntity.setUnread(false);
+
+         subCases().add(caseEntity);
+
          return caseEntity;
       }
 
