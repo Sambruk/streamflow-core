@@ -22,7 +22,6 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -58,8 +57,12 @@ public interface SubCase
 
       public void changedParent( @Optional DomainEvent event, Case newParent )
       {
-         parent().set( newParent );
-         newParent.assignSubCase(myself);
+          if (newParent == null) {
+              parent().get().removeSubCase(myself);
+          } else {
+              newParent.assignSubCase(myself);
+          }
+          parent().set(newParent);
       }
    }
 }

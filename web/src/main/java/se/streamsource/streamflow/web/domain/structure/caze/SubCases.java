@@ -114,14 +114,13 @@ public interface SubCases
          if (subCases().contains( subCase ))
          {
             removedSubCase( null, subCase );
-            subCase.changeParent( null );
          }
       }
 
       public void removedSubCase( @Optional DomainEvent event, Case subCase )
       {
-         subCase.changeParent(null);
          subCases().remove( subCase );
+         subCase.changeParent(null);
       }
 
       public void assignSubCase( @Optional DomainEvent event, Case subCase )
