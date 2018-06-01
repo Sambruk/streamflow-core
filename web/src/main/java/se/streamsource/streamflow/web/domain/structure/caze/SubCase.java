@@ -57,9 +57,11 @@ public interface SubCase
 
       public void changedParent( @Optional DomainEvent event, Case newParent )
       {
-          if (newParent == null) {
-              parent().get().removeSubCase(myself);
-          } else {
+          Case oldParent = parent().get();
+          if (oldParent != null) {
+              oldParent.removeSubCase(myself);
+          }
+          if (newParent != null) {
               newParent.assignSubCase(myself);
           }
           parent().set(newParent);
