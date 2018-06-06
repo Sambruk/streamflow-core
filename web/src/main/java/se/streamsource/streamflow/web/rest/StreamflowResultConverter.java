@@ -18,19 +18,10 @@
  */
 package se.streamsource.streamflow.web.rest;
 
-import static se.streamsource.dci.value.table.TableValue.BOOLEAN;
-import static se.streamsource.dci.value.table.TableValue.DATETIME;
-import static se.streamsource.dci.value.table.TableValue.STRING;
-
-import java.util.Collections;
-import java.util.Date;
-
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
@@ -41,7 +32,6 @@ import org.qi4j.spi.Qi4jSPI;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.slf4j.LoggerFactory;
-
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.link.LinkValue;
@@ -74,6 +64,11 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Priority;
 import se.streamsource.streamflow.web.domain.structure.organization.PrioritySettings;
+
+import java.util.Collections;
+import java.util.Date;
+
+import static se.streamsource.dci.value.table.TableValue.*;
 
 /**
  * JAVADOC
@@ -143,7 +138,9 @@ public class StreamflowResultConverter
       builder.prototype().unlimitedResultCount().set(result.getUnlimitedCount());
 
       for (Case aCase : result.getResult()) {
-         builder.prototype().links().get().add(caseDTO((CaseEntity) aCase, module, basePath, v2));
+          if (aCase != null) {
+              builder.prototype().links().get().add(caseDTO((CaseEntity) aCase, module, basePath, v2));
+          }
       }
 
       return builder.newInstance();
