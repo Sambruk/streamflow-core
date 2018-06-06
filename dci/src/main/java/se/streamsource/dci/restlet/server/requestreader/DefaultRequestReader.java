@@ -194,7 +194,10 @@ public class DefaultRequestReader
                } else
                   entityAsForm = new Form();
 
-               args[0] = module.unitOfWorkFactory().currentUnitOfWork().get(method.getParameterTypes()[0], getValue("entity", queryAsForm, entityAsForm));
+                String entity = getValue("entity", queryAsForm, entityAsForm);
+                args[0] = entity != null
+                        ? module.unitOfWorkFactory().currentUnitOfWork().get(method.getParameterTypes()[0], entity)
+                        : null;
 
                return args;
             } else
