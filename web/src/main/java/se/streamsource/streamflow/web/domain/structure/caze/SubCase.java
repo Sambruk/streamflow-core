@@ -22,6 +22,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.api.workspace.cases.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
@@ -49,10 +50,9 @@ public interface SubCase
 
       public void changeParent( Case newParent )
       {
-         if (newParent == null || !newParent.equals( parent().get() ))
-         {
-            changedParent( null, newParent );
-         }
+          if (newParent == null || (!newParent.equals(parent().get()) && !newParent.isStatus(CaseStates.CLOSED))) {
+              changedParent(null, newParent);
+          }
       }
 
       public void changedParent( @Optional DomainEvent event, Case newParent )
