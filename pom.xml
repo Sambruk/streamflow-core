@@ -45,6 +45,12 @@
         </repository>
 
         <repository>
+            <id>old-cloudbees</id>
+            <name>Old JayWayCloudBees repository</name>
+            <url>http://repo-streamflow.prod.imcode.com/repository/cloudbees</url>
+        </repository>
+
+        <repository>
             <id>maven-restlet</id>
             <name>Public online Restlet repository</name>
             <url>http://maven.restlet.org</url>
