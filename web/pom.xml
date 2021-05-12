@@ -262,7 +262,7 @@
         <dependency>
             <artifactId>solr-core</artifactId>
             <groupId>org.apache.solr</groupId>
-            <version>4.6.1</version>
+            <version>8.8.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
